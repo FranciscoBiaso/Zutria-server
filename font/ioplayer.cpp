@@ -49,7 +49,7 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 			 `posz`, `cap`, `lastlogin`, `lastlogout`, `lastip`, `save`, `conditions`, `redskulltime`, \
 			 `redskull`, `guildnick`, `loss_experience`, `loss_mana`, `loss_skills`, \
 			 `loss_items`, `rank_id`, `town_id`, `balance`, `status`, `levelPoints`, `physicalAttack`,  \
-			 `physicalDefense`, `capacity` \
+			 `physicalDefense` \
 			 FROM `players` LEFT JOIN `accounts` ON `account_id` = `accounts`.`id` \
 			 WHERE `players`.`name` = " + db->escapeString(name);
 
@@ -93,7 +93,7 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 	player->lastLogout = result->getDataInt("lastlogout");
 
 	player->health = result->getDataInt("health");
-	player->healthMax = result->getDataInt("healthmax");
+	player->setSkillValue(skillsID::PLAYER_SKILL_HEALTH_POINTS , result->getDataInt("healthmax"));
 	player->defaultOutfit.lookType = result->getDataInt("looktype");
 	player->defaultOutfit.lookHead = result->getDataInt("lookhead");
 	player->defaultOutfit.lookBody = result->getDataInt("lookbody");
@@ -106,7 +106,6 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 	player->setLevelPoints((uint16_t)result->getDataInt("levelPoints"));
 	player->setSkillValue(PLAYER_SKILL_PHYSICAL_ATTACK ,(uint16_t)result->getDataInt("physicalAttack"));
 	player->setSkillValue(PLAYER_SKILL_PHYSICAL_DEFENSE, (uint16_t)result->getDataInt("physicalDefense"));
-	player->setSkillValue(PLAYER_SKILL_CAPACITY, (uint16_t)result->getDataInt("capacity"));
 	
 
 
@@ -144,7 +143,7 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 	player->setVocation(result->getDataInt("vocation"));
 	// this stuff has to go after the vocation is set
 	player->mana = result->getDataInt("mana");
-	player->manaMax = result->getDataInt("manamax");
+	player->setSkillValue(skillsID::PLAYER_SKILL_MANA_POINTS, result->getDataInt("manamax"));
 	player->magLevel = result->getDataInt("maglevel");
 
 	uint32_t nextManaCount = (uint32_t)player->vocation->getReqMana(player->magLevel + 1);
