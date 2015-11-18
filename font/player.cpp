@@ -1945,51 +1945,6 @@ uint32_t Player::getIP() const
 	return 0;
 }
 
-void Player::sendToRook()
-{
-    setVocation(VOCATION_NONE);
-
-    //Edit stats (level, exp, mana...)
-    level = 1;
-    //health = 150;
-    healthMax = 150;
-    //mana = 0;
-    manaMax = 0;
-    manaSpent = 0;
-    magLevel= 0;
-#ifdef __PROTOCOL_76__
-	soul = 100;
-	soulMax = 100;
-#endif // __PROTOCOL_76__
-    capacity = 400;
-    experience = 0;
-
-    for (int32_t i = SKILL_FIRST; i <= SKILL_LAST; ++i) {
-        skills[i][SKILL_LEVEL]= 10;
-        skills[i][SKILL_TRIES]= 0;
-    }
-
-    //Remove items
-    for (int32_t i = SLOT_FIRST; i < SLOT_LAST; ++i) {
-		if (inventory[i]) {
-            g_game.internalRemoveItem(inventory[i]);
-		}
-    }
-
-    __internalAddThing(SLOT_BACKPACK, Item::CreateItem(1987));
-    __internalAddThing(SLOT_RIGHT, Item::CreateItem(2382));
-	if (getSex() == PLAYERSEX_MALE)
-		__internalAddThing(SLOT_ARMOR, Item::CreateItem(2650));
-	else
-		__internalAddThing(SLOT_ARMOR, Item::CreateItem(2651));
-
-    Town* town = Towns::getInstance().getTown(g_config.getNumber(ConfigManager::ROOK_TEMPLE_ID));
-    if (town) {
-        setTown(town->getTownID());
-        loginPosition = town->getTemplePosition();
-    }
-}
-
 void Player::onDie()
 {
     if(getZone() != ZONE_PVP){
@@ -2112,8 +2067,7 @@ void Player::die()
 
 			uint32_t levelToRook = g_config.getNumber(ConfigManager::LEVEL_TO_ROOK);
 			bool rooked = false;
-			if((newLevel <= levelToRook) && getVocationId() != 0) {
-                sendToRook();
+			if((newLevel <= levelToRook) && getVocationId() != 0) {           
 				rooked = true;
 			}
 
