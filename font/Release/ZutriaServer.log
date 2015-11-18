@@ -1,4 +1,4 @@
-﻿Build started 17/11/2015 23:34:57.
+﻿Build started 18/11/2015 18:24:10.
      1>Project "C:\Users\francisco\Documents\GitHub\Zutria-server\font\ZutriaServer.vcxproj" on node 2 (Build target(s)).
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(364,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
      1>Link:
@@ -81,4 +81,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:01:04.68
+Time Elapsed 00:00:56.73
