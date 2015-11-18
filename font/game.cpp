@@ -3142,7 +3142,7 @@ bool Game::playerAddSkillPoint(uint32_t playerId, uint8_t skillId, uint8_t value
 		else if (skillId == skillsID::PLAYER_SKILL_PHYSICAL_DEFENSE)
 			player->setSkillValue(skillId, player->getSkillValue(skillId) + 1);
 		else if (skillId == skillsID::PLAYER_SKILL_CAPACITY)
-			player->capacity = player->getCapacity + 1;
+			player->capacity = player->getCapacity() + 1;
 		else if (skillId == skillsID::PLAYER_SKILL_MANA_POINTS)
 			player->manaMax = player->manaMax + 1;
 		else if (skillId == skillsID::PLAYER_SKILL_MAGIC_ATTACK)

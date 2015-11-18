@@ -1,26 +1,84 @@
-﻿Build started 17/11/2015 18:19:15.
-     1>Project "C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER\ZutriaServer\ZutriaServer\ZutriaServer.vcxproj" on node 2 (Build target(s)).
-     1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\sqlite3" /I"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\mysql" /I"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\mpir" /I"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\lua" /I"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\libxml" /I"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\libiconv" /IC:\local\boost_1_58_0 /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D __USE_OTPCH__ /D __USE_MYSQL__ /D _WINSOCK_DEPRECATED_NO_WARNINGS /D __PROTOCOL_76__ /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt actions.cpp ban.cpp beds.cpp chat.cpp combat.cpp commands.cpp condition.cpp connection.cpp container.cpp creature.cpp creatureevent.cpp depot.cpp game.cpp globalevent.cpp house.cpp housetile.cpp iomapotbm.cpp iomapserialize.cpp iomapxml.cpp ioplayer.cpp item.cpp items.cpp luascript.cpp mailbox.cpp map.cpp monster.cpp monsters.cpp movement.cpp networkmessage.cpp npc.cpp otserv.cpp outfit.cpp party.cpp player.cpp protocolgame.cpp protocollogin.cpp raids.cpp scriptmanager.cpp spawn.cpp spells.cpp status.cpp talkaction.cpp tasks.cpp teleport.cpp thing.cpp tile.cpp trashholder.cpp vocation.cpp waitlist.cpp weapons.cpp
-         actions.cpp
-         ban.cpp
-         beds.cpp
-         chat.cpp
-         combat.cpp
-         commands.cpp
-         condition.cpp
-         connection.cpp
-         container.cpp
-         creature.cpp
-         creatureevent.cpp
-         depot.cpp
-         game.cpp
-     1>game.cpp(3145): error C3867: 'Player::getCapacity': function call missing argument list; use '&Player::getCapacity' to create a pointer to member
-     1>game.cpp(3145): error C2296: '+' : illegal, left operand has type 'double (__thiscall Player::* )(void) const'
-         globalevent.cpp
-         house.cpp
-         housetile.cpp
-         iomapotbm.cpp
-         iomapserialize.cpp
-         iomapxml.cpp
-         ioplayer.cpp
+﻿Build started 17/11/2015 23:34:57.
+     1>Project "C:\Users\francisco\Documents\GitHub\Zutria-server\font\ZutriaServer.vcxproj" on node 2 (Build target(s)).
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(364,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
+     1>Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"..\app\ZutriaServer.exe" /NOLOGO /LIBPATH:"C:\local\boost_1_58_0\lib32-msvc-12.0" /LIBPATH:"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\lib" libmysql.lib libxml2.lib lua5.1.lib mpir.lib sqlite3.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"..\app\ZutriaServer.pdb" /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"..\app\ZutriaServer.lib" /MACHINE:X86 /SAFESEH Release\account.obj
+         Release\actions.obj
+         Release\allocator.obj
+         Release\ban.obj
+         Release\baseevents.obj
+         Release\beds.obj
+         Release\chat.obj
+         Release\combat.obj
+         Release\commands.obj
+         Release\condition.obj
+         Release\configmanager.obj
+         Release\connection.obj
+         Release\container.obj
+         Release\creature.obj
+         Release\creatureevent.obj
+         Release\cylinder.obj
+         Release\database.obj
+         Release\databasemysql.obj
+         Release\databasesqlite.obj
+         Release\depot.obj
+         Release\exception.obj
+         Release\fileloader.obj
+         Release\game.obj
+         Release\globalevent.obj
+         Release\house.obj
+         Release\housetile.obj
+         Release\ioaccount.obj
+         Release\iomapotbm.obj
+         Release\iomapserialize.obj
+         Release\iomapxml.obj
+         Release\ioplayer.obj
+         Release\item.obj
+         Release\items.obj
+         Release\logger.obj
+         Release\luascript.obj
+         Release\mailbox.obj
+         Release\map.obj
+         Release\md5.obj
+         Release\monster.obj
+         Release\monsters.obj
+         Release\movement.obj
+         Release\networkmessage.obj
+         Release\npc.obj
+         Release\otpch.obj
+         Release\otserv.obj
+         Release\outfit.obj
+         Release\outputmessage.obj
+         Release\party.obj
+         Release\player.obj
+         Release\position.obj
+         Release\protocol.obj
+         Release\protocolgame.obj
+         Release\protocollogin.obj
+         Release\raids.obj
+         Release\rsa.obj
+         Release\scheduler.obj
+         Release\scriptmanager.obj
+         Release\server.obj
+         Release\sha1.obj
+         Release\spawn.obj
+         Release\spells.obj
+         Release\status.obj
+         Release\talkaction.obj
+         Release\tasks.obj
+         Release\teleport.obj
+         Release\thing.obj
+         Release\tile.obj
+         Release\tools.obj
+         Release\trashholder.obj
+         Release\vocation.obj
+         Release\waitlist.obj
+         Release\weapons.obj
+         Generating code
+         Finished generating code
+         ZutriaServer.vcxproj -> C:\Users\francisco\Documents\GitHub\Zutria-server\font\..\app\ZutriaServer.exe
+     1>Done Building Project "C:\Users\francisco\Documents\GitHub\Zutria-server\font\ZutriaServer.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:01:04.68
