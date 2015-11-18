@@ -1,0 +1,308 @@
+﻿Build started 17/11/2015 00:40:16.
+     1>Project "C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER\ZutriaServer\ZutriaServer\ZutriaServer.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt account.cpp actions.cpp ban.cpp baseevents.cpp beds.cpp chat.cpp combat.cpp commands.cpp condition.cpp configmanager.cpp connection.cpp container.cpp creature.cpp creatureevent.cpp cylinder.cpp database.cpp databasemysql.cpp databasesqlite.cpp depot.cpp fileloader.cpp game.cpp globalevent.cpp house.cpp housetile.cpp ioaccount.cpp iomapotbm.cpp iomapserialize.cpp iomapxml.cpp ioplayer.cpp item.cpp items.cpp logger.cpp luascript.cpp mailbox.cpp map.cpp monster.cpp monsters.cpp movement.cpp networkmessage.cpp npc.cpp otserv.cpp outfit.cpp outputmessage.cpp party.cpp player.cpp protocol.cpp protocolgame.cpp protocollogin.cpp raids.cpp rsa.cpp scheduler.cpp scriptmanager.cpp server.cpp spawn.cpp spells.cpp status.cpp talkaction.cpp tasks.cpp teleport.cpp thing.cpp tile.cpp tools.cpp trashholder.cpp vocation.cpp waitlist.cpp weapons.cpp
+         weapons.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(121): error C2079: 'ret' uses undefined class 'std::basic_stringstream<char,std::char_traits<char>,std::allocator<char>>'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): error C2297: '<<' : illegal, right operand has type 'const char [12]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [3]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [2]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(124): error C2228: left of '.str' must have class/struct/union
+                 type is 'int'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\database.h(28): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         waitlist.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\waitlist.cpp(24): fatal error C1083: Cannot open include file: 'boost/algorithm/string/predicate.hpp': No such file or directory
+         vocation.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\tools.h(35): fatal error C1083: Cannot open include file: 'libxml/parser.h': No such file or directory
+         trashholder.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(121): error C2079: 'ret' uses undefined class 'std::basic_stringstream<char,std::char_traits<char>,std::allocator<char>>'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): error C2297: '<<' : illegal, right operand has type 'const char [12]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [3]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [2]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(124): error C2228: left of '.str' must have class/struct/union
+                 type is 'int'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\database.h(28): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         tools.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\tools.h(35): fatal error C1083: Cannot open include file: 'libxml/parser.h': No such file or directory
+         tile.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(121): error C2079: 'ret' uses undefined class 'std::basic_stringstream<char,std::char_traits<char>,std::allocator<char>>'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): error C2297: '<<' : illegal, right operand has type 'const char [12]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [3]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [2]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(124): error C2228: left of '.str' must have class/struct/union
+                 type is 'int'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\database.h(28): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         thing.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(121): error C2079: 'ret' uses undefined class 'std::basic_stringstream<char,std::char_traits<char>,std::allocator<char>>'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): error C2297: '<<' : illegal, right operand has type 'const char [12]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [3]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [2]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(124): error C2228: left of '.str' must have class/struct/union
+                 type is 'int'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\templates.h(30): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         teleport.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(121): error C2079: 'ret' uses undefined class 'std::basic_stringstream<char,std::char_traits<char>,std::allocator<char>>'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): error C2297: '<<' : illegal, right operand has type 'const char [12]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [3]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [2]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(124): error C2228: left of '.str' must have class/struct/union
+                 type is 'int'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\database.h(28): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         tasks.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\tasks.h(27): fatal error C1083: Cannot open include file: 'boost/function.hpp': No such file or directory
+         talkaction.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\templates.h(30): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         status.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\networkmessage.h(28): fatal error C1083: Cannot open include file: 'boost/shared_ptr.hpp': No such file or directory
+         spells.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\tools.h(35): fatal error C1083: Cannot open include file: 'libxml/parser.h': No such file or directory
+         spawn.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(121): error C2079: 'ret' uses undefined class 'std::basic_stringstream<char,std::char_traits<char>,std::allocator<char>>'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): error C2297: '<<' : illegal, right operand has type 'const char [12]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [3]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [2]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(124): error C2228: left of '.str' must have class/struct/union
+                 type is 'int'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\templates.h(30): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         server.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\server.h(26): fatal error C1083: Cannot open include file: 'boost/bind.hpp': No such file or directory
+         scriptmanager.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\database.h(28): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         scheduler.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\tasks.h(27): fatal error C1083: Cannot open include file: 'boost/function.hpp': No such file or directory
+         rsa.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\rsa.h(25): fatal error C1083: Cannot open include file: 'gmp.h': No such file or directory
+         raids.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\database.h(28): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         protocollogin.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\protocol.h(28): fatal error C1083: Cannot open include file: 'boost/utility.hpp': No such file or directory
+         protocolgame.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\protocol.h(28): fatal error C1083: Cannot open include file: 'boost/utility.hpp': No such file or directory
+         Generating Code...
+         Compiling...
+         protocol.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\protocol.h(28): fatal error C1083: Cannot open include file: 'boost/utility.hpp': No such file or directory
+         player.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\templates.h(30): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         party.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\templates.h(30): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         outputmessage.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\networkmessage.h(28): fatal error C1083: Cannot open include file: 'boost/shared_ptr.hpp': No such file or directory
+         outfit.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\templates.h(30): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         otserv.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\server.h(26): fatal error C1083: Cannot open include file: 'boost/bind.hpp': No such file or directory
+         npc.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\templates.h(30): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         networkmessage.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\networkmessage.h(28): fatal error C1083: Cannot open include file: 'boost/shared_ptr.hpp': No such file or directory
+         movement.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\database.h(28): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         monsters.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\templates.h(30): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         monster.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\templates.h(30): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         map.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(121): error C2079: 'ret' uses undefined class 'std::basic_stringstream<char,std::char_traits<char>,std::allocator<char>>'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): error C2297: '<<' : illegal, right operand has type 'const char [12]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [3]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [2]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(124): error C2228: left of '.str' must have class/struct/union
+                 type is 'int'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\database.h(28): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         mailbox.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(121): error C2079: 'ret' uses undefined class 'std::basic_stringstream<char,std::char_traits<char>,std::allocator<char>>'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): error C2297: '<<' : illegal, right operand has type 'const char [12]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [3]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [2]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(124): error C2228: left of '.str' must have class/struct/union
+                 type is 'int'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\database.h(28): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         luascript.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\database.h(28): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         logger.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\tools.h(35): fatal error C1083: Cannot open include file: 'libxml/parser.h': No such file or directory
+         items.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(121): error C2079: 'ret' uses undefined class 'std::basic_stringstream<char,std::char_traits<char>,std::allocator<char>>'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): error C2297: '<<' : illegal, right operand has type 'const char [12]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [3]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [2]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(124): error C2228: left of '.str' must have class/struct/union
+                 type is 'int'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\database.h(28): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         item.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(121): error C2079: 'ret' uses undefined class 'std::basic_stringstream<char,std::char_traits<char>,std::allocator<char>>'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): error C2297: '<<' : illegal, right operand has type 'const char [12]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [3]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [2]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(124): error C2228: left of '.str' must have class/struct/union
+                 type is 'int'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\templates.h(30): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         ioplayer.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\templates.h(30): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         iomapxml.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(121): error C2079: 'ret' uses undefined class 'std::basic_stringstream<char,std::char_traits<char>,std::allocator<char>>'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): error C2297: '<<' : illegal, right operand has type 'const char [12]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [3]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [2]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(124): error C2228: left of '.str' must have class/struct/union
+                 type is 'int'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\database.h(28): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         iomapserialize.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\database.h(28): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         Generating Code...
+         Compiling...
+         iomapotbm.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(121): error C2079: 'ret' uses undefined class 'std::basic_stringstream<char,std::char_traits<char>,std::allocator<char>>'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): error C2297: '<<' : illegal, right operand has type 'const char [12]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [3]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [2]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(124): error C2228: left of '.str' must have class/struct/union
+                 type is 'int'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\database.h(28): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         ioaccount.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\database.h(28): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         housetile.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(121): error C2079: 'ret' uses undefined class 'std::basic_stringstream<char,std::char_traits<char>,std::allocator<char>>'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): error C2297: '<<' : illegal, right operand has type 'const char [12]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [3]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [2]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(124): error C2228: left of '.str' must have class/struct/union
+                 type is 'int'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\templates.h(30): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         house.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\templates.h(30): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         globalevent.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\database.h(28): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         game.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\tasks.h(27): fatal error C1083: Cannot open include file: 'boost/function.hpp': No such file or directory
+         fileloader.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\fileloader.cpp(90): error C2039: 'min' : is not a member of 'std'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\fileloader.cpp(90): error C2039: 'max' : is not a member of 'std'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\fileloader.cpp(90): error C3861: 'min': identifier not found
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\fileloader.cpp(90): error C3861: 'max': identifier not found
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\fileloader.cpp(366): error C2039: 'min' : is not a member of 'std'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\fileloader.cpp(366): error C3861: 'min': identifier not found
+         depot.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(121): error C2079: 'ret' uses undefined class 'std::basic_stringstream<char,std::char_traits<char>,std::allocator<char>>'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): error C2297: '<<' : illegal, right operand has type 'const char [12]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [3]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [2]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(124): error C2228: left of '.str' must have class/struct/union
+                 type is 'int'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\tools.h(35): fatal error C1083: Cannot open include file: 'libxml/parser.h': No such file or directory
+         databasesqlite.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\database.h(28): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         databasemysql.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\database.h(28): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         database.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\database.h(28): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         cylinder.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(121): error C2079: 'ret' uses undefined class 'std::basic_stringstream<char,std::char_traits<char>,std::allocator<char>>'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): error C2297: '<<' : illegal, right operand has type 'const char [12]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [3]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [2]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(124): error C2228: left of '.str' must have class/struct/union
+                 type is 'int'
+         creatureevent.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\database.h(28): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         creature.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\templates.h(30): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         container.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(121): error C2079: 'ret' uses undefined class 'std::basic_stringstream<char,std::char_traits<char>,std::allocator<char>>'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): error C2297: '<<' : illegal, right operand has type 'const char [12]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [3]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [2]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(124): error C2228: left of '.str' must have class/struct/union
+                 type is 'int'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\database.h(28): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         connection.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\protocol.h(28): fatal error C1083: Cannot open include file: 'boost/utility.hpp': No such file or directory
+         configmanager.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\configmanager.h(30): fatal error C1083: Cannot open include file: 'lua.h': No such file or directory
+         condition.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(121): error C2079: 'ret' uses undefined class 'std::basic_stringstream<char,std::char_traits<char>,std::allocator<char>>'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): error C2297: '<<' : illegal, right operand has type 'const char [12]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [3]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [2]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(124): error C2228: left of '.str' must have class/struct/union
+                 type is 'int'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\database.h(28): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         commands.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\commands.cpp(26): fatal error C1083: Cannot open include file: 'boost/tokenizer.hpp': No such file or directory
+         combat.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(121): error C2079: 'ret' uses undefined class 'std::basic_stringstream<char,std::char_traits<char>,std::allocator<char>>'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): error C2297: '<<' : illegal, right operand has type 'const char [12]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [3]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [2]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(124): error C2228: left of '.str' must have class/struct/union
+                 type is 'int'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\database.h(28): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         Generating Code...
+         Compiling...
+         chat.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\templates.h(30): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         beds.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(121): error C2079: 'ret' uses undefined class 'std::basic_stringstream<char,std::char_traits<char>,std::allocator<char>>'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): error C2297: '<<' : illegal, right operand has type 'const char [12]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(122): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [3]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): error C2297: '<<' : illegal, right operand has type 'const char [2]'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(123): warning C4552: '<<' : operator has no effect; expected operator with side-effect
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\thing.h(124): error C2228: left of '.str' must have class/struct/union
+                 type is 'int'
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\templates.h(30): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         baseevents.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\baseevents.cpp(22): fatal error C1083: Cannot open include file: 'libxml/xmlmemory.h': No such file or directory
+         ban.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\ban.h(28): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         actions.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\templates.h(30): fatal error C1083: Cannot open include file: 'boost/thread.hpp': No such file or directory
+         account.cpp
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\account.cpp(48): error C3861: 'time': identifier not found
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\account.cpp(50): error C3861: 'difftime': identifier not found
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\account.cpp(50): error C3861: 'mktime': identifier not found
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\account.cpp(54): error C3861: 'time': identifier not found
+     1>c:\users\francisco\documents\github\2d-mmorpg-game-server\zutriaserver\zutriaserver\account.cpp(59): error C3861: 'time': identifier not found
+         Generating Code...
+     1>Done Building Project "C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER\ZutriaServer\ZutriaServer\ZutriaServer.vcxproj" (Build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:23.73

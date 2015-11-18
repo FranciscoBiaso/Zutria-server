@@ -1,0 +1,26 @@
+﻿Build started 17/11/2015 18:19:15.
+     1>Project "C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER\ZutriaServer\ZutriaServer\ZutriaServer.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\sqlite3" /I"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\mysql" /I"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\mpir" /I"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\lua" /I"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\libxml" /I"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\libiconv" /IC:\local\boost_1_58_0 /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D __USE_OTPCH__ /D __USE_MYSQL__ /D _WINSOCK_DEPRECATED_NO_WARNINGS /D __PROTOCOL_76__ /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt actions.cpp ban.cpp beds.cpp chat.cpp combat.cpp commands.cpp condition.cpp connection.cpp container.cpp creature.cpp creatureevent.cpp depot.cpp game.cpp globalevent.cpp house.cpp housetile.cpp iomapotbm.cpp iomapserialize.cpp iomapxml.cpp ioplayer.cpp item.cpp items.cpp luascript.cpp mailbox.cpp map.cpp monster.cpp monsters.cpp movement.cpp networkmessage.cpp npc.cpp otserv.cpp outfit.cpp party.cpp player.cpp protocolgame.cpp protocollogin.cpp raids.cpp scriptmanager.cpp spawn.cpp spells.cpp status.cpp talkaction.cpp tasks.cpp teleport.cpp thing.cpp tile.cpp trashholder.cpp vocation.cpp waitlist.cpp weapons.cpp
+         actions.cpp
+         ban.cpp
+         beds.cpp
+         chat.cpp
+         combat.cpp
+         commands.cpp
+         condition.cpp
+         connection.cpp
+         container.cpp
+         creature.cpp
+         creatureevent.cpp
+         depot.cpp
+         game.cpp
+     1>game.cpp(3145): error C3867: 'Player::getCapacity': function call missing argument list; use '&Player::getCapacity' to create a pointer to member
+     1>game.cpp(3145): error C2296: '+' : illegal, left operand has type 'double (__thiscall Player::* )(void) const'
+         globalevent.cpp
+         house.cpp
+         housetile.cpp
+         iomapotbm.cpp
+         iomapserialize.cpp
+         iomapxml.cpp
+         ioplayer.cpp
