@@ -3135,20 +3135,7 @@ bool Game::playerAddSkillPoint(uint32_t playerId, uint8_t skillId, uint8_t value
 
 	if (player->getLevelPoints() > 0)
 	{
-		if (skillId == skillsID::PLAYER_SKILL_HEALTH)
-			player->healthMax = player->healthMax + 1;
-		else if (skillId == skillsID::PLAYER_SKILL_PHYSICAL_ATTACK)
-			player->setSkillValue(skillId, player->getSkillValue(skillId) + 1);
-		else if (skillId == skillsID::PLAYER_SKILL_PHYSICAL_DEFENSE)
-			player->setSkillValue(skillId, player->getSkillValue(skillId) + 1);
-		else if (skillId == skillsID::PLAYER_SKILL_CAPACITY)
-			player->capacity = player->getCapacity() + 1;
-		else if (skillId == skillsID::PLAYER_SKILL_MANA_POINTS)
-			player->manaMax = player->manaMax + 1;
-		else if (skillId == skillsID::PLAYER_SKILL_MAGIC_ATTACK)
-			player->setSkillValue(skillId, player->getSkillValue(skillId) + 1);
-		else if (skillId == skillsID::PLAYER_SKILL_MAGIC_DEFENSE)
-			player->setSkillValue(skillId, player->getSkillValue(skillId) + 1);
+		player->setSkillValue(skillId,player->getSkillValue(skillId) + 1);
 		
 		player->setLevelPoints(player->getLevelPoints() - 1);
 		player->sendStats();
