@@ -1778,12 +1778,9 @@ void Player::addExperience(uint64_t exp)
 
 	uint64_t currLevelExp = Player::getExpForLevel(newLevel);
 	uint64_t nextLevelExp = Player::getExpForLevel(newLevel + 1);
-	if(nextLevelExp < currLevelExp) {
-		// Cannot gain more experience
-		// Perhaps some sort of notice should be printed here?
-		return;
-	}
-	while(experience >= nextLevelExp) {
+
+	while(experience >= nextLevelExp) 
+	{
 		++newLevel;
 		setSkillValue(PLAYER_SKILL_HEALTH_POINTS, getSkillValue(PLAYER_SKILL_HEALTH_POINTS) +  vocation->getHPGain());
 		health += vocation->getHPGain();
