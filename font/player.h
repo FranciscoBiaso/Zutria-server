@@ -153,7 +153,7 @@ public:
 	static uint64_t getExpForLevel(int32_t level)
 	{
 		level--;
-		return ((50ULL * level * level * level) - (150ULL * level * level) + (400ULL * level))/3ULL;
+		return 150ULL * level * level * level;
 	}
 
 	uint32_t getGuildId() const {return guildId;}
