@@ -1785,9 +1785,9 @@ void Player::addExperience(uint64_t exp)
 	}
 	while(experience >= nextLevelExp) {
 		++newLevel;
-		healthMax += vocation->getHPGain();
+		setSkillValue(PLAYER_SKILL_HEALTH_POINTS, getSkillValue(PLAYER_SKILL_HEALTH_POINTS) +  vocation->getHPGain());
 		health += vocation->getHPGain();
-		manaMax += vocation->getManaGain();
+		setSkillValue(PLAYER_SKILL_MANA_POINTS, getSkillValue(PLAYER_SKILL_MANA_POINTS) + vocation->getManaGain());
 		mana += vocation->getManaGain();
 		capacity += vocation->getCapGain();
 		nextLevelExp = Player::getExpForLevel(newLevel + 1);
@@ -2173,13 +2173,13 @@ void Player::preSave()
 
 		while(level > 1 && experience < Player::getExpForLevel(level)){
 			--level;
-			healthMax = std::max((int32_t)0, (healthMax - (int32_t)vocation->getHPGain()));
-			manaMax = std::max((int32_t)0, (manaMax - (int32_t)vocation->getManaGain()));
+			setSkillValue(PLAYER_SKILL_HEALTH_POINTS, std::max((int32_t)0, (int32_t)getSkillValue(PLAYER_SKILL_HEALTH_POINTS) - (int32_t)vocation->getHPGain()));
+			setSkillValue(PLAYER_SKILL_MANA_POINTS, std::max((int32_t)0, (int32_t)getSkillValue(PLAYER_SKILL_MANA_POINTS) - (int32_t)vocation->getManaGain()));
 			capacity = std::max((double)0, (capacity - (double)vocation->getCapGain()));
 		}
 
-		health = healthMax;
-		mana = manaMax;
+		health = getSkillValue(PLAYER_SKILL_HEALTH_POINTS);
+		mana = getSkillValue(PLAYER_SKILL_MANA_POINTS);
 	}
 }
 
