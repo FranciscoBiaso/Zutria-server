@@ -2542,29 +2542,37 @@ void ProtocolGame::AddCreature(NetworkMessage_ptr msg, const Creature* creature,
 
 void ProtocolGame::AddPlayerStats(NetworkMessage_ptr msg)
 {
+	// connection protocol 0xA0
 	msg->AddByte(0xA0);
+	// all player status
 	msg->AddU16(player->getHealth());
-	msg->AddU16(player->getPlayerInfo(PLAYERINFO_MAXHEALTH));
-	msg->AddU16((int32_t)player->getFreeCapacity());
-	uint32_t experience = player->getExperience();
+	msg->AddU16(player->getMana());
+	msg->AddU32(player->getFreeCapacity());
 	msg->AddU32(player->getExperience());
 	msg->AddU16(player->getPlayerInfo(PLAYERINFO_LEVEL));
 	msg->AddByte(player->getPlayerInfo(PLAYERINFO_LEVELPERCENT));
-	msg->AddU16(player->getMana());
-	msg->AddU16(player->getPlayerInfo(PLAYERINFO_MAXMANA));
-	msg->AddByte(player->getMagicLevel());
-	msg->AddByte(player->getPlayerInfo(PLAYERINFO_MAGICLEVELPERCENT));
-	msg->AddByte(player->getPlayerInfo(PLAYERINFO_SOUL));
-	msg->AddU16(player->getLevelPoints());
+	msg->AddU16(player->getBaseSpeed());
+	msg->AddByte(player->getLevelPoints());
+
 }
 
 void ProtocolGame::AddPlayerSkills(NetworkMessage_ptr msg)
 {
+	// conection protocol 0xA1
 	msg->AddByte(0xA1);
-	msg->AddU32(player->getSkillValue(PLAYER_SKILL_PHYSICAL_ATTACK));
-	msg->AddU32(player->getSkillValue(PLAYER_SKILL_PHYSICAL_DEFENSE));
+	// all player skills
+	msg->AddU16(player->getSkillValue(PLAYER_SKILL_HEALTH_POINTS));
+	msg->AddU16(player->getSkillValue(PLAYER_SKILL_PHYSICAL_ATTACK));
+	msg->AddU16(player->getSkillValue(PLAYER_SKILL_PHYSICAL_DEFENSE));
 	msg->AddU32(player->getSkillValue(PLAYER_SKILL_CAPACITY));
-	
+	msg->AddU16(player->getSkillValue(PLAYER_SKILL_MANA_POINTS));
+	msg->AddU16(player->getSkillValue(PLAYER_SKILL_MAGIC_ATTACK));
+	msg->AddU16(player->getSkillValue(PLAYER_SKILL_MAGIC_DEFENSE));
+	msg->AddU16(player->getSkillValue(PLAYER_SKILL_MAGIC_POINTS));
+	msg->AddU16(player->getSkillValue(PLAYER_SKILL_SPEED));
+	msg->AddU16(player->getSkillValue(PLAYER_SKILL_ATTACK_SPEED));
+	msg->AddU16(player->getSkillValue(PLAYER_SKILL_COOLDOWN));
+	msg->AddU16(player->getSkillValue(PLAYER_SKILL_AVOIDANCE));
 }
 
 void ProtocolGame::AddCreatureSpeak(NetworkMessage_ptr msg, const Creature* creature,
