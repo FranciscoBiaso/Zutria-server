@@ -47,7 +47,7 @@ class SchedulerTask;
 #define SKILL_INCREMENT 0.2
 enum skillsID
 {
-	PLAYER_SKILL_HEALTH = 0,
+	PLAYER_SKILL_HEALTH_POINTS = 0,
 	PLAYER_SKILL_PHYSICAL_ATTACK = 1,
 	PLAYER_SKILL_PHYSICAL_DEFENSE = 2,
 	PLAYER_SKILL_CAPACITY = 3,
@@ -245,8 +245,8 @@ public:
 			return 0.00;
 	}
 
-	virtual int32_t getMaxHealth() const {return getPlayerInfo(PLAYERINFO_MAXHEALTH);}
-	virtual int32_t getMaxMana() const {return getPlayerInfo(PLAYERINFO_MAXMANA);}
+	virtual int32_t getMaxHealth() const { return m_skills[PLAYER_SKILL_HEALTH_POINTS]; }
+	virtual int32_t getMaxMana() const { return m_skills[PLAYER_SKILL_MANA_POINTS]; }
 
 	// Returns the inventory item in the slot position
 	Item* getInventoryItem(slots_t slot) const;
