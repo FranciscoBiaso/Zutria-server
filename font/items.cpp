@@ -176,12 +176,6 @@ int Items::loadFromOtb(std::string file)
 	PropStream props;
 	f.getProps(node, props);
 
-	uint8_t byte;
-	//first byte is 0 always but is already read
-	/*props.GET_UINT8(byte);
-	std::cout << "first byte:" << (int)byte << std::endl;*/
-
-
 	uint32_t flags;
 	//4 bytes flag unused
 	props.GET_UINT32(flags);
@@ -189,13 +183,10 @@ int Items::loadFromOtb(std::string file)
 	//read byte
 	uint8_t attrib;
 	props.GET_UINT8(attrib);
-	//std::cout << "attrib:" << (int)attrib << std::endl;
-
+	
 
 	uint16_t dataLen;
 	props.GET_UINT16(dataLen);
-	//std::cout << "dataLen:" << (int)dataLen << std::endl;
-
 
 	uint32_t MajorVersion;
 	uint32_t MinorVersion;
@@ -210,10 +201,6 @@ int Items::loadFromOtb(std::string file)
 	Items::dwMajorVersion = MajorVersion;	//items otb format file version
 	Items::dwMinorVersion = MinorVersion;	//client version
 	Items::dwBuildNumber = BuildNumber;
-
-	//std::cout << "major v:" << MajorVersion << std::endl;
-	//std::cout << "minor v:" << MinorVersion << std::endl;
-	//std::cout << "build n:" << BuildNumber << std::endl;
 
 	node = f.getChildNode(node, type);
 
