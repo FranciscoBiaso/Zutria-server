@@ -152,7 +152,6 @@ public:
 
 	static uint64_t getExpForLevel(int32_t level)
 	{
-		level--;
 		return 10ULL * level * level * level;
 	}
 
@@ -229,22 +228,9 @@ public:
 	void addMessageBuffer();
 	void removeMessageBuffer();
 
-	double getCapacity() const {
-		if(!hasFlag(PlayerFlag_HasInfiniteCapacity)){
-			return capacity;
-		}
-		else
-			return 0.00;
-	}
-
-	double getFreeCapacity() const {
-		if(!hasFlag(PlayerFlag_HasInfiniteCapacity)) {
-			return std::max(0.00, capacity - inventoryWeight);
-		}
-		else
-			return 0.00;
-	}
-
+	double getCapacity() const;
+	double getFreeCapacity() const;
+	void updateAttributes();
 	virtual int32_t getMaxHealth() const { return m_skills[PLAYER_SKILL_HEALTH_POINTS]; }
 	virtual int32_t getMaxMana() const { return m_skills[PLAYER_SKILL_MANA_POINTS]; }
 
@@ -667,7 +653,7 @@ protected:
 	uint32_t conditionSuppressions;
 	uint32_t condition;
 	uint32_t manaSpent;
-	Vocation_t vocation_id;
+	playerClasses vocation_id;
 	Vocation* vocation;
 	PlayerSex_t sex;
 #ifdef __PROTOCOL_76__
@@ -790,17 +776,12 @@ protected:
 	}
 	void updateBaseSpeed()
 	{
-		if(!hasFlag(PlayerFlag_SetMaxSpeed)){
-			baseSpeed = 220 + (2* (level - 1));
-		}
-		else{
-			baseSpeed = 900;
-		};
+		baseSpeed = 220 + (2 * (level - 1));
 	}
 	
-	void updateLevelPoints(uint16_t dif)
+	void updateLevelPoints()
 	{
-		setLevelPoints(getLevelPoints() + 5 * dif);
+		setLevelPoints(getLevelPoints() + 5);
 	}
 
 	static uint32_t getPercentLevel(uint64_t count, uint32_t nextLevelCount);
