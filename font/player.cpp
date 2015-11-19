@@ -1773,53 +1773,52 @@ void Player::addManaSpent(uint32_t amount, bool useMultiplier /*= true*/)
 void Player::addExperience(uint64_t exp)
 {
 	experience += exp;
-	int prevLevel = getLevel();
-	int newLevel = getLevel();
+	int oldLevel = getLevel();
+	int currentLevel = oldLevel;
+	uint64_t currentLevelXp = Player::getExpForLevel(currentLevel);
+	uint64_t nextLevelXp = Player::getExpForLevel(currentLevel + 1);
+	bool levelUp = false;
 
-	uint64_t currLevelExp = Player::getExpForLevel(newLevel);
-	uint64_t nextLevelExp = Player::getExpForLevel(newLevel + 1);
-
-	while(experience >= nextLevelExp) 
+	//level up
+	while (experience >= nextLevelXp)
 	{
-		++newLevel;
-		setSkillValue(PLAYER_SKILL_HEALTH_POINTS, getSkillValue(PLAYER_SKILL_HEALTH_POINTS) +  vocation->getHPGain());
+		levelUp = true;
+		currentLevel++;//4
+		//change max health attributes
+		setSkillValue(PLAYER_SKILL_HEALTH_POINTS, getSkillValue(PLAYER_SKILL_HEALTH_POINTS) + vocation->getHPGain());
+		//change current health attributes
 		health += vocation->getHPGain();
+		//change max mana attributes
 		setSkillValue(PLAYER_SKILL_MANA_POINTS, getSkillValue(PLAYER_SKILL_MANA_POINTS) + vocation->getManaGain());
+		//change current mana attributes
 		mana += vocation->getManaGain();
-		capacity += vocation->getCapGain();
-		nextLevelExp = Player::getExpForLevel(newLevel + 1);
+		//change max cap attributes
+		setSkillValue(PLAYER_SKILL_CAPACITY, getSkillValue(PLAYER_SKILL_CAPACITY) + vocation->getCapGain());
+		//update speed
+		updateBaseSpeed();
+		//update level points of attributes
+		updateLevelPoints();
+		nextLevelXp = Player::getExpForLevel(currentLevel + 1);
 	}
 
-	if(prevLevel != newLevel){
-		level = newLevel;
-		updateBaseSpeed();
-		updateLevelPoints(newLevel - prevLevel);
 
-		int32_t newSpeed = getBaseSpeed();
-		setBaseSpeed(newSpeed);
-
+	if (levelUp){
+		level = currentLevel;
 		g_game.changeSpeed(this, 0);
 		g_game.addCreatureHealth(this);
 
 		std::stringstream levelMsg;
-		levelMsg << "Você avançou do level " << prevLevel << " para o level " << newLevel << ".";
+		levelMsg << "Você avançou do level " << oldLevel << " para o level " << currentLevel << ".";
 		sendTextMessage(MSG_EVENT_LEVELUP, levelMsg.str());
 
 		//scripting event - onAdvance
-		onAdvanceEvent(LEVEL_EXPERIENCE, prevLevel, newLevel);
+		onAdvanceEvent(LEVEL_EXPERIENCE, oldLevel, currentLevel);
 	}
 
-	currLevelExp = Player::getExpForLevel(level);
-	nextLevelExp = Player::getExpForLevel(level + 1);
-	if(nextLevelExp > currLevelExp) {
-		uint32_t newPercent = Player::getPercentLevel(getExperience() - currLevelExp, Player::getExpForLevel(level + 1) - currLevelExp);
-		levelPercent = newPercent;
-	} 
-	else {
-		levelPercent = 0;
-	}
-
+	levelPercent = (experience - getExpForLevel(currentLevel)) / (double)(getExpForLevel(currentLevel + 1) - getExpForLevel(currentLevel)) * 100.0;
+	
 	sendStats();
+	sendSkills();
 }
 
 uint32_t Player::getPercentLevel(uint64_t count, uint32_t nextLevelCount)
