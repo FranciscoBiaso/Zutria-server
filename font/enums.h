@@ -137,7 +137,8 @@ enum playerClasses
 	archer,
 	knight,
 	druid,
-	summoner
+	summoner,
+	none
 };
 
 enum levelTypes_t {
