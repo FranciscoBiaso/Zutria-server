@@ -129,16 +129,15 @@ enum BlockType_t {
 	BLOCK_IMMUNITY
 };
 
-enum Vocation_t {
-	VOCATION_NONE				= 0,
-	VOCATION_SORCERER			= 1,
-	VOCATION_DRUID				= 2,
-	VOCATION_PALADIN			= 3,
-	VOCATION_KNIGHT				= 4,
-	VOCATION_MASTERSORCERER		= 5,
-	VOCATION_ELDERDRUID			= 6,
-	VOCATION_ROYALPALADIN		= 7,
-	VOCATION_ELITEKNIGHT		= 8
+//vocations - classes
+enum playerClasses
+{
+	fireMage = 0,
+	eletricianMage,
+	archer,
+	knight,
+	druid,
+	summoner
 };
 
 enum levelTypes_t {
