@@ -351,14 +351,17 @@ enum PlayerFlags{
 // health points, physical attack, physical defense, capacity
 // mana points, magical attack, magical defense, magic points,
 // player speed, attack speed, cooldown, avoidance
-int playerAttributes[][12] = 
-{ 
-	{ 2, 1, 1, 2, 7, 5, 4, 2, 2, 1, 2, 1 } , // fire mage
-	{ 2, 1, 1, 2, 7, 5, 3, 2, 3, 1, 2, 1 } , // eletrician mage
-	{ 3, 4, 3, 3, 3, 2, 1, 1, 3, 2, 1, 4 } , // archer
-	{ 5, 5, 4, 6, 2, 1, 1, 1, 1, 1, 1, 2 } , // knight
-	{ 2, 1, 1, 2, 7, 4, 5, 2, 2, 1, 2, 1 } , // druid
-	{ 2, 1, 1, 2, 6, 4, 5, 2, 2, 1, 3, 1 } , // sumoner
+namespace _player_{
+
+	const int attributes[][12] =
+	{
+		{ 2, 1, 1, 2, 7, 5, 4, 2, 2, 1, 2, 1 }, // fire mage
+		{ 2, 1, 1, 2, 7, 5, 3, 2, 3, 1, 2, 1 }, // eletrician mage
+		{ 3, 4, 3, 3, 3, 2, 1, 1, 3, 2, 1, 4 }, // archer
+		{ 5, 5, 4, 6, 2, 1, 1, 1, 1, 1, 1, 2 }, // knight
+		{ 2, 1, 1, 2, 7, 4, 5, 2, 2, 1, 2, 1 }, // druid
+		{ 2, 1, 1, 2, 6, 4, 5, 2, 2, 1, 3, 1 }, // sumoner
+	};
 };
 
 
