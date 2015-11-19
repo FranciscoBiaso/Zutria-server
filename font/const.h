@@ -361,17 +361,6 @@ int playerAttributes[][12] =
 	{ 2, 1, 1, 2, 6, 4, 5, 2, 2, 1, 3, 1 } , // sumoner
 };
 
-//vocations - classes
-enum playerClasses
-{
-	fireMage = 0 ,
-	eletricianMage,
-	archer, 
-	knight,
-	druid,
-	summoner
-};
-
 
 
 
