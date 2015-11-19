@@ -1427,9 +1427,8 @@ void ProtocolGame::parseAddSkillButtonClick(NetworkMessage& msg)
 {
 	uint32_t creatureId = msg.GetU32();
 	uint8_t skillId = msg.GetByte();
-	uint8_t valueToAdd = msg.GetByte();
 
-	addGameTask(&Game::playerAddSkillPoint, player->getID(), skillId, valueToAdd);
+	addGameTask(&Game::playerAddSkillPoint, player->getID(), skillId);
 }
 
 void ProtocolGame::parseRequestTrade(NetworkMessage& msg)
@@ -2552,8 +2551,6 @@ void ProtocolGame::AddPlayerStats(NetworkMessage_ptr msg)
 	msg->AddU16(player->getPlayerInfo(PLAYERINFO_LEVEL));
 	msg->AddByte(player->getPlayerInfo(PLAYERINFO_LEVELPERCENT));
 	msg->AddU16(player->getBaseSpeed());
-	msg->AddByte(player->getLevelPoints());
-
 }
 
 void ProtocolGame::AddPlayerSkills(NetworkMessage_ptr msg)
@@ -2573,6 +2570,7 @@ void ProtocolGame::AddPlayerSkills(NetworkMessage_ptr msg)
 	msg->AddU16(player->getSkillValue(PLAYER_SKILL_ATTACK_SPEED));
 	msg->AddU16(player->getSkillValue(PLAYER_SKILL_COOLDOWN));
 	msg->AddU16(player->getSkillValue(PLAYER_SKILL_AVOIDANCE));
+	msg->AddByte(player->getLevelPoints());
 }
 
 void ProtocolGame::AddCreatureSpeak(NetworkMessage_ptr msg, const Creature* creature,
