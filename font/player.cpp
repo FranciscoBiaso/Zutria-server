@@ -71,7 +71,7 @@ Creature()
 	}
 
 	name        = _name;
-	setVocation(VOCATION_NONE);
+	setVocation(playerClasses::none);
 	capacity   = 300.00;
 	mana       = 0;
 	manaMax    = 0;
@@ -211,10 +211,11 @@ Player::~Player()
 
 bool Player::setVocation(uint32_t vocId)
 {
-	if(!g_vocations.getVocation(vocId, vocation)){
+	if(!g_vocations.getVocation(vocId, vocation))
+	{
 		return false;
 	}
-	vocation_id = (Vocation_t)vocId;
+	vocation_id = (playerClasses)vocId;
 
 	//Update health/mana gain condition
 	Condition* condition = getCondition(CONDITION_REGENERATION, CONDITIONID_DEFAULT);
@@ -224,11 +225,6 @@ bool Player::setVocation(uint32_t vocId)
 		condition->setParam(CONDITIONPARAM_MANAGAIN, vocation->getManaGainAmount());
 		condition->setParam(CONDITIONPARAM_MANATICKS, vocation->getManaGainTicks() * 1000);
 	}
-
-#ifdef __PROTOCOL_76__
-	//Set the player's max soul according to their vocation
-	soulMax = vocation->getSoulMax();
-#endif // __PROTOCOL_76__
 
 	return true;
 }
@@ -259,7 +255,7 @@ std::string Player::getDescription(int32_t lookDistance) const
 
 		if(hasFlag(PlayerFlag_ShowGroupInsteadOfVocation))
 			s << " Você é " << getGroupName() << ".";
-		else if(getVocationId() != VOCATION_NONE)
+		else if(getVocationId() != playerClasses::none)
 			s << " Você é " << vocation->getDescription() << ".";
 		else
 			s << " Você não tem vocação.";
@@ -274,7 +270,7 @@ std::string Player::getDescription(int32_t lookDistance) const
 
 		if(hasFlag(PlayerFlag_ShowGroupInsteadOfVocation))
 			s << " é " << getGroupName() << ".";
-		else if(getVocationId() != VOCATION_NONE)
+		else if(getVocationId() != playerClasses::none)
 			s << " é " << vocation->getDescription() << ".";
 		else
 			s << " has no vocation.";
@@ -569,7 +565,7 @@ int32_t Player::getPlayerInfo(playerinfo_t playerinfo) const
 		case PLAYERINFO_HEALTH: 
 			return health; 
 		case PLAYERINFO_MAXHEALTH: 
-			return std::max((int32_t)1, ((int32_t)healthMax + varStats[STAT_MAXHITPOINTS])); 
+			return getSkillValue(PLAYER_SKILL_HEALTH_POINTS);
 		case PLAYERINFO_MANA: 
 			return mana; 
 		case PLAYERINFO_MAXMANA: 
@@ -1775,18 +1771,18 @@ void Player::updateAttributes()
 {
 	int vocationId = getVocationId();
 
-	setSkillValue(PLAYER_SKILL_HEALTH_POINTS, playerAttributes[vocationId][PLAYER_SKILL_HEALTH_POINTS]);
-	setSkillValue(PLAYER_SKILL_PHYSICAL_ATTACK, playerAttributes[vocationId][PLAYER_SKILL_PHYSICAL_ATTACK]);
-	setSkillValue(PLAYER_SKILL_PHYSICAL_DEFENSE, playerAttributes[vocationId][PLAYER_SKILL_PHYSICAL_DEFENSE]);
-	setSkillValue(PLAYER_SKILL_CAPACITY, playerAttributes[vocationId][PLAYER_SKILL_CAPACITY]);
-	setSkillValue(PLAYER_SKILL_MANA_POINTS, playerAttributes[vocationId][PLAYER_SKILL_MANA_POINTS]);
-	setSkillValue(PLAYER_SKILL_MAGIC_ATTACK, playerAttributes[vocationId][PLAYER_SKILL_MAGIC_ATTACK]);
-	setSkillValue(PLAYER_SKILL_MAGIC_DEFENSE, playerAttributes[vocationId][PLAYER_SKILL_MAGIC_DEFENSE]);
-	setSkillValue(PLAYER_SKILL_MAGIC_POINTS, playerAttributes[vocationId][PLAYER_SKILL_MAGIC_POINTS]);
-	setSkillValue(PLAYER_SKILL_SPEED, playerAttributes[vocationId][PLAYER_SKILL_SPEED]);
-	setSkillValue(PLAYER_SKILL_ATTACK_SPEED, playerAttributes[vocationId][PLAYER_SKILL_ATTACK_SPEED]);
-	setSkillValue(PLAYER_SKILL_COOLDOWN, playerAttributes[vocationId][PLAYER_SKILL_COOLDOWN]);
-	setSkillValue(PLAYER_SKILL_AVOIDANCE, playerAttributes[vocationId][PLAYER_SKILL_AVOIDANCE]);
+	setSkillValue(PLAYER_SKILL_HEALTH_POINTS, _player_::attributes[vocationId][PLAYER_SKILL_HEALTH_POINTS]);
+	setSkillValue(PLAYER_SKILL_PHYSICAL_ATTACK, _player_::attributes[vocationId][PLAYER_SKILL_PHYSICAL_ATTACK]);
+	setSkillValue(PLAYER_SKILL_PHYSICAL_DEFENSE, _player_::attributes[vocationId][PLAYER_SKILL_PHYSICAL_DEFENSE]);
+	setSkillValue(PLAYER_SKILL_CAPACITY, _player_::attributes[vocationId][PLAYER_SKILL_CAPACITY]);
+	setSkillValue(PLAYER_SKILL_MANA_POINTS, _player_::attributes[vocationId][PLAYER_SKILL_MANA_POINTS]);
+	setSkillValue(PLAYER_SKILL_MAGIC_ATTACK, _player_::attributes[vocationId][PLAYER_SKILL_MAGIC_ATTACK]);
+	setSkillValue(PLAYER_SKILL_MAGIC_DEFENSE, _player_::attributes[vocationId][PLAYER_SKILL_MAGIC_DEFENSE]);
+	setSkillValue(PLAYER_SKILL_MAGIC_POINTS, _player_::attributes[vocationId][PLAYER_SKILL_MAGIC_POINTS]);
+	setSkillValue(PLAYER_SKILL_SPEED, _player_::attributes[vocationId][PLAYER_SKILL_SPEED]);
+	setSkillValue(PLAYER_SKILL_ATTACK_SPEED, _player_::attributes[vocationId][PLAYER_SKILL_ATTACK_SPEED]);
+	setSkillValue(PLAYER_SKILL_COOLDOWN, _player_::attributes[vocationId][PLAYER_SKILL_COOLDOWN]);
+	setSkillValue(PLAYER_SKILL_AVOIDANCE, _player_::attributes[vocationId][PLAYER_SKILL_AVOIDANCE]);
 }
 
 void Player::addExperience(uint64_t exp)
@@ -1809,7 +1805,8 @@ void Player::addExperience(uint64_t exp)
 	}
 
 
-	if (levelUp){
+	if (levelUp)
+	{
 		level = currentLevel;
 		g_game.changeSpeed(this, 0);
 		g_game.addCreatureHealth(this);
@@ -2125,14 +2122,16 @@ Item* Player::getCorpse()
 
 void Player::preSave()
 {
-	if(health <= 0){
+	if(health <= 0)
+{
 		experience -= getLostExperience();
 
-		while(level > 1 && experience < Player::getExpForLevel(level)){
+		while(level > 1 && experience < Player::getExpForLevel(level))
+		{
 			--level;
 			setSkillValue(PLAYER_SKILL_HEALTH_POINTS, std::max((int32_t)0, (int32_t)getSkillValue(PLAYER_SKILL_HEALTH_POINTS) - (int32_t)vocation->getHPGain()));
 			setSkillValue(PLAYER_SKILL_MANA_POINTS, std::max((int32_t)0, (int32_t)getSkillValue(PLAYER_SKILL_MANA_POINTS) - (int32_t)vocation->getManaGain()));
-			capacity = std::max((double)0, (capacity - (double)vocation->getCapGain()));
+			setSkillValue(PLAYER_SKILL_CAPACITY,  (getSkillValue(PLAYER_SKILL_CAPACITY) - (double)vocation->getCapGain()));
 		}
 
 		health = getSkillValue(PLAYER_SKILL_HEALTH_POINTS);
@@ -2322,6 +2321,16 @@ bool Player::hasCapacity(const Item* item, uint32_t count) const
 	}
 
 	return true;
+}
+
+double Player::getCapacity() const
+{
+	return getSkillValue(PLAYER_SKILL_CAPACITY);
+}
+
+double Player::getFreeCapacity() const
+{
+	return std::max(0.00, getSkillValue(PLAYER_SKILL_CAPACITY) - inventoryWeight);
 }
 
 ReturnValue Player::__queryAdd(int32_t index, const Thing* thing, uint32_t count,
