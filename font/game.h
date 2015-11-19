@@ -430,7 +430,7 @@ public:
 	bool playerRevokePartyInvitation(uint32_t playerId, uint32_t invitedId);
 	bool playerPassPartyLeadership(uint32_t playerId, uint32_t newLeaderId);
 	bool playerLeaveParty(uint32_t playerId);
-	bool playerAddSkillPoint(uint32_t playerId, uint8_t skillId, uint8_t valueToAdd);
+	bool playerAddSkillPoint(uint32_t playerId, uint8_t skillId);
 
 	bool bugReport(uint32_t playerId, std::string report);
 	bool violationWindow(uint32_t playerId, std::string name, uint8_t reason, std::string comment, uint8_t action, bool IPBanishment);
