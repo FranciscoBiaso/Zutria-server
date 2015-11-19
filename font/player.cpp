@@ -1803,19 +1803,7 @@ void Player::addExperience(uint64_t exp)
 	{
 		levelUp = true;
 		currentLevel++;
-		//change max health attributes
-		setSkillValue(PLAYER_SKILL_HEALTH_POINTS, getSkillValue(PLAYER_SKILL_HEALTH_POINTS) + vocation->getHPGain());
-		//change current health attributes
-		health += vocation->getHPGain();
-		//change max mana attributes
-		setSkillValue(PLAYER_SKILL_MANA_POINTS, getSkillValue(PLAYER_SKILL_MANA_POINTS) + vocation->getManaGain());
-		//change current mana attributes
-		mana += vocation->getManaGain();
-		//change max cap attributes
-		setSkillValue(PLAYER_SKILL_CAPACITY, getSkillValue(PLAYER_SKILL_CAPACITY) + vocation->getCapGain());
-		//update speed
-		updateBaseSpeed();
-		//update level points of attributes
+		updateAttributes();
 		updateLevelPoints();
 		nextLevelXp = Player::getExpForLevel(currentLevel + 1);
 	}
