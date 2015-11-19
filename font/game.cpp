@@ -3126,7 +3126,7 @@ bool Game::playerLeaveParty(uint32_t playerId)
 }
 
 
-bool Game::playerAddSkillPoint(uint32_t playerId, uint8_t skillId, uint8_t valueToAdd)
+bool Game::playerAddSkillPoint(uint32_t playerId, uint8_t skillId)
 {
 	Player* player = getPlayerByID(playerId);
 	if (!player || player->isRemoved()){
@@ -3138,7 +3138,8 @@ bool Game::playerAddSkillPoint(uint32_t playerId, uint8_t skillId, uint8_t value
 		player->setSkillValue(skillId,player->getSkillValue(skillId) + 1);
 		
 		player->setLevelPoints(player->getLevelPoints() - 1);
-		player->sendStats();
+		if (skillId == PLAYER_SKILL_CAPACITY)
+			player->sendStats();
 		player->sendSkills();
 	}
 	return true;
