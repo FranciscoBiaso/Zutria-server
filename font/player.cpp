@@ -159,7 +159,7 @@ Creature()
 	premiumDays = 0;
 	balance = 0;
 
- 	vocation_id = (Vocation_t)0;
+ 	vocation_id = (playerClasses)0;
 
  	town = 0;
  	lastip = 0;
@@ -1770,6 +1770,25 @@ void Player::addManaSpent(uint32_t amount, bool useMultiplier /*= true*/)
 	}
 }
 
+
+void Player::updateAttributes()
+{
+	int vocationId = getVocationId();
+
+	setSkillValue(PLAYER_SKILL_HEALTH_POINTS, playerAttributes[vocationId][PLAYER_SKILL_HEALTH_POINTS]);
+	setSkillValue(PLAYER_SKILL_PHYSICAL_ATTACK, playerAttributes[vocationId][PLAYER_SKILL_PHYSICAL_ATTACK]);
+	setSkillValue(PLAYER_SKILL_PHYSICAL_DEFENSE, playerAttributes[vocationId][PLAYER_SKILL_PHYSICAL_DEFENSE]);
+	setSkillValue(PLAYER_SKILL_CAPACITY, playerAttributes[vocationId][PLAYER_SKILL_CAPACITY]);
+	setSkillValue(PLAYER_SKILL_MANA_POINTS, playerAttributes[vocationId][PLAYER_SKILL_MANA_POINTS]);
+	setSkillValue(PLAYER_SKILL_MAGIC_ATTACK, playerAttributes[vocationId][PLAYER_SKILL_MAGIC_ATTACK]);
+	setSkillValue(PLAYER_SKILL_MAGIC_DEFENSE, playerAttributes[vocationId][PLAYER_SKILL_MAGIC_DEFENSE]);
+	setSkillValue(PLAYER_SKILL_MAGIC_POINTS, playerAttributes[vocationId][PLAYER_SKILL_MAGIC_POINTS]);
+	setSkillValue(PLAYER_SKILL_SPEED, playerAttributes[vocationId][PLAYER_SKILL_SPEED]);
+	setSkillValue(PLAYER_SKILL_ATTACK_SPEED, playerAttributes[vocationId][PLAYER_SKILL_ATTACK_SPEED]);
+	setSkillValue(PLAYER_SKILL_COOLDOWN, playerAttributes[vocationId][PLAYER_SKILL_COOLDOWN]);
+	setSkillValue(PLAYER_SKILL_AVOIDANCE, playerAttributes[vocationId][PLAYER_SKILL_AVOIDANCE]);
+}
+
 void Player::addExperience(uint64_t exp)
 {
 	experience += exp;
@@ -1783,7 +1802,7 @@ void Player::addExperience(uint64_t exp)
 	while (experience >= nextLevelXp)
 	{
 		levelUp = true;
-		currentLevel++;//4
+		currentLevel++;
 		//change max health attributes
 		setSkillValue(PLAYER_SKILL_HEALTH_POINTS, getSkillValue(PLAYER_SKILL_HEALTH_POINTS) + vocation->getHPGain());
 		//change current health attributes
