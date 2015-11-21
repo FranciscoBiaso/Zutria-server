@@ -942,11 +942,6 @@ void Spell::postCastSpell(Player* player, uint32_t manaCost, uint32_t soulCost) 
 		}
 	}
 
-	if(!player->hasFlag(PlayerFlag_HasInfiniteSoul)){
-		if(soulCost > 0){
-			player->changeSoul(-(int32_t)soulCost);
-		}
-	}
 }
 #else
 void Spell::postCastSpell(Player* player, uint32_t manaCost) const

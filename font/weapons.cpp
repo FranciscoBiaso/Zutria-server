@@ -532,15 +532,7 @@ void Weapon::onUsedWeapon(Player* player, Item* item, Tile* destTile) const
 		}
 	}
 
-#ifdef __PROTOCOL_76__
-	if(!player->hasFlag(PlayerFlag_HasInfiniteSoul)){
-		int32_t soulCost = soul;
 
-		if(soulCost > 0){
-			player->changeSoul(-soulCost);
-		}
-	}
-#endif // __PROTOCOL_76__
 }
 
 void Weapon::onUsedAmmo(Player* player, Item* item, Tile* destTile) const

@@ -1644,6 +1644,15 @@ void ProtocolGame::sendStats()
 	}
 }
 
+void ProtocolGame::sendFirstStats()
+{
+	NetworkMessage_ptr msg = getOutputBuffer();
+	if (msg){
+		TRACK_MESSAGE(msg);
+		AddPlayerFirstStats(msg);
+	}
+}
+
 void ProtocolGame::sendTextMessage(MessageClasses mclass, const std::string& message)
 {
 	NetworkMessage_ptr msg = getOutputBuffer();
@@ -2093,7 +2102,7 @@ void ProtocolGame::sendAddCreature(const Creature* creature, bool isLogin)
 				AddInventoryItem(msg, SLOT_RING, player->getInventoryItem(SLOT_RING));
 				AddInventoryItem(msg, SLOT_AMMO, player->getInventoryItem(SLOT_AMMO));
 
-				AddPlayerStats(msg);
+				AddPlayerFirstStats(msg);				
 				AddPlayerSkills(msg);
 
 				//gameworld light-settings
@@ -2551,6 +2560,22 @@ void ProtocolGame::AddPlayerStats(NetworkMessage_ptr msg)
 	msg->AddU16(player->getPlayerInfo(PLAYERINFO_LEVEL));
 	msg->AddByte(player->getPlayerInfo(PLAYERINFO_LEVELPERCENT));
 	msg->AddU16(player->getBaseSpeed());
+}
+
+void ProtocolGame::AddPlayerFirstStats(NetworkMessage_ptr msg)
+{
+	// connection protocol 0xA0
+	msg->AddByte(0xFB);
+	// all player status
+	msg->AddU16(player->getHealth());
+	msg->AddU16(player->getMana());
+	msg->AddU32(player->getFreeCapacity());
+	msg->AddU32(player->getExperience());
+	msg->AddU16(player->getPlayerInfo(PLAYERINFO_LEVEL));
+	msg->AddByte(player->getPlayerInfo(PLAYERINFO_LEVELPERCENT));
+	msg->AddU16(player->getBaseSpeed());
+	msg->AddU16(player->getMaxHealth());
+	msg->AddU16(player->getMaxMana());
 }
 
 void ProtocolGame::AddPlayerSkills(NetworkMessage_ptr msg)

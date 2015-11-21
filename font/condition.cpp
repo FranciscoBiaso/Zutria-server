@@ -993,7 +993,7 @@ bool ConditionSoul::executeCondition(Creature* creature, int32_t interval)
 		if(player->getZone() != ZONE_PROTECTION){
 			if(internalSoulTicks >= soulTicks){
 				internalSoulTicks = 0;
-				player->changeSoul(soulGain);
+				//player->changeSoul(soulGain);
 			}
 		}
 	}

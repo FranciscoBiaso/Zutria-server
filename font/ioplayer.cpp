@@ -93,7 +93,8 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 	player->lastLogout = result->getDataInt("lastlogout");
 
 	player->health = result->getDataInt("health");
-	player->setSkillValue(skillsID::PLAYER_SKILL_HEALTH_POINTS , result->getDataInt("healthmax"));
+	player->setSkillValue(skillsID::PLAYER_SKILL_HEALTH_POINTS, result->getDataInt("healthmax"));
+	player->setSkillValue(skillsID::PLAYER_SKILL_MANA_POINTS, result->getDataInt("manamax"));
 	player->defaultOutfit.lookType = result->getDataInt("looktype");
 	player->defaultOutfit.lookHead = result->getDataInt("lookhead");
 	player->defaultOutfit.lookBody = result->getDataInt("lookbody");
@@ -143,7 +144,7 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 	player->setVocation(result->getDataInt("vocation"));
 	// this stuff has to go after the vocation is set
 	player->mana = result->getDataInt("mana");
-	player->setSkillValue(skillsID::PLAYER_SKILL_MANA_POINTS, result->getDataInt("manamax"));
+	//player->setSkillValue(skillsID::PLAYER_SKILL_MANA_POINTS, result->getDataInt("manamax"));
 	player->magLevel = result->getDataInt("maglevel");
 
 	uint32_t nextManaCount = (uint32_t)player->vocation->getReqMana(player->magLevel + 1);

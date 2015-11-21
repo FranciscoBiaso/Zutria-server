@@ -1132,6 +1132,13 @@ void Player::sendStats()
 	}
 }
 
+void Player::sendFirstStats()
+{
+	if (client){
+		client->sendFirstStats();
+	}
+}
+
 void Player::sendPing(uint32_t interval)
 {
 	internal_ping += interval;
@@ -1771,18 +1778,18 @@ void Player::updateAttributes()
 {
 	int vocationId = getVocationId();
 
-	setSkillValue(PLAYER_SKILL_HEALTH_POINTS, _player_::attributes[vocationId][PLAYER_SKILL_HEALTH_POINTS]);
-	setSkillValue(PLAYER_SKILL_PHYSICAL_ATTACK, _player_::attributes[vocationId][PLAYER_SKILL_PHYSICAL_ATTACK]);
-	setSkillValue(PLAYER_SKILL_PHYSICAL_DEFENSE, _player_::attributes[vocationId][PLAYER_SKILL_PHYSICAL_DEFENSE]);
-	setSkillValue(PLAYER_SKILL_CAPACITY, _player_::attributes[vocationId][PLAYER_SKILL_CAPACITY]);
-	setSkillValue(PLAYER_SKILL_MANA_POINTS, _player_::attributes[vocationId][PLAYER_SKILL_MANA_POINTS]);
-	setSkillValue(PLAYER_SKILL_MAGIC_ATTACK, _player_::attributes[vocationId][PLAYER_SKILL_MAGIC_ATTACK]);
-	setSkillValue(PLAYER_SKILL_MAGIC_DEFENSE, _player_::attributes[vocationId][PLAYER_SKILL_MAGIC_DEFENSE]);
-	setSkillValue(PLAYER_SKILL_MAGIC_POINTS, _player_::attributes[vocationId][PLAYER_SKILL_MAGIC_POINTS]);
-	setSkillValue(PLAYER_SKILL_SPEED, _player_::attributes[vocationId][PLAYER_SKILL_SPEED]);
-	setSkillValue(PLAYER_SKILL_ATTACK_SPEED, _player_::attributes[vocationId][PLAYER_SKILL_ATTACK_SPEED]);
-	setSkillValue(PLAYER_SKILL_COOLDOWN, _player_::attributes[vocationId][PLAYER_SKILL_COOLDOWN]);
-	setSkillValue(PLAYER_SKILL_AVOIDANCE, _player_::attributes[vocationId][PLAYER_SKILL_AVOIDANCE]);
+	setSkillValue(PLAYER_SKILL_HEALTH_POINTS, getSkillValue(PLAYER_SKILL_HEALTH_POINTS) + _player_::attributes[vocationId][PLAYER_SKILL_HEALTH_POINTS]);
+	setSkillValue(PLAYER_SKILL_PHYSICAL_ATTACK, getSkillValue(PLAYER_SKILL_PHYSICAL_ATTACK) + _player_::attributes[vocationId][PLAYER_SKILL_PHYSICAL_ATTACK]);
+	setSkillValue(PLAYER_SKILL_PHYSICAL_DEFENSE, getSkillValue(PLAYER_SKILL_PHYSICAL_DEFENSE) + _player_::attributes[vocationId][PLAYER_SKILL_PHYSICAL_DEFENSE]);
+	setSkillValue(PLAYER_SKILL_CAPACITY, getSkillValue(PLAYER_SKILL_CAPACITY) + _player_::attributes[vocationId][PLAYER_SKILL_CAPACITY]);
+	setSkillValue(PLAYER_SKILL_MANA_POINTS, getSkillValue(PLAYER_SKILL_MANA_POINTS) + _player_::attributes[vocationId][PLAYER_SKILL_MANA_POINTS]);
+	setSkillValue(PLAYER_SKILL_MAGIC_ATTACK, getSkillValue(PLAYER_SKILL_MAGIC_ATTACK) + _player_::attributes[vocationId][PLAYER_SKILL_MAGIC_ATTACK]);
+	setSkillValue(PLAYER_SKILL_MAGIC_DEFENSE, getSkillValue(PLAYER_SKILL_MAGIC_DEFENSE) + _player_::attributes[vocationId][PLAYER_SKILL_MAGIC_DEFENSE]);
+	setSkillValue(PLAYER_SKILL_MAGIC_POINTS, getSkillValue(PLAYER_SKILL_MAGIC_POINTS) + _player_::attributes[vocationId][PLAYER_SKILL_MAGIC_POINTS]);
+	setSkillValue(PLAYER_SKILL_SPEED, getSkillValue(PLAYER_SKILL_SPEED) + _player_::attributes[vocationId][PLAYER_SKILL_SPEED]);
+	setSkillValue(PLAYER_SKILL_ATTACK_SPEED, getSkillValue(PLAYER_SKILL_ATTACK_SPEED) + _player_::attributes[vocationId][PLAYER_SKILL_ATTACK_SPEED]);
+	setSkillValue(PLAYER_SKILL_COOLDOWN, getSkillValue(PLAYER_SKILL_COOLDOWN) + _player_::attributes[vocationId][PLAYER_SKILL_COOLDOWN]);
+	setSkillValue(PLAYER_SKILL_AVOIDANCE, getSkillValue(PLAYER_SKILL_AVOIDANCE) + _player_::attributes[vocationId][PLAYER_SKILL_AVOIDANCE]);
 }
 
 void Player::addExperience(uint64_t exp)
@@ -1817,12 +1824,13 @@ void Player::addExperience(uint64_t exp)
 
 		//scripting event - onAdvance
 		onAdvanceEvent(LEVEL_EXPERIENCE, oldLevel, currentLevel);
+
+		sendSkills();
 	}
 
 	levelPercent = (experience - getExpForLevel(currentLevel)) / (double)(getExpForLevel(currentLevel + 1) - getExpForLevel(currentLevel)) * 100.0;
 	
 	sendStats();
-	sendSkills();
 }
 
 uint32_t Player::getPercentLevel(uint64_t count, uint32_t nextLevelCount)
@@ -3501,19 +3509,6 @@ void Player::changeMana(int32_t manaChange)
 	sendStats();
 }
 
-#ifdef __PROTOCOL_76__
-void Player::changeSoul(int32_t soulChange)
-{
-	if(soulChange > 0){
-		soul += std::min(soulChange, soulMax - soul);
-	}
-	else{
-		soul = std::max((int32_t)0, soul + soulChange);
-	}
-
-	sendStats();
-}
-#endif // __PROTOCOL_76__
 
 PartyShields_t Player::getPartyShield(const Player* player) const
 {

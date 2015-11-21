@@ -311,9 +311,6 @@ public:
 	virtual void changeHealth(int32_t healthChange);
 	virtual void changeMana(int32_t manaChange);
 
-#ifdef __PROTOCOL_76__
-	void changeSoul(int32_t soulChange);
-#endif // __PROTOCOL_76__
 
 	bool isPzLocked() const { return pzLocked; }
 	virtual BlockType_t blockHit(Creature* attacker, CombatType_t combatType, int32_t& damage,
@@ -522,6 +519,7 @@ public:
 		{if(client) client->sendMagicEffect(pos,type);}
 	void sendPing(uint32_t interval);
 	void sendStats();
+	void sendFirstStats();
 	void sendSkills() const
 		{if(client) client->sendSkills();}
 	void sendTextMessage(MessageClasses mclass, const std::string& message) const

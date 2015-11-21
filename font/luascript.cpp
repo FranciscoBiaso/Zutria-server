@@ -4728,7 +4728,7 @@ int LuaScriptInterface::luaDoPlayerAddSoul(lua_State *L)
 
 	Player* player = env->getPlayerByUID(cid);
 	if(player){
-		player->changeSoul(addsoul);
+		//player->changeSoul(addsoul);
 		lua_pushboolean(L, true);
 	}
 	else{

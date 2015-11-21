@@ -3138,8 +3138,8 @@ bool Game::playerAddSkillPoint(uint32_t playerId, uint8_t skillId)
 		player->setSkillValue(skillId,player->getSkillValue(skillId) + 1);
 		
 		player->setLevelPoints(player->getLevelPoints() - 1);
-		if (skillId == PLAYER_SKILL_CAPACITY)
-			player->sendStats();
+		//if (skillId == PLAYER_SKILL_CAPACITY)
+		player->sendStats();
 		player->sendSkills();
 	}
 	return true;

@@ -184,6 +184,7 @@ private:
 	void sendCreatureOutfit(const Creature* creature, const Outfit_t& outfit);
 	void sendCreatureInvisible(const Creature* creature);
 	void sendStats();
+	void sendFirstStats();
 	void sendTextMessage(MessageClasses mclass, const std::string& message);
 
 	void sendTradeItemRequest(const Player* player, const Item* item, bool ack);
@@ -250,6 +251,7 @@ private:
 	void AddDistanceShoot(NetworkMessage_ptr msg,const Position& from, const Position& to, uint8_t type);
 	void AddCreature(NetworkMessage_ptr msg,const Creature* creature, bool known, uint32_t remove);
 	void AddPlayerStats(NetworkMessage_ptr msg);
+	void AddPlayerFirstStats(NetworkMessage_ptr msg);
 	void AddCreatureSpeak(NetworkMessage_ptr msg, const Creature* creature, SpeakClasses type, std::string text, uint16_t channelId, uint32_t time = 0);
 	void AddCreatureHealth(NetworkMessage_ptr msg,const Creature* creature);
 	void AddCreatureOutfit(NetworkMessage_ptr msg, const Creature* creature, const Outfit_t& outfit);
