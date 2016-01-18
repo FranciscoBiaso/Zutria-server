@@ -213,28 +213,18 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 	//std::cout << player->premiumDays << std::endl;
 	db->freeResult(result);
 
-	// we need to find out our skills
-	// so we query the skill table
+
+	//LOADING SKILLS
 	query.str("");
-	query << "SELECT `skillid`, `value`, `count` FROM `player_skills` WHERE `player_id` = " << player->getGUID();
-	if((result = db->storeQuery(query.str()))){
+	query << "SELECT `attribute`, `value` FROM `player_skills` WHERE `player_id` = " << player->getGUID();
+	if((result = db->storeQuery(query.str())))
+	{
 		//now iterate over the skills
 		do{
-			int skillid = result->getDataInt("skillid");
-			if(skillid >= SKILL_FIRST && skillid <= SKILL_LAST){
-				uint32_t skillLevel = result->getDataInt("value");
-				uint32_t skillCount = result->getDataInt("count");
-
-				uint32_t nextSkillCount = player->vocation->getReqSkillTries(skillid, skillLevel + 1);
-				if(skillCount > nextSkillCount){
-					//make sure its not out of bound
-					skillCount = 0;
-				}
-
-				player->skills[skillid][SKILL_LEVEL] = skillLevel;
-				player->skills[skillid][SKILL_TRIES] = skillCount;
-				player->skills[skillid][SKILL_PERCENT] = Player::getPercentLevel(skillCount, nextSkillCount);
-			}
+			int attribute = result->getDataInt("attribute");
+			uint32_t value = result->getDataInt("value");
+			player->skills[attribute] = value;
+			
 		}while(result->next());
 
 		db->freeResult(result);
@@ -530,14 +520,14 @@ bool IOPlayer::savePlayer(Player* player)
 	query.str("");
 
 	//skills
-	for(int i = 0; i <= 6; i++){
+	/*for(int i = 0; i <= 6; i++){
 		query << "UPDATE `player_skills` SET `value` = " << player->skills[i][SKILL_LEVEL] << ", `count` = " << player->skills[i][SKILL_TRIES] << " WHERE `player_id` = " << player->getGUID() << " AND `skillid` = " << i;
 
 		if(!db->executeQuery(query.str())){
 			return false;
 		}
 		query.str("");
-	}
+	}*/
 
 	// deletes all player-related stuff
 

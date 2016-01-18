@@ -83,7 +83,7 @@ struct Abilities{
 	int16_t elementDamage;
 
 	//extra skill modifiers
-	int32_t skills[SKILL_LAST + 1];
+	int32_t skills[2];
 
 	//stats modifiers
 	int32_t stats[STAT_LAST + 1];

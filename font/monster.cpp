@@ -454,7 +454,7 @@ void Monster::onFollowCreatureComplete(const Creature* creature)
 BlockType_t Monster::blockHit(Creature* attacker, CombatType_t combatType, int32_t& damage,
 	bool checkDefense /* = false*/, bool checkArmor /* = false*/)
 {
-	BlockType_t blockType = Creature::blockHit(attacker, combatType, damage, checkDefense, checkArmor);
+	BlockType_t blockType = (BlockType_t)Creature::blockHit(attacker, combatType, damage, checkDefense, checkArmor);
 
 	/*if(damage != 0){
 		int32_t elementMod = 0;

@@ -3035,7 +3035,7 @@ int LuaScriptInterface::luaDoPlayerAddSkillTry(lua_State *L)
 
 	Player* player = env->getPlayerByUID(cid);
 	if(player){
-		player->addSkillAdvance((skills_t)skillid, n, useMultiplier);
+		//player->addSkillAdvance((skills_t)skillid, n, useMultiplier);
 		lua_pushboolean(L, true);
 	}
 	else{
@@ -3447,26 +3447,26 @@ int LuaScriptInterface::luaDoSendAnimatedText(lua_State *L)
 int LuaScriptInterface::luaGetPlayerSkill(lua_State *L)
 {
 	//getPlayerSkill(cid, skillid)
-	uint32_t skillid = popNumber(L);
-	uint32_t cid = popNumber(L);
+	//uint32_t skillid = popNumber(L);
+	//uint32_t cid = popNumber(L);
 
-	ScriptEnviroment* env = getScriptEnv();
+	//ScriptEnviroment* env = getScriptEnv();
 
-	const Player* player = env->getPlayerByUID(cid);
-	if(player){
-		if(skillid <= SKILL_LAST){
-			uint32_t value = player->skills[skillid][SKILL_LEVEL];
-			lua_pushnumber(L, value);
-		}
-		else{
-			reportErrorFunc("No valid skillId");
-			lua_pushboolean(L, false);
-		}
-	}
-	else{
-		reportErrorFunc(getErrorDesc(LUA_ERROR_PLAYER_NOT_FOUND));
-		lua_pushboolean(L, false);
-	}
+	//const Player* player = env->getPlayerByUID(cid);
+	//if(player){
+	//	if(skillid <= SKILL_LAST){
+	//		uint32_t value = player->skills[skillid][SKILL_LEVEL];
+	//		lua_pushnumber(L, value);
+	//	}
+	//	else{
+	//		reportErrorFunc("No valid skillId");
+	//		lua_pushboolean(L, false);
+	//	}
+	//}
+	//else{
+	//	reportErrorFunc(getErrorDesc(LUA_ERROR_PLAYER_NOT_FOUND));
+	//	lua_pushboolean(L, false);
+	//}
 	return 1;
 }
 
@@ -5857,7 +5857,6 @@ int LuaScriptInterface::luaDoCombat(lua_State *L)
 	}
 
 	const Combat* combat = env->getCombatObject(combatId);
-
 	if(!combat){
 		reportErrorFunc(getErrorDesc(LUA_ERROR_COMBAT_NOT_FOUND));
 		lua_pushboolean(L, false);
@@ -5873,7 +5872,6 @@ int LuaScriptInterface::luaDoCombat(lua_State *L)
 	switch(var.type){
 		case VARIANT_NUMBER:
 		{
-			std::cout << "number";
 			Creature* target = g_game.getCreatureByID(var.number);
 
 			if(!target){
@@ -5934,6 +5932,8 @@ int LuaScriptInterface::luaDoCombat(lua_State *L)
 	lua_pushboolean(L, true);
 	return 1;
 }
+
+
 
 int LuaScriptInterface::luaDoAreaCombatHealth(lua_State *L)
 {

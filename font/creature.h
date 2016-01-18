@@ -243,8 +243,9 @@ public:
 	//combat functions
 	Creature* getAttackedCreature() { return attackedCreature; }
 	virtual bool setAttackedCreature(Creature* creature);
-	virtual BlockType_t blockHit(Creature* attacker, CombatType_t combatType, int32_t& damage,
-		bool checkDefense = false, bool checkArmor = false);
+	virtual int blockHit(Creature* attacker, CombatType_t combatType, int32_t& damage,
+	bool checkDefense = false, bool checkArmor = false, float * missPorcentage = nullptr);
+	virtual int getAvoindanceDefense() { return 0; }
 
 	void setMaster(Creature* creature) {master = creature;}
 	Creature* getMaster() {return master;}
@@ -309,8 +310,8 @@ public:
 	virtual void onAttackedCreatureKilled(Creature* target);
 	virtual void onKilledCreature(Creature* target, bool lastHit);
 	virtual void onGainExperience(uint64_t gainExp);
-	virtual void onAttackedCreatureBlockHit(Creature* target, BlockType_t blockType);
-	virtual void onBlockHit(BlockType_t blockType);
+	virtual void onAttackedCreatureBlockHit(Creature* target, int blockType);
+	virtual void onBlockHit(int blockType);
 	virtual void onChangeZone(ZoneType_t zone);
 	virtual void onAttackedCreatureChangeZone(ZoneType_t zone);
 	virtual void onIdleStatus();

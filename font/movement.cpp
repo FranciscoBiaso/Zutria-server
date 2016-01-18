@@ -843,12 +843,12 @@ uint32_t MoveEvent::EquipItem(MoveEvent* moveEvent, Player* player, Item* item, 
 
 	//skill modifiers
 	bool needUpdateSkills = false;
-	for(int32_t i = SKILL_FIRST; i <= SKILL_LAST; ++i){
+	/*for(int32_t i = SKILL_FIRST; i <= SKILL_LAST; ++i){
 		if(it.abilities.skills[i]){
 			needUpdateSkills = true;
 			player->setVarSkill((skills_t)i, it.abilities.skills[i]);
 		}
-	}
+	}*/
 	if(needUpdateSkills){
 		player->sendSkills();
 	}
@@ -910,12 +910,12 @@ uint32_t MoveEvent::DeEquipItem(MoveEvent* moveEvent, Player* player, Item* item
 
 	//skill modifiers
 	bool needUpdateSkills = false;
-	for(int32_t i = SKILL_FIRST; i <= SKILL_LAST; ++i){
+	/*for(int32_t i = SKILL_FIRST; i <= SKILL_LAST; ++i){
 		if(it.abilities.skills[i] != 0){
 			needUpdateSkills = true;
 			player->setVarSkill((skills_t)i, -it.abilities.skills[i]);
 		}
-	}
+	}*/
 	if(needUpdateSkills){
 		player->sendSkills();
 	}

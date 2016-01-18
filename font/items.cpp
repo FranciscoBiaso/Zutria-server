@@ -860,7 +860,7 @@ bool Items::loadFromXml(const std::string& datadir)
 									it.abilities.manaShield = (intValue != 0);
 								}
 							}
-							else if(asLowerCaseString(strValue) == "skillsword"){
+							/*else if(asLowerCaseString(strValue) == "skillsword"){
 								if(readXMLInteger(itemAttributesNode, "value", intValue)){
 									it.abilities.skills[SKILL_SWORD] = intValue;
 								}
@@ -894,7 +894,7 @@ bool Items::loadFromXml(const std::string& datadir)
 								if(readXMLInteger(itemAttributesNode, "value", intValue)){
 									it.abilities.skills[SKILL_FIST] = intValue;
 								}
-							}
+							}*/
 							else if(asLowerCaseString(strValue) == "maxhitpoints"){
 								if(readXMLInteger(itemAttributesNode, "value", intValue)){
 									it.abilities.stats[STAT_MAXHITPOINTS] = intValue;

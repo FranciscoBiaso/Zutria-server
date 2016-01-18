@@ -3138,10 +3138,26 @@ bool Game::playerAddSkillPoint(uint32_t playerId, uint8_t skillId)
 		player->setSkillValue(skillId,player->getSkillValue(skillId) + 1);
 		
 		player->setLevelPoints(player->getLevelPoints() - 1);
-		//if (skillId == PLAYER_SKILL_CAPACITY)
-		player->sendStats();
+		if (skillId == PLAYER_SKILL_CAPACITY)
+			player->sendStats();
 		player->sendSkills();
 	}
+	return true;
+}
+
+bool Game::playerAddSpellLevel(uint32_t playerId, std::string spellName)
+{
+	Player* player = getPlayerByID(playerId);
+	if (!player || player->isRemoved())
+		return false;
+
+
+	if (!player->hasLearnedInstantSpell(spellName))
+	{
+		player->learnInstantSpell(spellName);
+		player->sendSpellLearned(spellName);
+	}
+	
 	return true;
 }
 
@@ -3751,18 +3767,29 @@ bool Game::combatBlockHit(CombatType_t combatType, Creature* attacker, Creature*
 	}
 
 	int32_t damage = -healthChange;
-	BlockType_t blockType = target->blockHit(attacker, combatType, damage, checkDefense, checkArmor);
+	float missPorcentage = 0.0f;
+	int blockType = target->blockHit(attacker, combatType, damage, checkDefense, checkArmor, &missPorcentage);
 	healthChange = -damage;
 
-	if(blockType == BLOCK_DEFENSE){
-		addMagicEffect(list, targetPos, NM_ME_PUFF);
+
+
+	//if(blockType & BLOCK_DEFENSE)
+	//{
+	//	addMagicEffect(list, targetPos, NM_ME_PUFF);
+	//	return true;
+	//}
+	if (blockType & BLOCK_AVOIDANCE)
+	{
+		addAnimatedText(targetPos, TEXTCOLOR_LIGHTGREY, "miss " + std::to_string(missPorcentage));
 		return true;
 	}
-	else if(blockType == BLOCK_ARMOR){
+	else if(blockType & BLOCK_ARMOR)
+	{
 		addMagicEffect(list, targetPos, NM_ME_BLOCKHIT);
 		return true;
 	}
-	else if(blockType == BLOCK_IMMUNITY){
+	else if(blockType & BLOCK_IMMUNITY)
+	{
 		uint8_t hitEffect = 0;
 
 		switch(combatType){
@@ -3975,7 +4002,7 @@ bool Game::combatChangeMana(Creature* attacker, Creature* target, int32_t manaCh
 		}
 
 		int32_t manaLoss = std::min(target->getMana(), -manaChange);
-		BlockType_t blockType = target->blockHit(attacker, COMBAT_MANADRAIN, manaLoss);
+		BlockType_t blockType = (BlockType_t)target->blockHit(attacker, COMBAT_MANADRAIN, manaLoss);
 
 		if(blockType != BLOCK_NONE){
 			addMagicEffect(list, targetPos, NM_ME_PUFF);
