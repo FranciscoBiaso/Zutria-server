@@ -331,7 +331,6 @@ public:
 	virtual void drainHealth(Creature* attacker, CombatType_t combatType, int32_t damage);
 	virtual void drainMana(Creature* attacker, int32_t manaLoss);
 	void addManaSpent(uint32_t amount, bool useMultiplier = true);
-	void addSkillAdvance(skills_t skill, uint32_t count, bool useMultiplier = true);
 
 
 	virtual int32_t getShieldDefense() const;
@@ -530,6 +529,9 @@ public:
 		{if(client) client->sendTextWindow(windowTextId, itemId, text);}
 	void sendToChannel(Creature* creature, SpeakClasses type, const std::string& text, uint16_t channelId, uint32_t time = 0) const
 		{if(client) client->sendToChannel(creature, type, text, channelId, time);}
+	void sendSpellLearned(std::string spellName)
+		{ if (client) client->sendSpellLearned(spellName); }
+	
 	
 	
 	void sendTradeItemRequest(const Player* player, const Item* item, bool ack) const
@@ -578,6 +580,10 @@ public:
 	void learnInstantSpell(const std::string& name);
 	bool hasLearnedInstantSpell(const std::string& name) const;
 	void stopWalk();
+
+	virtual uint32_t getAttackSpeed() const;
+	int getAvoindanceDefense(){ return getSkillValue(PLAYER_SKILL_AVOIDANCE); }
+
 
 	VIPListSet VIPList;
 	uint32_t maxVipLimit;
@@ -702,10 +708,10 @@ protected:
 	bool inventoryAbilities[11];
 
 	//player advances variables
-	uint32_t skills[SKILL_LAST + 1][3];
+	uint32_t skills[12];
 
 	//extra skill modifiers
-	int32_t varSkills[SKILL_LAST + 1];
+	int32_t varSkills[1];
 
 	//extra stat modifiers
 	int32_t varStats[STAT_LAST + 1];
@@ -792,7 +798,6 @@ protected:
 	virtual uint32_t getConditionImmunities() const { return conditionImmunities; }
 	virtual uint32_t getConditionSuppressions() const { return conditionSuppressions; }
 	virtual uint16_t getLookCorpse() const;
-	virtual uint32_t getAttackSpeed() const;
 	virtual void getPathSearchParams(const Creature* creature, FindPathParams& fpp) const;
 
 	friend class Game;

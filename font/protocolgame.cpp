@@ -799,6 +799,10 @@ void ProtocolGame::parsePacket(NetworkMessage &msg)
 		parseAddSkillButtonClick(msg);
 		break;
 
+	case 0xFB: // 251 add Spell Level point
+		parseAddSpellLevelButtonClick(msg);
+		break;
+
 	default:
 		std::cout << "Unknown packet header: " << std::hex << (int)recvbyte
 			<< std::dec << ", player " << player->getName() << std::endl;
@@ -1431,6 +1435,14 @@ void ProtocolGame::parseAddSkillButtonClick(NetworkMessage& msg)
 	addGameTask(&Game::playerAddSkillPoint, player->getID(), skillId);
 }
 
+void ProtocolGame::parseAddSpellLevelButtonClick(NetworkMessage& msg)
+{
+	uint32_t creatureId = msg.GetU32();
+	std::string spellName = msg.GetString();
+
+	addGameTask(&Game::playerAddSpellLevel, player->getID(), spellName);
+}
+
 void ProtocolGame::parseRequestTrade(NetworkMessage& msg)
 {
 	Position pos = msg.GetPosition();
@@ -1952,6 +1964,15 @@ void ProtocolGame::sendSkills()
 	}
 }
 
+void ProtocolGame::sendSpellLearned(std::string spellName)
+{
+	NetworkMessage_ptr msg = getOutputBuffer();
+	if (msg){
+		TRACK_MESSAGE(msg);
+		AddSpellLearned(msg, spellName);
+	}
+}
+
 void ProtocolGame::sendPing()
 {
 	NetworkMessage_ptr msg = getOutputBuffer();
@@ -2177,15 +2198,17 @@ void ProtocolGame::sendMoveCreature(const Creature* creature, const Tile* newTil
 		NetworkMessage_ptr msg = getOutputBuffer();
 		if(msg){
 			TRACK_MESSAGE(msg);
-			if(teleport || oldStackPos >= 10){
+			if(teleport || oldStackPos >= 10)
+			{
 				RemoveTileItem(msg, oldPos, oldStackPos);
 				AddMapDescription(msg, newPos);
 			}
-			else{
-				if(oldPos.z == 7 && newPos.z >= 8){
+			else
+			{
+				if(oldPos.z == 7 && newPos.z >= 8)
 					RemoveTileItem(msg, oldPos, oldStackPos);
-				}
-				else{
+				else
+				{
 					msg->AddByte(0x6D);
 					msg->AddPosition(oldPos);
 					msg->AddByte(oldStackPos);
@@ -2193,40 +2216,51 @@ void ProtocolGame::sendMoveCreature(const Creature* creature, const Tile* newTil
 				}
 
 				//floor change down
-				if(newPos.z > oldPos.z){
+				if(newPos.z > oldPos.z)
 					MoveDownCreature(msg, creature, newPos, oldPos, oldStackPos);
-				}
+				
 				//floor change up
-				else if(newPos.z < oldPos.z){
+				else if(newPos.z < oldPos.z)
 					MoveUpCreature(msg, creature, newPos, oldPos, oldStackPos);
-				}
-
-				if(oldPos.y > newPos.y){ // north, for old x
+				
+				// north, for old x
+				if(oldPos.y > newPos.y)
+				{ 
 					msg->AddByte(0x65);
 					GetMapDescription(oldPos.x - 8, newPos.y - 6, newPos.z, 18, 1, msg);
 				}
-				else if(oldPos.y < newPos.y){ // south, for old x
+
+				// south, for old x
+				else if(oldPos.y < newPos.y)
+				{
 					msg->AddByte(0x67);
 					GetMapDescription(oldPos.x - 8, newPos.y + 7, newPos.z, 18, 1, msg);
 				}
 
-				if(oldPos.x < newPos.x){ // east, [with new y]
+				// east, [with new y]
+				if(oldPos.x < newPos.x)
+				{
 					msg->AddByte(0x66);
 					GetMapDescription(newPos.x + 9, newPos.y - 6, newPos.z, 1, 14, msg);
 				}
-				else if(oldPos.x > newPos.x){ // west, [with new y]
+				// west, [with new y]
+				else if(oldPos.x > newPos.x)
+				{
 					msg->AddByte(0x68);
 					GetMapDescription(newPos.x - 8, newPos.y - 6, newPos.z, 1, 14, msg);
 				}
 			}
 		}
 	}
-	else if(canSee(oldPos) && canSee(creature->getPosition())){
-		if(teleport || (oldPos.z == 7 && newPos.z >= 8) || oldStackPos >= 10){
+	else if(canSee(oldPos) && canSee(creature->getPosition()))
+	{
+		if(teleport || (oldPos.z == 7 && newPos.z >= 8) || oldStackPos >= 10)
+		{
 			sendRemoveCreature(creature, oldPos, oldStackPos, false);
 			sendAddCreature(creature, false);
 		}
-		else{
+		else
+		{
 			NetworkMessage_ptr msg = getOutputBuffer();
 			if(msg){
 				msg->AddByte(0x6D);
@@ -2236,12 +2270,10 @@ void ProtocolGame::sendMoveCreature(const Creature* creature, const Tile* newTil
 			}
 		}
 	}
-	else if(canSee(oldPos)){
+	else if(canSee(oldPos))
 		sendRemoveCreature(creature, oldPos, oldStackPos, false);
-	}
-	else if(canSee(creature->getPosition())){
+	else if(canSee(creature->getPosition()))
 		sendAddCreature(creature, false);
-	}
 }
 
 //inventory
@@ -2595,7 +2627,14 @@ void ProtocolGame::AddPlayerSkills(NetworkMessage_ptr msg)
 	msg->AddU16(player->getSkillValue(PLAYER_SKILL_ATTACK_SPEED));
 	msg->AddU16(player->getSkillValue(PLAYER_SKILL_COOLDOWN));
 	msg->AddU16(player->getSkillValue(PLAYER_SKILL_AVOIDANCE));
-	msg->AddByte(player->getLevelPoints());
+	msg->AddU16(player->getLevelPoints());
+}
+
+void ProtocolGame::AddSpellLearned(NetworkMessage_ptr msg, std::string spellName)
+{
+	// conection protocol 0xFC -- decimal = 252
+	msg->AddByte(0xFC);
+	msg->AddString(spellName);
 }
 
 void ProtocolGame::AddCreatureSpeak(NetworkMessage_ptr msg, const Creature* creature,

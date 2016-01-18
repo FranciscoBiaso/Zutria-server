@@ -131,15 +131,15 @@ Creature()
 		inventoryAbilities[i] = false;
 	}
 
-	for(int32_t i = SKILL_FIRST; i <= SKILL_LAST; ++i){
-		skills[i][SKILL_LEVEL]= 10;
-		skills[i][SKILL_TRIES]= 0;
-		skills[i][SKILL_PERCENT] = 0;
-	}
+	//for(int32_t i = SKILL_FIRST; i <= SKILL_LAST; ++i){
+	//	skills[i][SKILL_LEVEL]= 10;
+	//	skills[i][SKILL_TRIES]= 0;
+	//	skills[i][SKILL_PERCENT] = 0;
+	//}
 
-	for(int32_t i = SKILL_FIRST; i <= SKILL_LAST; ++i){
-		varSkills[i] = 0;
-	}
+	//for(int32_t i = SKILL_FIRST; i <= SKILL_LAST; ++i){
+	//	varSkills[i] = 0;
+	//}
 
 	for(int32_t i = STAT_FIRST; i <= STAT_LAST; ++i){
 		varStats[i] = 0;
@@ -581,85 +581,19 @@ int32_t Player::getPlayerInfo(playerinfo_t playerinfo) const
 
 int32_t Player::getSkill(skills_t skilltype, skillsid_t skillinfo) const
 {
-	int32_t n = skills[skilltype][skillinfo];
+	//int32_t n = skills[skilltype];
 
-	if(skillinfo == SKILL_LEVEL){
-		n += varSkills[skilltype];
-	}
+	//if(skillinfo == SKILL_LEVEL){
+	//	n += varSkills[skilltype];
+	//}
 
-	return std::max((int32_t)0, (int32_t)n);
+	return 0;
 }
 
 std::string Player::getSkillName(int skillid)
 {
-	std::string skillname;
-	switch(skillid){
-	case SKILL_FIST:
-		skillname = "Pontos de magia";
-		break;
-	case SKILL_CLUB:
-		skillname = "club fighting";
-		break;
-	case SKILL_SWORD:
-		skillname = "sword fighting";
-		break;
-	case SKILL_AXE:
-		skillname = "axe fighting";
-		break;
-	case SKILL_DIST:
-		skillname = "distance fighting";
-		break;
-	case SKILL_SHIELD:
-		skillname = "shielding";
-		break;
-	case SKILL_FISH:
-		skillname = "fishing";
-		break;
-	default:
-		skillname = "unknown";
-		break;
-	}
-	return skillname;
-}
-
-void Player::addSkillAdvance(skills_t skill, uint32_t count, bool useMultiplier /*= true*/)
-{
-	/*
-	if(useMultiplier){
-		count = uint32_t(count * getRateValue((levelTypes_t)skill));
-	}
-
-	skills[skill][SKILL_TRIES] += count * g_config.getNumber(ConfigManager::RATE_SKILL);
-
-#if __DEBUG__
-	std::cout << getName() << ", has the vocation: " << (int)getVocationId() << " and is training his " << getSkillName(skill) << "(" << skill << "). Tries: " << skills[skill][SKILL_TRIES] << "(" << vocation->getReqSkillTries(skill, skills[skill][SKILL_LEVEL] + 1) << ")" << std::endl;
-	std::cout << "Current skill: " << skills[skill][SKILL_LEVEL] << std::endl;
-#endif
-
-	//Need skill up?
-	if(skills[skill][SKILL_TRIES] >= vocation->getReqSkillTries(skill, skills[skill][SKILL_LEVEL] + 1)){
-	 	skills[skill][SKILL_LEVEL]++;
-	 	skills[skill][SKILL_TRIES] = 0;
-		skills[skill][SKILL_PERCENT] = 0;
-		std::stringstream advMsg;
-		advMsg << "You advanced in " << getSkillName(skill) << ".";
-		sendTextMessage(MSG_EVENT_ADVANCE, advMsg.str());
-
-		//scripting event - onAdvance
-		onAdvanceEvent((levelTypes_t)skill, (skills[skill][SKILL_LEVEL] - 1), skills[skill][SKILL_LEVEL]);
-
-		sendSkills();
-	}
-	else{
-		//update percent
-		uint32_t newPercent = Player::getPercentLevel(skills[skill][SKILL_TRIES], vocation->getReqSkillTries(skill, skills[skill][SKILL_LEVEL] + 1));
-		if(skills[skill][SKILL_PERCENT] != newPercent){
-			skills[skill][SKILL_PERCENT] = newPercent;
-			sendSkills();
-		}
-	}
-	*/
-	sendSkills();
+	
+	return "";
 }
 
 void Player::setVarStats(stats_t stat, int32_t modifier)
@@ -1913,7 +1847,7 @@ bool Player::hasShield() const
 BlockType_t Player::blockHit(Creature* attacker, CombatType_t combatType, int32_t& damage, 
 							 bool checkDefense /* = false*/, bool checkArmor /* = false*/) 
 { 
-	BlockType_t blockType = Creature::blockHit(attacker, combatType, damage, checkDefense, checkArmor); 
+	BlockType_t blockType = (BlockType_t)Creature::blockHit(attacker, combatType, damage, checkDefense, checkArmor);
 
 	if(attacker) 
 		sendCreatureSquare(attacker, SQ_COLOR_BLACK); 
@@ -2036,11 +1970,11 @@ void Player::die()
 			lostSkillTries = 0;         //reset to 0
 			sumSkillTries = 0;
 
-			for(uint32_t c = 11; c <= skills[i][SKILL_LEVEL]; ++c) { //sum up all required tries for all skill levels
+			for(uint32_t c = 11; c <= skills[i]; ++c) { //sum up all required tries for all skill levels
 				sumSkillTries += vocation->getReqSkillTries(i, c);
 			}
 
-			sumSkillTries += skills[i][SKILL_TRIES];
+			/*sumSkillTries += skills[i][SKILL_TR;
 			lostSkillTries = (uint32_t)std::ceil(sumSkillTries * ((double)lossPercent[LOSS_SKILLTRIES]/100));
 
 			while(lostSkillTries > skills[i][SKILL_TRIES]){
@@ -2057,7 +1991,7 @@ void Player::die()
 				}
 			}
 
-			skills[i][SKILL_TRIES] = std::max((int32_t)0, (int32_t)(skills[i][SKILL_TRIES] - lostSkillTries));
+			skills[i][SKILL_TRIES] = std::max((int32_t)0, (int32_t)(skills[i][SKILL_TRIES] - lostSkillTries));*/
 		}
 		//
 
@@ -3760,19 +3694,18 @@ void Player::learnInstantSpell(const std::string& name)
 
 bool Player::hasLearnedInstantSpell(const std::string& name) const
 {
-	if(hasFlag(PlayerFlag_CannotUseSpells)){
+	/*if(hasFlag(PlayerFlag_CannotUseSpells)){
 		return false;
 	}
 
 	if(hasFlag(PlayerFlag_IgnoreSpellCheck)){
 		return true;
-	}
+	}*/
 
 	for(LearnedInstantSpellList::const_iterator it = learnedInstantSpellList.begin();
 			it != learnedInstantSpellList.end(); ++it){
-		if(boost::algorithm::iequals((*it), name)){
-			return true;
-		}
+		if(boost::algorithm::iequals((*it), name))
+			return true;		
 	}
 
 	return false;
