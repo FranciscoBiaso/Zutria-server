@@ -1,6 +1,7 @@
 local combat = createCombatObject()
 setCombatParam(combat, COMBAT_PARAM_TYPE, COMBAT_PHYSICALDAMAGE)
 setCombatParam(combat, COMBAT_PARAM_EFFECT, CONST_ME_FIREBALL_GREATEXPLOSION)
+setCombatParam(combat, COMBAT_PARAM_MAGIC_WITH_INTERVALS, true)
 setCombatFormula(combat, COMBAT_FORMULA_LEVELMAGIC, -0.25, -0, -0.55, 0)
 
 local arr = {
