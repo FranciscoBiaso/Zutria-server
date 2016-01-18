@@ -438,7 +438,7 @@ bool Weapon::useWeapon(Player* player, Item* item, Creature* target) const
 
 bool Weapon::useFist(Player* player, Creature* target)
 {
-	const Position& playerPos = player->getPosition();
+	/*const Position& playerPos = player->getPosition();
 	const Position& targetPos = target->getPosition();
 
 	if(Position::areInRange<1,1>(playerPos, targetPos)){
@@ -455,15 +455,9 @@ bool Weapon::useFist(Player* player, Creature* target)
 		params.blockedByShield = true;
 		Combat::doCombatHealth(player, target, damage, damage, params);
 
-		if(!player->hasFlag(PlayerFlag_NotGainSkill)){
-			if(player->getAddAttackSkill()){
-				player->addSkillAdvance(SKILL_FIST, 1);
-			}
-		}
-
 		return true;
 	}
-
+*/
 	return false;
 }
 
@@ -509,14 +503,6 @@ bool Weapon::internalUseWeapon(Player* player, Item* item, Tile* tile) const
 
 void Weapon::onUsedWeapon(Player* player, Item* item, Tile* destTile) const
 {
-	if(!player->hasFlag(PlayerFlag_NotGainSkill)){
-		skills_t skillType;
-		uint32_t skillPoint = 0;
-		if(getSkillType(player, item, skillType, skillPoint)){
-			player->addSkillAdvance(skillType, skillPoint);
-		}
-	}
-
 	if(!player->hasFlag(PlayerFlag_HasNoExhaustion)){
 		if(exhaustion){
 			player->addCombatExhaust(g_game.getFightExhaustionTicks());
@@ -686,7 +672,7 @@ bool WeaponMelee::getSkillType(const Player* player, const Item* item,
 
 	WeaponType_t weaponType = item->getWeaponType();
 
-	switch(weaponType){
+	/*switch(weaponType){
 		case WEAPON_SWORD:
 		{
 			skill = SKILL_SWORD;
@@ -708,7 +694,8 @@ bool WeaponMelee::getSkillType(const Player* player, const Item* item,
 		{
 			return false;
 		}
-	}
+	}*/
+	return true;
 }
 
 int32_t WeaponMelee::getElementDamage(const Player* player, const Item* item) const
@@ -860,7 +847,7 @@ bool WeaponDistance::useWeapon(Player* player, Item* item, Creature* target) con
 	int32_t chance;
 	if(hitChance == -1){
 		// hit chance is based on distance to target and distance skill
-		uint32_t skill = player->getSkill(SKILL_DIST, SKILL_LEVEL);
+		uint32_t skill = player->getSkill(SKILL_HEALTH_POINTS, SKILL_LEVEL);
 		const Position& playerPos = player->getPosition();
 		const Position& targetPos = target->getPosition();
 		uint32_t distance = std::max(std::abs(playerPos.x - targetPos.x), std::abs(playerPos.y - targetPos.y));
@@ -980,7 +967,7 @@ int32_t WeaponDistance::getWeaponDamage(const Player* player, const Creature* ta
 		}
 	}
 
-	int32_t attackSkill = player->getSkill(SKILL_DIST, SKILL_LEVEL);
+	int32_t attackSkill = player->getSkill(SKILL_HEALTH_POINTS, SKILL_LEVEL);
 	float attackFactor = player->getAttackFactor();
 	int32_t maxValue = Weapons::getMaxDistanceWeaponDamage(attackSkill, attackValue, attackFactor);
 
@@ -1009,7 +996,7 @@ int32_t WeaponDistance::getWeaponDamage(const Player* player, const Creature* ta
 bool WeaponDistance::getSkillType(const Player* player, const Item* item,
 	skills_t& skill, uint32_t& skillpoint) const
 {
-	skill = SKILL_DIST;
+	skill = SKILL_HEALTH_POINTS;// SKILL_DIST;
 	skillpoint = 0;
 
 	if(player->getAddAttackSkill()){
