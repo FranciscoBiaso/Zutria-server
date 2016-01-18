@@ -79,13 +79,13 @@ protected:
 	uint16_t gainSoulTicks;
 #endif // __PROTOCOL_76__
 	
-	static uint32_t skillBase[SKILL_LAST + 1];
-	float skillMultipliers[SKILL_LAST + 1];
+	/*static uint32_t skillBase[SKILL_LAST + 1];
+	float skillMultipliers[SKILL_LAST + 1];*/
 	float manaMultiplier;
 	
 	typedef std::map<uint32_t, uint32_t> cacheMap;
 	cacheMap cacheMana;
-	cacheMap cacheSkill[SKILL_LAST + 1];
+	cacheMap cacheSkill[1];
 };
 
 class Vocations

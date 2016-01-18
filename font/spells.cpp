@@ -1186,7 +1186,7 @@ bool InstantSpell::playerCastInstant(Player* player, const std::string& param)
 		}
 		else{
 			var.type = VARIANT_POSITION;
-			std::cout << player->getDirection()<<std::endl;
+			//std::cout << player->getDirection()<<std::endl;
 			var.pos = Spells::getCasterPosition(player, player->getDirection());
 
 			if(!playerInstantSpellCheck(player, var.pos)){

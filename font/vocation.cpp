@@ -115,7 +115,7 @@ bool Vocations::loadFromXml(const std::string& datadir)
 						if(xmlStrcmp(skillNode->name, (const xmlChar*)"skill") == 0){
 							uint32_t skill_id;
 							if(readXMLInteger(skillNode, "id", intVal)){
-								skill_id = intVal;
+								/*skill_id = intVal;
 								if(skill_id < SKILL_FIRST || skill_id > SKILL_LAST){
 									std::cout << "No valid skill id. " << skill_id << std::endl;
 									
@@ -124,7 +124,7 @@ bool Vocations::loadFromXml(const std::string& datadir)
 									if(readXMLFloat(skillNode, "multiplier", floatVal)){
 										voc->skillMultipliers[skill_id] = floatVal;
 									}
-								}
+								}*/
 							}
 							else{
 								std::cout << "Missing skill id." << std::endl;
@@ -189,7 +189,7 @@ bool Vocations::getVocationId(const std::string& name, int32_t& vocationId) cons
 	return false;
 }
 
-uint32_t Vocation::skillBase[SKILL_LAST + 1] = { 50, 50, 50, 50, 30, 100, 20 };
+//uint32_t Vocation::skillBase[] = { 50, 50, 50, 50, 30, 100, 20 };
 
 Vocation::Vocation()
 {
@@ -213,26 +213,26 @@ Vocation::Vocation()
 	defenseMultiplier = 1.0;
 	armorMultiplier = 1.0;
 
-	skillMultipliers[0] = 1.5f;
+	/*skillMultipliers[0] = 1.5f;
 	skillMultipliers[1] = 2.0f;
 	skillMultipliers[2] = 2.0f;
 	skillMultipliers[3] = 2.0f;
 	skillMultipliers[4] = 2.0f;
 	skillMultipliers[5] = 1.5f;
-	skillMultipliers[6] = 1.1f;
+	skillMultipliers[6] = 1.1f;*/
 }
 
 Vocation::~Vocation()
 {
 	cacheMana.clear();
-	for(int i = SKILL_FIRST; i < SKILL_LAST; ++i){
+	/*for(int i = SKILL_FIRST; i < SKILL_LAST; ++i){
 		cacheSkill[i].clear();
-	}
+	}*/
 }
 
 uint32_t Vocation::getReqSkillTries(int skill, int level)
 {
-	if(skill < SKILL_FIRST || skill > SKILL_LAST){
+	/*if(skill < SKILL_FIRST || skill > SKILL_LAST){
 		return 0;
 	}
 	cacheMap& skillMap = cacheSkill[skill];
@@ -242,7 +242,8 @@ uint32_t Vocation::getReqSkillTries(int skill, int level)
 	}
 	uint32_t tries = (unsigned int)(skillBase[skill] * pow((float)skillMultipliers[skill], (float)(level - 11)));
 	skillMap[level] = tries;
-	return tries;
+	return tries;*/
+	return 0;
 }
 
 uint32_t Vocation::getReqMana(int magLevel)
@@ -270,7 +271,7 @@ void Vocation::debugVocation()
 	std::cout << "gain time: Health(" << gainHealthTicks << " ticks, +" << gainHealthAmount << "). Mana(" << 
 		gainManaTicks << " ticks, +" << gainManaAmount << ")" << std::endl;
 	std::cout << "mana multiplier: " << manaMultiplier << std::endl;
-	for(int i = SKILL_FIRST; i < SKILL_LAST; ++i){
-		std::cout << "Skill id: " << i << " multiplier: " << skillMultipliers[i] << std::endl;
-	}
+	//for(int i = SKILL_FIRST; i < SKILL_LAST; ++i){
+	//	std::cout << "Skill id: " << i << " multiplier: " << skillMultipliers[i] << std::endl;
+	//}
 }
