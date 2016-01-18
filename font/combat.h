@@ -78,6 +78,7 @@ struct CombatParams{
 		condition = NULL;
 		dispelType = CONDITION_NONE;
 		useCharges = false;
+		magicWithIntervals = false;
 
 		valueCallback = NULL;
 		tileCallback = NULL;
@@ -97,6 +98,7 @@ struct CombatParams{
 	uint8_t impactEffect;
 	uint8_t distanceEffect;
 	bool useCharges;
+	bool magicWithIntervals;
 
 	ValueCallback* valueCallback;
 	TileCallback* tileCallback;
@@ -164,7 +166,8 @@ public:
 	bool getValue(uint32_t row, uint32_t col) const {return data_[row][col];}
 
 	void setCenter(uint32_t y, uint32_t x) {centerX = x; centerY = y;}
-	void getCenter(uint32_t& y, uint32_t& x) const {x = centerX; y = centerY;}
+	void getCenter(uint32_t& y, uint32_t& x) const { x = centerX; y = centerY; }
+	Position getCenter() const { return Position(centerX, centerY, 7); }
 
 	size_t getRows() const {return rows;}
 	size_t getCols() const {return cols;}
@@ -198,7 +201,44 @@ public:
 	void setupArea(int32_t radius);
 	void setupExtArea(const std::list<uint32_t>& list, uint32_t rows);
 	void clear();
+	MatrixArea* getArea(const Position& centerPos, const Position& targetPos) const
+	{
+		int32_t dx = targetPos.x - centerPos.x;
+		int32_t dy = targetPos.y - centerPos.y;
 
+		Direction dir = NORTH;
+
+		if (dx < 0){
+			dir = WEST;
+		}
+		else if (dx > 0){
+			dir = EAST;
+		}
+		else if (dy < 0){
+			dir = NORTH;
+		}
+		else{
+			dir = SOUTH;
+		}
+
+		if (hasExtArea){
+			if (dx < 0 && dy < 0)
+				dir = NORTHWEST;
+			else if (dx > 0 && dy < 0)
+				dir = NORTHEAST;
+			else if (dx < 0 && dy > 0)
+				dir = SOUTHWEST;
+			else if (dx > 0 && dy > 0)
+				dir = SOUTHEAST;
+		}
+
+		AreaCombatMap::const_iterator it = areas.find(dir);
+		if (it != areas.end()){
+			return it->second;
+		}
+
+		return NULL;
+	}
 protected:
 	enum MatrixOperation_t{
 		MATRIXOPERATION_COPY,
@@ -212,44 +252,7 @@ protected:
 	MatrixArea* createArea(const std::list<uint32_t>& list, uint32_t rows);
 	void copyArea(const MatrixArea* input, MatrixArea* output, MatrixOperation_t op) const;
 
-	MatrixArea* getArea(const Position& centerPos, const Position& targetPos) const
-	{
-		int32_t dx = targetPos.x - centerPos.x;
-		int32_t dy = targetPos.y - centerPos.y;
-
-		Direction dir = NORTH;
-
-		if(dx < 0){
-			dir = WEST;
-		}
-		else if(dx > 0){
-			dir = EAST;
-		}
-		else if(dy < 0){
-			dir = NORTH;
-		}
-		else{
-			dir = SOUTH;
-		}
-
-		if(hasExtArea){
-			if(dx < 0 && dy < 0)
-				dir = NORTHWEST;
-			else if(dx > 0 && dy < 0)
-				dir = NORTHEAST;
-			else if(dx < 0 && dy > 0)
-				dir = SOUTHWEST;
-			else if(dx > 0 && dy > 0)
-				dir = SOUTHEAST;
-		}
-
-		AreaCombatMap::const_iterator it = areas.find(dir);
-		if(it != areas.end()){
-			return it->second;
-		}
-		
-		return NULL;
-	}
+	
 
 	AreaCombatMap areas;
 	bool hasExtArea;
@@ -390,5 +393,7 @@ inline CombatType_t CombatIndexToType(int combatindex) {
 	if(combatindex == 0) return COMBAT_NONE;
 	return (CombatType_t)(1 << (combatindex-1));
 };
+
+
 
 #endif

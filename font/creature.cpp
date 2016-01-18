@@ -889,15 +889,26 @@ void Creature::drainMana(Creature* attacker, int32_t manaLoss)
 	changeMana(-manaLoss);
 }
 
-BlockType_t Creature::blockHit(Creature* attacker, CombatType_t combatType, int32_t& damage,
-	bool checkDefense /* = false */, bool checkArmor /* = false */)
+int Creature::blockHit(Creature* attacker, CombatType_t combatType, int32_t& damage,
+	bool checkDefense /* = false */, bool checkArmor /* = false */, float * missPorcentage)
 {
-	BlockType_t blockType = BLOCK_NONE;
+	int blockType = BLOCK_NONE;
+	bool checkWeapon = true;
+	*missPorcentage = 0.0f;
 
 	if(isImmune(combatType))
 	{
 		damage = 0;
-		blockType = BLOCK_IMMUNITY;
+		blockType |= BLOCK_IMMUNITY;
+	}
+	//try avoidance
+	else if (damage > 0 && getAvoindanceDefense() > 0.0)
+	{
+		float maxAvoidancePorcentage = getAvoindanceDefense() / 800.0 * 0.3 * 100;
+		float minAvoidancePorcentage = maxAvoidancePorcentage / 3.0;
+		(*missPorcentage) = minAvoidancePorcentage + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (maxAvoidancePorcentage - minAvoidancePorcentage)));
+		damage = damage * (*missPorcentage);
+		blockType |= BLOCK_AVOIDANCE;
 	}
 	else if(checkDefense || checkArmor)
 	{
@@ -908,10 +919,12 @@ BlockType_t Creature::blockHit(Creature* attacker, CombatType_t combatType, int3
 			--blockCount;
 			//can def
 			hasDefense = true;
+
 		}
 
-		//how is your shield and can he block?
-		if(checkDefense && hasDefense){
+		//block by shield and weapon
+		if(checkDefense && hasDefense)
+		{
 			//shield defense
 			int32_t maxShieldDefense = getShieldDefense();
 			int32_t minShieldDefense = maxShieldDefense / 3.0f;
@@ -919,38 +932,49 @@ BlockType_t Creature::blockHit(Creature* attacker, CombatType_t combatType, int3
 			if(damage <= 0)
 			{
 				damage = 0;
-				blockType = BLOCK_SHIELD;
+				blockType |= BLOCK_SHIELD;
 				checkArmor = false;
-			}
-			//weapon defense
-			int32_t maxWeaponDefense = getWeaponDefense();
-			int32_t minWeaponDefense = maxWeaponDefense / 2;
-			damage -= random_range(minWeaponDefense, maxWeaponDefense);
-			if (damage <= 0)
-			{
-				damage = 0;
-				blockType = BLOCK_WEAPON;
-				checkArmor = false;
+				checkWeapon = false;
 			}
 		}
 
-		if(checkArmor){
+		//weapon defense
+		if (checkWeapon)
+		{
+			int32_t maxWeaponDefense = getWeaponDefense();
+			int32_t minWeaponDefense = maxWeaponDefense / 2;
+			if (maxWeaponDefense > 0)
+			{
+				damage -= random_range(minWeaponDefense, maxWeaponDefense);
+				if (damage <= 0)
+				{
+					damage = 0;
+					blockType |= BLOCK_WEAPON;
+					checkArmor = false;
+				}
+			}		
+		}
+	
+		if(checkArmor)
+		{
 			int32_t armorDefense = getArmor();
 			int32_t maxArmorDefense = ceil(armorDefense * 0.75);
 			int32_t minArmorDefense = maxArmorDefense / 3.0f;
 			damage -= random_range(minArmorDefense, maxArmorDefense);
-			if(damage <= 0){
+			if(damage <= 0)
+			{
 				damage = 0;
-				blockType = BLOCK_ARMOR;
+				blockType |= BLOCK_ARMOR;
 			}
 		}
 
-		if(hasDefense && blockType != BLOCK_NONE){
-			onBlockHit(blockType);
-		}
+		if(hasDefense && blockType != BLOCK_NONE)
+			onBlockHit(blockType);		
 	}
 
-	if(attacker){
+
+	if(attacker)
+	{
 		attacker->onAttackedCreature(this);
 		attacker->onAttackedCreatureBlockHit(this, blockType);
 	}
@@ -1222,12 +1246,12 @@ void Creature::onGainExperience(uint64_t gainExp)
 	}
 }
 
-void Creature::onAttackedCreatureBlockHit(Creature* target, BlockType_t blockType)
+void Creature::onAttackedCreatureBlockHit(Creature* target, int blockType)
 {
 	//
 }
 
-void Creature::onBlockHit(BlockType_t blockType)
+void Creature::onBlockHit(int blockType)
 {
 	//
 }

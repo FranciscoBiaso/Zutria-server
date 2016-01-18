@@ -450,7 +450,7 @@ bool ConditionAttributes::serialize(PropWriteStream& propWriteStream)
 		return false;
 	}
 
-	for(int32_t i = SKILL_FIRST; i <= SKILL_LAST; ++i){
+	/*for(int32_t i = SKILL_FIRST; i <= SKILL_LAST; ++i){
 		propWriteStream.ADD_UINT8(CONDITIONATTR_SKILLS);
 		propWriteStream.ADD_INT32(skills[i]);
 	}
@@ -458,7 +458,7 @@ bool ConditionAttributes::serialize(PropWriteStream& propWriteStream)
 	for(int32_t i = SKILL_FIRST; i <= SKILL_LAST; ++i){
 		propWriteStream.ADD_UINT8(CONDITIONATTR_SKILLSPERCENT);
 		propWriteStream.ADD_INT32(skillsPercent[i]);
-	}
+	}*/
 
 	for(int32_t i = STAT_FIRST; i <= STAT_LAST; ++i){
 		propWriteStream.ADD_UINT8(CONDITIONATTR_STATS);
@@ -532,19 +532,19 @@ void ConditionAttributes::updateStats(Player* player)
 
 void ConditionAttributes::updatePercentSkills(Player* player)
 {
-	for(int32_t i = SKILL_FIRST; i <= SKILL_LAST; ++i){
+	/*for(int32_t i = SKILL_FIRST; i <= SKILL_LAST; ++i){
 		if(skillsPercent[i] == 0){
 			continue;
 		}
 
 		int32_t currSkill = player->getSkill((skills_t)i, SKILL_LEVEL);
 		skills[i] = (int32_t)(currSkill * ((skillsPercent[i] - 100) / 100.f));
-	}
+	}*/
 }
 
 void ConditionAttributes::updateSkills(Player* player)
 {
-	bool needUpdateSkills = false;
+	/*bool needUpdateSkills = false;
 
 	for(int32_t i = SKILL_FIRST; i <= SKILL_LAST; ++i){
 		if(skills[i]){
@@ -555,7 +555,7 @@ void ConditionAttributes::updateSkills(Player* player)
 
 	if(needUpdateSkills){
 		player->sendSkills();
-	}
+	}*/
 }
 
 bool ConditionAttributes::executeCondition(Creature* creature, int32_t interval)
@@ -568,7 +568,7 @@ void ConditionAttributes::endCondition(Creature* creature, ConditionEnd_t reason
 	Player* player = creature->getPlayer();
 	if(player){
 		bool needUpdateSkills = false;
-		for(int32_t i = SKILL_FIRST; i <= SKILL_LAST; ++i){
+		/*for(int32_t i = SKILL_FIRST; i <= SKILL_LAST; ++i){
 			if(skills[i] || skillsPercent[i]){
 				needUpdateSkills = true;
 
@@ -577,7 +577,7 @@ void ConditionAttributes::endCondition(Creature* creature, ConditionEnd_t reason
 				player->setVarSkill((skills_t)i, -new_skill);
 
 			}
-		}
+		}*/
 		if(needUpdateSkills){
 			player->sendSkills();
 		}
@@ -599,106 +599,7 @@ bool ConditionAttributes::setParam(ConditionParam_t param, int32_t value)
 {
 	bool ret = ConditionGeneric::setParam(param, value);
 
-	switch(param){
-		case CONDITIONPARAM_SKILL_MELEE:
-		{
-			skills[SKILL_CLUB] = value;
-			skills[SKILL_AXE] = value;
-			skills[SKILL_SWORD] = value;
-			return true;
-		}
-
-		case CONDITIONPARAM_SKILL_MELEEPERCENT:
-		{
-			skillsPercent[SKILL_CLUB] = value;
-			skillsPercent[SKILL_AXE] = value;
-			skillsPercent[SKILL_SWORD] = value;
-			return true;
-		}
-
-				case CONDITIONPARAM_SKILL_FIST:
-		{
-			skills[SKILL_FIST] = value;
-			return true;
-		}
-
-		case CONDITIONPARAM_SKILL_FISTPERCENT:
-		{
-			skillsPercent[SKILL_FIST] = value;
-			return true;
-		}
-
-		case CONDITIONPARAM_SKILL_CLUB:
-		{
-			skills[SKILL_CLUB] = value;
-			return true;
-		}
-
-		case CONDITIONPARAM_SKILL_CLUBPERCENT:
-		{
-			skillsPercent[SKILL_CLUB] = value;
-			return true;
-		}
-
-		case CONDITIONPARAM_SKILL_SWORD:
-		{
-			skills[SKILL_SWORD] = value;
-			return true;
-		}
-
-		case CONDITIONPARAM_SKILL_SWORDPERCENT:
-		{
-			skillsPercent[SKILL_SWORD] = value;
-			return true;
-		}
-
-		case CONDITIONPARAM_SKILL_AXE:
-		{
-			skills[SKILL_AXE] = value;
-			return true;
-		}
-
-		case CONDITIONPARAM_SKILL_AXEPERCENT:
-		{
-			skillsPercent[SKILL_AXE] = value;
-			return true;
-		}
-
-		case CONDITIONPARAM_SKILL_DISTANCE:
-		{
-			skills[SKILL_DIST] = value;
-			return true;
-		}
-
-		case CONDITIONPARAM_SKILL_DISTANCEPERCENT:
-		{
-			skillsPercent[SKILL_DIST] = value;
-			return true;
-		}
-
-		case CONDITIONPARAM_SKILL_SHIELD:
-		{
-			skills[SKILL_SHIELD] = value;
-			return true;
-		}
-
-		case CONDITIONPARAM_SKILL_SHIELDPERCENT:
-		{
-			skillsPercent[SKILL_SHIELD] = value;
-			return true;
-		}
-
-		case CONDITIONPARAM_SKILL_FISHING:
-		{
-			skills[SKILL_FISH] = value;
-			return true;
-		}
-
-		case CONDITIONPARAM_SKILL_FISHINGPERCENT:
-		{
-			skillsPercent[SKILL_FISH] = value;
-			return true;
-		}
+	switch(param){		
 
 		case CONDITIONPARAM_STAT_MAXHITPOINTS:
 		{

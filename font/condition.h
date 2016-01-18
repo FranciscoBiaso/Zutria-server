@@ -200,8 +200,8 @@ public:
 	virtual bool unserializeProp(ConditionAttr_t attr, PropStream& propStream);
 
 protected:
-	int32_t skills[SKILL_LAST + 1];
-	int32_t skillsPercent[SKILL_LAST + 1];
+	int32_t skills[1];
+	int32_t skillsPercent[1];
 	int32_t stats[STAT_LAST + 1];
 	int32_t statsPercent[STAT_LAST + 1];
 	int32_t currentSkill;

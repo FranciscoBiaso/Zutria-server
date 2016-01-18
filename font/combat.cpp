@@ -455,6 +455,12 @@ bool Combat::setParam(CombatParam_t param, uint32_t value)
 			return true;
 		}
 
+		case COMBATPARAM_MAGIC_WITH_INTERVALS:
+		{
+			params.magicWithIntervals = (bool)value;
+			return true;
+		}
+
 		default:
 		{
 			break;
@@ -781,6 +787,8 @@ void Combat::CombatFunc(Creature* caster, const Position& pos,
 	postCombatEffects(caster, pos, params);
 }
 
+
+
 void Combat::doCombat(Creature* caster, Creature* target) const
 {
 	//target combat callback function
@@ -805,53 +813,91 @@ void Combat::doCombat(Creature* caster, Creature* target) const
 void Combat::doCombat(Creature* caster, const Position& pos) const
 {
 	//area combat callback function
-
-	if(params.combatType != COMBAT_NONE){
+	if(params.combatType != COMBAT_NONE)
+	{
 		int32_t minChange = 0;
 		int32_t maxChange = 0;
 		getMinMaxValues(caster, NULL, minChange, maxChange);
 
-		if (params.combatType != COMBAT_MANADRAIN){
-		/*	AreaCombat * areaCombat = new AreaCombat();
-			std::list<Tile*> tileList;
-			getCombatArea(caster->getPosition(), pos, areaCombat, tileList);
+		if (params.combatType != COMBAT_MANADRAIN)
+		{
+			if (!params.magicWithIntervals)
+			{
+				doCombatHealth(caster, pos, area, minChange, maxChange, params);
+			}
+			else
+			{
+				MatrixArea *  matrixArea = area->getArea(caster->getPosition(), pos);
+				Position positionCenter = matrixArea->getCenter();
+				Position positionMagic = caster->getPosition();
+				Direction dir = caster->getDirection();
+				AreaCombat * areaCombat = new AreaCombat();
+				areaCombat->setupArea(1);
 
-			int32_t areaMATRIX[13][13] = {
-				{ 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0 },
-				{ 0, 0, 0, 0, 8, 8, 7, 8, 8, 0, 0, 0, 0 },
-				{ 0, 0, 0, 8, 7, 6, 6, 6, 7, 8, 0, 0, 0 },
-				{ 0, 0, 8, 7, 6, 5, 5, 5, 6, 7, 8, 0, 0 },
-				{ 0, 8, 7, 6, 5, 4, 4, 4, 5, 6, 7, 8, 0 },
-				{ 0, 8, 6, 5, 4, 3, 2, 3, 4, 5, 6, 8, 0 },
-				{ 8, 7, 6, 5, 4, 2, 1, 2, 4, 5, 6, 7, 8 },
-				{ 0, 8, 6, 5, 4, 3, 2, 3, 4, 5, 6, 8, 0 },
-				{ 0, 8, 7, 6, 5, 4, 4, 4, 5, 6, 7, 8, 0 },
-				{ 0, 0, 8, 7, 6, 5, 5, 5, 6, 7, 8, 0, 0 },
-				{ 0, 0, 0, 8, 7, 6, 6, 6, 7, 8, 0, 0, 0 },
-				{ 0, 0, 0, 0, 8, 8, 7, 8, 8, 0, 0, 0, 0 },
-				{ 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0 }
-			};
 
-			std::list<uint32_t> list;
-			uint32_t x, y = 0;
-			for (int32_t y = 0; y < 13; ++y){
-				for (int32_t x = 0; x < 13; ++x){
-					if (areaMATRIX[y][x] == 1){
-						list.push_back(3);
-					}
-					else if (areaMATRIX[y][x] > 0 && areaMATRIX[y][x] <= 8){
-						int number = rand() % 2;
-						list.push_back(number);
+				std::list<Tile*> tileList;
+				area->getList(caster->getPosition(), pos, tileList);
 
-					}
-					else{
-						list.push_back(0);
-					}
+				int timeDelay = 50;
+
+				//for (int x = 0; x < matrixArea->getCols(); x++)
+				//	for (int y = 0; y < matrixArea->getRows(); y++)
+				//	{
+				//		if (matrixArea->getValue(x, y) != 0)
+				//		{
+				//			int deltax = 0;
+				//			int deltay = 0;
+				//			if (x < positionCenter.y)
+				//			{
+				//				deltax = positionCenter.y - x;
+				//				//if (dir == direction::north)
+				//				positionMagic.x -= deltax;
+				//			}
+				//			else if (x > positionCenter.y)
+				//			{
+				//				deltax = x - positionCenter.y;
+				//				positionMagic.x += deltax;
+				//			}
+
+				//			if (y < positionCenter.x)
+				//			{
+				//				deltay = positionCenter.x - y;
+				//				positionMagic.y -= deltay;
+				//			}
+				//			else if (y > positionCenter.x)
+				//			{
+
+				//				deltay = y - positionCenter.x;
+				//				positionMagic.y += deltay;
+				//			}
+
+				//			int max = deltay;
+				//			if (deltax > deltay)
+				//				max = deltax;
+				//			if (max == 0)
+				//			{
+				//				int time = 50;
+				//				max = 1;
+				//			}							
+				//			else
+				//				timeDelay = 100;
+				//			Scheduler::getScheduler().addEvent(createSchedulerTask(max * timeDelay, boost::bind(&Combat::doCombatHealth, caster, positionMagic,
+				//				areaCombat, minChange, maxChange, params)));
+				//		}
+				//		positionMagic = caster->getPosition();
+				//	}	
+				int max = 1;
+				while (!tileList.empty())
+				{
+					Tile *  t = tileList.back();
+					Scheduler::getScheduler().addEvent(createSchedulerTask(max * timeDelay, boost::bind(&Combat::doCombatHealth, caster, t->getPosition(),
+						areaCombat, minChange, maxChange, params)));
+					tileList.pop_back();
+					max++;
 				}
 			}
-
-			areaCombat->setupArea(list,13);*/
-			doCombatHealth(caster, pos, area, minChange, maxChange, params);
+			
+			
 		}
 		else{
 			doCombatMana(caster, pos, area, minChange, maxChange, params);
