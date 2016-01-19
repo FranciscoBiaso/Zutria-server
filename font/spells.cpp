@@ -263,6 +263,8 @@ InstantSpell* Spells::getInstantSpellByIndex(const Player* player, uint32_t inde
 	return NULL;
 }
 
+
+
 InstantSpell* Spells::getInstantSpellByName(const std::string& name)
 {
 	for(InstantsMap::iterator it = instants.begin(); it != instants.end(); ++it){
@@ -723,7 +725,7 @@ bool Spell::playerSpellCheck(Player* player) const
 #endif // __PROTOCOL_76__
 
 		if(isInstant() && isLearnable()){
-			if(!player->hasLearnedInstantSpell(getName())){
+			if(!player->hasLearnedInstantSpell(getName(), 0)){
 				player->sendCancelMessage(RET_YOUNEEDTOLEARNTHISSPELL);
 				g_game.addMagicEffect(player->getPosition(), NM_ME_PUFF);
 				return false;
@@ -1775,7 +1777,7 @@ bool InstantSpell::canCast(const Player* player) const
 	}
 
 	if(isLearnable()){
-		if(player->hasLearnedInstantSpell(getName())){
+		if(player->hasLearnedInstantSpell(getName(), 0)){
 			return true;
 		}
 	}

@@ -48,7 +48,7 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 			 `lookhead`, `lookbody`, `looklegs`, `lookfeet`, `posx`, `posy`, \
 			 `posz`, `lastlogin`, `lastlogout`, `lastip`, `save`, `conditions`, `redskulltime`, \
 			 `redskull`, `guildnick`, `loss_experience`, `loss_mana`, `loss_skills`, \
-			 `loss_items`, `rank_id`, `town_id`, `balance`, `status`, `levelPoints` \
+			 `loss_items`, `rank_id`, `town_id`, `balance`, `status`, `levelPoints`, `unusedMagicPoints` \
 			 FROM `players` LEFT JOIN `accounts` ON `account_id` = `accounts`.`id` \
 			 WHERE `players`.`name` = " + db->escapeString(name);
 
@@ -95,7 +95,8 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 	player->defaultOutfit.lookLegs = result->getDataInt("looklegs");
 	player->defaultOutfit.lookFeet = result->getDataInt("lookfeet");
 	player->currentOutfit = player->defaultOutfit;
-	player->setLevelPoints((uint16_t)result->getDataInt("levelPoints"));	
+	player->setLevelPoints((uint16_t)result->getDataInt("levelPoints"));
+	player->setUnusedMagicPoints((uint16_t)result->getDataInt("unusedMagicPoints"));
 
 #ifdef __SKULLSYSTEM__
 	int32_t redSkullSeconds = result->getDataInt("redskulltime") - std::time(NULL);
@@ -215,7 +216,7 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 	if((result = db->storeQuery(query.str()))){
 		do{
 			std::string spellName = result->getDataString("name");
-			player->learnedInstantSpellList.push_back(spellName);
+			player->learnedInstantSpellList.push_back(std::make_pair(spellName,0));
 		}while(result->next());
 
 		db->freeResult(result);
@@ -550,14 +551,14 @@ bool IOPlayer::savePlayer(Player* player)
 
 	//learned spells
 	stmt.setQuery("INSERT INTO `player_spells` (`player_id`, `name`) VALUES ");
-	for(LearnedInstantSpellList::const_iterator it = player->learnedInstantSpellList.begin();
+	/*for(LearnedInstantSpellList::const_iterator it = player->learnedInstantSpellList.begin();
 			it != player->learnedInstantSpellList.end(); ++it){
 		query << player->getGUID() << ", " << db->escapeString(*it);
 
 		if(!stmt.addRow(query)){
 			return false;
 		}
-	}
+	}*/
 
 	if(!stmt.execute()){
 		return false;

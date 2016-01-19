@@ -365,9 +365,28 @@ namespace _player_{
 	
 	//10,20,30,40,50,60,70,80,90,100%
 	const int attackSpeedDivision[] = { 100, 200, 300, 400, 500, 600, 700, 800, 900 ,1000};
+	
+	//player spells
 
+#define NUMBER_OF_SPELLS 1
+
+	struct spell
+	{
+		spell::spell(std::string name, int magPointsLevelOne, int magPointsLevelTwo = 0, int magPointsLevelTree = 0)
+		{
+			this->name = name;
+			this->magicPoints[0] = magPointsLevelOne;
+			this->magicPoints[1] = magPointsLevelTwo;
+			this->magicPoints[2] = magPointsLevelTree;
+		}
+		std::string name; //name of spell	
+		int magicPoints[3];	//magic points for lvl 1,2,3
+	};
+
+	const spell g_spellsTree[] = {
+		spell("Bola de fogo", 15, 20) // 1
+	};
 };
-
 
 
 

@@ -1439,8 +1439,8 @@ void ProtocolGame::parseAddSpellLevelButtonClick(NetworkMessage& msg)
 {
 	uint32_t creatureId = msg.GetU32();
 	std::string spellName = msg.GetString();
-
-	addGameTask(&Game::playerAddSpellLevel, player->getID(), spellName);
+	uint8_t spellLevel = msg.GetByte();
+	addGameTask(&Game::playerAddSpellLevel, player->getID(), spellName, spellLevel);
 }
 
 void ProtocolGame::parseRequestTrade(NetworkMessage& msg)
@@ -1964,12 +1964,12 @@ void ProtocolGame::sendSkills()
 	}
 }
 
-void ProtocolGame::sendSpellLearned(std::string spellName)
+void ProtocolGame::sendSpellLearned(std::string spellName, int level)
 {
 	NetworkMessage_ptr msg = getOutputBuffer();
 	if (msg){
 		TRACK_MESSAGE(msg);
-		AddSpellLearned(msg, spellName);
+		AddSpellLearned(msg, spellName, level);
 	}
 }
 
@@ -2628,13 +2628,15 @@ void ProtocolGame::AddPlayerSkills(NetworkMessage_ptr msg)
 	msg->AddU16(player->getSkillValue(PLAYER_SKILL_COOLDOWN));
 	msg->AddU16(player->getSkillValue(PLAYER_SKILL_AVOIDANCE));
 	msg->AddU16(player->getLevelPoints());
+	msg->AddByte(player->getUnusedMagicPoints());
 }
 
-void ProtocolGame::AddSpellLearned(NetworkMessage_ptr msg, std::string spellName)
+void ProtocolGame::AddSpellLearned(NetworkMessage_ptr msg, std::string spellName, int spellLevel)
 {
 	// conection protocol 0xFC -- decimal = 252
 	msg->AddByte(0xFC);
 	msg->AddString(spellName);
+	msg->AddByte(spellLevel);
 }
 
 void ProtocolGame::AddCreatureSpeak(NetworkMessage_ptr msg, const Creature* creature,

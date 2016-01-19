@@ -85,6 +85,7 @@ Creature()
 
 	level      = 1;
 	m_levelPoints = 0;
+	m_unusedMagicPoints = 0;
 	levelPercent = 0;
 	magLevelPercent = 0;
 	magLevel   = 0;
@@ -3685,28 +3686,18 @@ void Player::setSex(PlayerSex_t playerSex)
 	sex = playerSex;
 }
 
-void Player::learnInstantSpell(const std::string& name)
+void Player::learnInstantSpell(const std::string& name, int level)
 {
-	if(!hasLearnedInstantSpell(name)){
-		learnedInstantSpellList.push_back(name);
-	}
+	if(!hasLearnedInstantSpell(name, level))
+		learnedInstantSpellList.push_back(std::make_pair(name, level));
 }
 
-bool Player::hasLearnedInstantSpell(const std::string& name) const
+bool Player::hasLearnedInstantSpell(const std::string& name, int level) const
 {
-	/*if(hasFlag(PlayerFlag_CannotUseSpells)){
-		return false;
-	}
-
-	if(hasFlag(PlayerFlag_IgnoreSpellCheck)){
-		return true;
-	}*/
-
-	for(LearnedInstantSpellList::const_iterator it = learnedInstantSpellList.begin();
-			it != learnedInstantSpellList.end(); ++it){
-		if(boost::algorithm::iequals((*it), name))
-			return true;		
-	}
+	std::pair<std::string, int> spellToFind = std::make_pair(name, level);
+	for (LearnedInstantSpellList::const_iterator it = learnedInstantSpellList.begin(); it != learnedInstantSpellList.end(); ++it)
+		if ((*it).first == name && (*it).second == level)
+			return true;
 
 	return false;
 }

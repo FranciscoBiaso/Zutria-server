@@ -117,7 +117,7 @@ public:
 	virtual ~Spell(){};
 
 	bool configureSpell(xmlNodePtr xmlspell);
-	const std::string& getName() const {return name;}
+	const std::string& getName() const { return name; }
 
 	void postCastSpell(Player* player, bool finishedSpell = true, bool payCost = true) const;
 #ifdef __PROTOCOL_76__

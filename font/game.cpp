@@ -3140,22 +3140,38 @@ bool Game::playerAddSkillPoint(uint32_t playerId, uint8_t skillId)
 		player->setLevelPoints(player->getLevelPoints() - 1);
 		if (skillId == PLAYER_SKILL_CAPACITY)
 			player->sendStats();
+		if (skillId == PLAYER_SKILL_MAGIC_POINTS)
+			player->setUnusedMagicPoints(player->getUnusedMagicPoints() + 1);		
+			
 		player->sendSkills();
 	}
 	return true;
 }
 
-bool Game::playerAddSpellLevel(uint32_t playerId, std::string spellName)
+bool Game::playerAddSpellLevel(uint32_t playerId, std::string spellName, int spellLevel)
 {
+
+	//get player
 	Player* player = getPlayerByID(playerId);
+	//a player exists?
 	if (!player || player->isRemoved())
 		return false;
-
-
-	if (!player->hasLearnedInstantSpell(spellName))
+	//The player already has this spell?
+	if (!player->hasLearnedInstantSpell(spellName,spellLevel))
 	{
-		player->learnInstantSpell(spellName);
-		player->sendSpellLearned(spellName);
+		int spellCountMagicPoints = player->getCountOfSpellMagicPoints(spellName, spellLevel);
+		//This is spell exists?
+		if (!spellCountMagicPoints)
+			return false;
+		//create a spellTree object for inspect count of magic points
+		//He has magic points to learn the spell?
+		if ((player->getUnusedMagicPoints() - spellCountMagicPoints) >= 0)
+		{
+			player->setUnusedMagicPoints(player->getUnusedMagicPoints() - player->getCountOfSpellMagicPoints(spellName, spellLevel));
+			//learn spell and send to client for update spell tree
+			player->learnInstantSpell(spellName,spellLevel);
+			player->sendSpellLearned(spellName, spellLevel);
+		}		
 	}
 	
 	return true;
