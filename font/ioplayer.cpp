@@ -44,32 +44,31 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 
 	query << "SELECT `players`.`id` AS `id`, `players`.`name` AS `name`, `account_id`, \
 			 `players`.`group_id` as `group_id`, `sex`, `vocation`, `experience`, `level`, \
-			 `maglevel`, `health`, `healthmax`, `mana`, `manamax`, `manaspent`, `direction`,`looktype`, \
+			 `health`, `mana`, `manaspent`, `direction`,`looktype`, \
 			 `lookhead`, `lookbody`, `looklegs`, `lookfeet`, `posx`, `posy`, \
-			 `posz`, `cap`, `lastlogin`, `lastlogout`, `lastip`, `save`, `conditions`, `redskulltime`, \
+			 `posz`, `lastlogin`, `lastlogout`, `lastip`, `save`, `conditions`, `redskulltime`, \
 			 `redskull`, `guildnick`, `loss_experience`, `loss_mana`, `loss_skills`, \
-			 `loss_items`, `rank_id`, `town_id`, `balance`, `status`, `levelPoints`, `physicalAttack`,  \
-			 `physicalDefense` \
+			 `loss_items`, `rank_id`, `town_id`, `balance`, `status`, `levelPoints` \
 			 FROM `players` LEFT JOIN `accounts` ON `account_id` = `accounts`.`id` \
 			 WHERE `players`.`name` = " + db->escapeString(name);
 
-	if(!(result = db->storeQuery(query.str()))){
-	  	return false;
-	}
+	if(!(result = db->storeQuery(query.str())))
+		return false;
+	
 	query.str("");
 	player->setGUID(result->getDataInt("id"));
 	player->accountNumber = result->getDataInt("account_id");
-	//player->groupName = result->getDataString("groupname"); fix me
-
 	const PlayerGroup* group = getPlayerGroup(result->getDataInt("group_id"));
-	if(group){
+	if(group)
+	{
 		player->accessLevel = group->m_access;
 		player->maxDepotLimit = group->m_maxDepotItems;
 		player->maxVipLimit = group->m_maxVip;
 		player->setFlags(group->m_flags);
 	}
 
-	if(preload){
+	if(preload)
+	{
 		//only loading basic info
 		db->freeResult(result);
 		return true;
@@ -79,40 +78,24 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 	player->setSex((PlayerSex_t)result->getDataInt("sex"));
 	player->setDirection((Direction)result->getDataInt("direction"));
 	player->level = std::max((uint32_t)1, (uint32_t)result->getDataInt("level"));
-
 	uint64_t currExpCount = Player::getExpForLevel(player->level);
 	uint64_t nextExpCount = Player::getExpForLevel(player->level + 1);
 	uint64_t experience = (uint64_t)result->getDataLong("experience");
-	if(experience < currExpCount || experience  > nextExpCount){
+	if(experience < currExpCount || experience > nextExpCount)
 		experience = currExpCount;
-	}
+	
 	player->experience = experience;
 	player->levelPercent = Player::getPercentLevel(player->experience - currExpCount, nextExpCount - currExpCount);
-	player->capacity = result->getDataInt("cap");
 	player->lastLoginSaved = result->getDataInt("lastlogin");
 	player->lastLogout = result->getDataInt("lastlogout");
-
 	player->health = result->getDataInt("health");
-	player->setSkillValue(skillsID::PLAYER_SKILL_HEALTH_POINTS, result->getDataInt("healthmax"));
-	player->setSkillValue(skillsID::PLAYER_SKILL_MANA_POINTS, result->getDataInt("manamax"));
 	player->defaultOutfit.lookType = result->getDataInt("looktype");
 	player->defaultOutfit.lookHead = result->getDataInt("lookhead");
 	player->defaultOutfit.lookBody = result->getDataInt("lookbody");
 	player->defaultOutfit.lookLegs = result->getDataInt("looklegs");
 	player->defaultOutfit.lookFeet = result->getDataInt("lookfeet");
 	player->currentOutfit = player->defaultOutfit;
-
-
-
-	player->setLevelPoints((uint16_t)result->getDataInt("levelPoints"));
-	player->setSkillValue(PLAYER_SKILL_PHYSICAL_ATTACK ,(uint16_t)result->getDataInt("physicalAttack"));
-	player->setSkillValue(PLAYER_SKILL_PHYSICAL_DEFENSE, (uint16_t)result->getDataInt("physicalDefense"));
-	
-
-
-
-
-
+	player->setLevelPoints((uint16_t)result->getDataInt("levelPoints"));	
 
 #ifdef __SKULLSYSTEM__
 	int32_t redSkullSeconds = result->getDataInt("redskulltime") - std::time(NULL);
@@ -132,27 +115,23 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 	propStream.init(conditions, conditionsSize);
 
 	Condition* condition;
-	while((condition = Condition::createCondition(propStream))){
-		if(condition->unserialize(propStream)){
+	while((condition = Condition::createCondition(propStream)))
+	{
+		if(condition->unserialize(propStream))
 			player->storedConditionList.push_back(condition);
-		}
-		else{
-			delete condition;
-		}
+		else
+			delete condition;		
 	}
 	// you need to set the vocation after conditions in order to ensure the proper regeneration rates for the vocation
 	player->setVocation(result->getDataInt("vocation"));
 	// this stuff has to go after the vocation is set
 	player->mana = result->getDataInt("mana");
-	//player->setSkillValue(skillsID::PLAYER_SKILL_MANA_POINTS, result->getDataInt("manamax"));
-	player->magLevel = result->getDataInt("maglevel");
 
 	uint32_t nextManaCount = (uint32_t)player->vocation->getReqMana(player->magLevel + 1);
 	uint32_t manaSpent = (uint32_t)result->getDataInt("manaspent");
-	if(manaSpent > nextManaCount){
-		//make sure its not out of bound
-		manaSpent = 0;
-	}
+	if(manaSpent > nextManaCount)
+		manaSpent = 0; //make sure its not out of bound
+		
 	player->manaSpent = manaSpent;
 	player->magLevelPercent = Player::getPercentLevel(player->manaSpent, nextManaCount);
 
@@ -167,19 +146,18 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 
 	player->town = result->getDataInt("town_id");
 	Town* town = Towns::getInstance().getTown(player->town);
-	if(town){
-		player->masterPos = town->getTemplePosition();
-	}
+	if(town)
+		player->masterPos = town->getTemplePosition();	
 
 	//if posx == 0 AND posy == 0 AND posz == 0
 	// login position is temple position
 	Position loginPos = player->loginPosition;
-	if (loginPos.x == 0 && loginPos.y == 0 && loginPos.z == 0) {
-		player->loginPosition = player->masterPos;
-	}
+	if (loginPos.x == 0 && loginPos.y == 0 && loginPos.z == 0) 
+		player->loginPosition = player->masterPos;	
 
 	Account acc;
-	if (player->getVocationId() && acc.premEnd > 0 && acc.premEnd < std::time(NULL) && (g_config.getNumber(ConfigManager::TEMPLE_TP_ID) != 0)){
+	if (player->getVocationId() && acc.premEnd > 0 && acc.premEnd < std::time(NULL) && (g_config.getNumber(ConfigManager::TEMPLE_TP_ID) != 0))
+	{
 		town = Towns::getInstance().getTown(g_config.getNumber(ConfigManager::TEMPLE_TP_ID));
 		player->loginPosition = town->getTemplePosition();
 	}
@@ -213,7 +191,6 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 	//std::cout << player->premiumDays << std::endl;
 	db->freeResult(result);
 
-
 	//LOADING SKILLS
 	query.str("");
 	query << "SELECT `attribute`, `value` FROM `player_skills` WHERE `player_id` = " << player->getGUID();
@@ -221,15 +198,18 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 	{
 		//now iterate over the skills
 		do{
-			int attribute = result->getDataInt("attribute");
+			uint8_t attribute = result->getDataInt("attribute");
 			uint32_t value = result->getDataInt("value");
-			player->skills[attribute] = value;
+	
+			player->setSkillValue(attribute, value);
+			if (attribute == skillsID::PLAYER_SKILL_MAGIC_POINTS)
+				player->magLevel = value;
+			if (attribute == skillsID::PLAYER_SKILL_CAPACITY)
+				player->capacity = value;
 			
 		}while(result->next());
-
 		db->freeResult(result);
 	}
-
 	query.str("");
 	query << "SELECT `name` FROM `player_spells` WHERE `player_id` = " << player->getGUID();
 	if((result = db->storeQuery(query.str()))){
