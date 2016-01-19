@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<actions>
+
+	<action itemid="463" script="ropeToUp.lua"/>
+	<action itemid="461" script="rockRopeToDown.lua"/>
+	
+	<action itemid="509" script="lampClick.lua"/>
+	<action itemid="510" script="lampClick.lua"/>
+
+</actions>
