@@ -173,7 +173,7 @@ private:
 	void sendAnimatedText(const Position& pos, uint8_t color, std::string text);
 	void sendCreatureHealth(const Creature* creature);
 	void sendSkills();
-	void sendSpellLearned(std::string spellName);
+	void sendSpellLearned(std::string spellName, int level);
 	void sendPing();
 	void sendCreatureTurn(const Creature* creature, uint32_t stackpos);
 	void sendCreatureSay(const Creature* creature, SpeakClasses type, const std::string& text);
@@ -259,7 +259,7 @@ private:
 	void AddCreatureOutfit(NetworkMessage_ptr msg, const Creature* creature, const Outfit_t& outfit);
 	void AddCreatureInvisible(NetworkMessage_ptr msg, const Creature* creature);
 	void AddPlayerSkills(NetworkMessage_ptr msg);
-	void AddSpellLearned(NetworkMessage_ptr msg, std::string spellName);
+	void AddSpellLearned(NetworkMessage_ptr msg, std::string spellName, int level);
 	void AddWorldLight(NetworkMessage_ptr msg, const LightInfo& lightInfo);
 	void AddCreatureLight(NetworkMessage_ptr msg, const Creature* creature);
 

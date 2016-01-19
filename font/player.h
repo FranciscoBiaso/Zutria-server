@@ -18,8 +18,8 @@
 // Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //////////////////////////////////////////////////////////////////////
 
-#ifndef __OTSERV_PLAYER_H__
-#define __OTSERV_PLAYER_H__
+#ifndef __PLAYER_H__
+#define __PLAYER_H__
 
 #include "definitions.h"
 #include "otsystem.h"
@@ -43,8 +43,12 @@ class Npc;
 class Party;
 class SchedulerTask;
 
+
 #define NUMBER_OF_SKILLS  12
-#define SKILL_INCREMENT 0.2
+#define PLAYER_MAX_SPEED 1500
+#define PLAYER_MIN_SPEED 10
+
+//skill attributes of a player health points, mana points, etc
 enum skillsID
 {
 	PLAYER_SKILL_HEALTH_POINTS = 0,
@@ -113,79 +117,143 @@ typedef std::map<uint32_t, Depot*> DepotMap;
 typedef std::map<uint32_t, int32_t> StorageMap;
 typedef std::set<uint32_t> VIPListSet;
 typedef std::map<uint32_t, uint32_t> MuteCountMap;
-typedef std::list<std::string> LearnedInstantSpellList;
+typedef std::list<std::pair<std::string, int>> LearnedInstantSpellList;
 typedef std::list<Party*> PartyList;
 
-#define PLAYER_MAX_SPEED 1500
-#define PLAYER_MIN_SPEED 10
+
 
 //////////////////////////////////////////////////////////////////////
-// Defines a player...
-
+// Defines a player
 class Player : public Creature, public Cylinder
 {
 public:
-#ifdef __ENABLE_SERVER_DIAGNOSTIC__
-	static uint32_t playerCount;
-#endif
-
-	Player(const std::string& name, ProtocolGame* p);
+	Player(const std::string& name, ProtocolGame* protocol);
 	virtual ~Player();
-
+	
+	// get functions -------------------------------------------------
 	virtual Player* getPlayer() {return this;}
 	virtual const Player* getPlayer() const {return this;}
+	virtual const std::string& getName() const { return name; }
+	virtual const std::string& getNameDescription() const { return name; }
+	virtual std::string getDescription(int32_t lookDistance) const;
+	virtual int getThrowRange() const { return 1; }
+	virtual int32_t getMaxHealth() const { return m_skills[PLAYER_SKILL_HEALTH_POINTS]; }
+	virtual int32_t getMaxMana() const { return m_skills[PLAYER_SKILL_MANA_POINTS]; }
+	virtual int32_t getShieldDefense() const;
+	virtual int32_t getWeaponDefense() const;
+	virtual int32_t getArmor() const;
+	virtual int32_t getDefense() const;
+	virtual float getAttackFactor() const;
+	virtual float getDefenseFactor() const;
+	virtual uint64_t getGainedExperience(Creature* attacker, bool useMultiplier = true) const;
+	virtual void getCreatureLight(LightInfo& light) const;
+	virtual RaceType_t getRace() const { return RACE_BLOOD; }
+	virtual WeaponType_t getWeaponType();
+	virtual uint32_t getAttackSpeed() const;
+	uint32_t getGUID() const { return guid; }
+	static uint64_t getExpForLevel(int32_t level){return 10ULL * level * level * level;}
+	uint32_t getGuildId() const { return guildId; }
+	const std::string& getGuildName() const { return guildName; }
+	const std::string& getGuildRank() const { return guildRank; }
+	const std::string& getGuildNick() const { return guildNick; }
+	uint16_t getPremiumDays() const { return premiumDays; }
+	uint32_t getIP() const;
+	int32_t getContainerID(const Container* container) const;
+	Container* getContainer(uint32_t cid);
+	bool getStorageValue(const uint32_t key, int32_t& value) const;
+	double getSkillValue(uint8_t id) const { return this->m_skills[id]; }
+	uint16_t getLevelPoints(){ return m_levelPoints; }
+	uint16_t getUnusedMagicPoints(){ return m_unusedMagicPoints; }
+	inline StorageMap::const_iterator getStorageIteratorBegin() const { return storageMap.begin(); }
+	inline StorageMap::const_iterator getStorageIteratorEnd() const { return storageMap.end(); }
+	uint32_t getAccount() const { return accountNumber; }
+	uint32_t getLevel() const { return level; }
+	uint32_t getMagicLevel() const { return getPlayerInfo(PLAYERINFO_MAGICLEVEL); }
+	int16_t getAccessLevel() const { return accessLevel; }
+	std::string getGroupName() const { return groupName; }
+	uint32_t getVocationId() const;
+	PlayerSex_t getSex() const { return sex; }
+	Vocation* getVocation() const { return vocation; }
+	int32_t getPlayerInfo(playerinfo_t playerinfo) const;
+	int64_t getExperience() const { return experience; }
+	time_t getLastLoginSaved() const { return lastLoginSaved; }
+	const Position& getLoginPosition() const { return loginPosition; }
+	const Position& getTemplePosition() const { return masterPos; }
+	uint32_t getTown() const { return town; }
+	double getCapacity() const;
+	double getFreeCapacity() const;	
+	// Returns the inventory item in the slot position
+	Item* getInventoryItem(slots_t slot) const;
+	// As above, but returns NULL if the item can not be weared in that slot (armor in hand for example)
+	Item* getEquippedItem(slots_t slot) const;
+	int32_t getVarSkill(skills_t skill) const { return varSkills[skill]; }
+	int32_t getVarStats(stats_t stat) const { return varStats[stat]; }
+	int32_t getDefaultStats(stats_t stat);
+	double getRateValue(levelTypes_t rateType) const { return rateValue[rateType]; }
+	uint32_t getLossPercent(lossTypes_t lossType) const { return lossPercent[lossType]; }
+	Depot* getDepot(uint32_t depotId, bool autoCreateDepot);
+	tradestate_t getTradeState() { return tradeState; }
+	Item* getTradeItem() { return tradeItem; }
+	chaseMode_t getChaseMode() const { return chaseMode; }
+	fightMode_t getFightMode() const { return fightMode; }
+	int32_t getShootRange() const { return shootRange; }
+	int32_t getSkill(skills_t skilltype, skillsid_t skillinfo) const;
+	bool getAddAttackSkill() const { return addAttackSkillPoint; }
+	BlockType_t getLastAttackBlockType() const { return lastAttackBlockType; }
+	Item* getWeapon(bool ignoreAmmu = false);
+	int32_t getWeaponSkill(const Item* item) const;
+	void getShieldAndWeapon(const Item* &shield, const Item* &weapon) const;
+	Item* getWriteItem(uint32_t& _windowTextId, uint16_t& _maxWriteLen);
+	House* getEditHouse(uint32_t& _windowTextId, uint32_t& _listId);
+	uint32_t getNextActionTime() const;
+	int getAvoindanceDefense(){ return getSkillValue(PLAYER_SKILL_AVOIDANCE); }
+	int getCountOfSpellMagicPoints(std::string spellName, int level)
+	{
+		for (int i = 0; i < NUMBER_OF_SPELLS; i++)
+		{
+			if (_player_::g_spellsTree[i].name == spellName)
+				return _player_::g_spellsTree[i].magicPoints[level];
+		}
+
+		return 0;
+	}
+
+
+
+
+
 
 	static MuteCountMap muteCountMap;
 	static int32_t maxMessageBuffer;
 
-	virtual const std::string& getName() const {return name;}
-	virtual const std::string& getNameDescription() const {return name;}
-	virtual std::string getDescription(int32_t lookDistance) const;
-
+	
 	void setGUID(uint32_t _guid) {guid = _guid;}
-	uint32_t getGUID() const { return guid;}
 	virtual uint32_t idRange(){ return 0x10000000;}
 	static AutoList<Player> listPlayer;
 	void removeList();
 	void addList();
 	void kickPlayer();
 
-	static uint64_t getExpForLevel(int32_t level)
-	{
-		return 10ULL * level * level * level;
-	}
-
-	uint32_t getGuildId() const {return guildId;}
-	const std::string& getGuildName() const {return guildName;}
-	const std::string& getGuildRank() const {return guildRank;}
-	const std::string& getGuildNick() const {return guildNick;}
-
+	
+	
 	void setGuildRank(const std::string& rank) {guildRank = rank;}
 	void setGuildNick(const std::string& nick) {guildNick = nick;}
 
 	void setFlags(uint64_t flags){ groupFlags = flags;}
 	bool hasFlag(PlayerFlags value) const { return (0 != (groupFlags & ((uint64_t)1 << value)));}
 
-	uint16_t getPremiumDays() const {return premiumDays;}
 	bool isPremium() const {return (premiumDays > 0 || hasFlag(PlayerFlag_IsAlwaysPremium));}
 
 	bool isOffline() const {return (getID() == 0);}
 	void disconnect() {if(client) client->disconnect();}
-	uint32_t getIP() const;
-
+	
 	void addContainer(uint32_t cid, Container* container);
 	void closeContainer(uint32_t cid);
-	int32_t getContainerID(const Container* container) const;
-	Container* getContainer(uint32_t cid);
 	bool canOpenCorpse(uint32_t ownerId);
 
 	void addStorageValue(const uint32_t key, const int32_t value);
-	bool getStorageValue(const uint32_t key, int32_t& value) const;
-
-
-	uint16_t getLevelPoints(){ return m_levelPoints; }
 	void setLevelPoints(uint16_t value){ this->m_levelPoints = value; }
-	double getSkillValue(uint8_t id) const { return this->m_skills[id]; }
+	void setUnusedMagicPoints(uint16_t value){ this->m_unusedMagicPoints = value; }
 	void setSkillValue(uint8_t id, double value){ this->m_skills[id] = value; }
 
 	bool withdrawMoney(uint32_t amount);
@@ -193,68 +261,33 @@ public:
 	bool transferMoneyTo(const std::string& name, uint32_t amount);
 	uint32_t balance;
 
-	inline StorageMap::const_iterator getStorageIteratorBegin() const {return storageMap.begin();}
-	inline StorageMap::const_iterator getStorageIteratorEnd() const {return storageMap.end();}
-
-	uint32_t getAccount() const {return accountNumber;}
-	uint32_t getLevel() const {return level;}
-	uint32_t getMagicLevel() const {return getPlayerInfo(PLAYERINFO_MAGICLEVEL);}
-	int16_t getAccessLevel() const {return accessLevel;}
-	std::string getGroupName() const {return groupName;}
-
 	void checkIdleTime(uint32_t ticks);
 	void resetIdle() {idleTime = 0; idleWarned = false;}
 	void setIdleTime(uint32_t value, bool warned) {idleTime = value; idleWarned = warned;}
 
 	bool setVocation(uint32_t vocId);
-	uint32_t getVocationId() const;
-
-	PlayerSex_t getSex() const {return sex;}
 	void setSex(PlayerSex_t);
-	Vocation* getVocation() const {return vocation;}
-	int32_t getPlayerInfo(playerinfo_t playerinfo) const;
-	int64_t getExperience() const {return experience;}
-
-	time_t getLastLoginSaved() const {return lastLoginSaved;}
-	const Position& getLoginPosition() const {return loginPosition;}
-	const Position& getTemplePosition() const {return masterPos;}
-	uint32_t getTown() const {return town;}
 	void setTown(uint32_t _town) {town = _town;}
 
 	virtual bool isPushable() const;
-	virtual int getThrowRange() const {return 1;}
 	virtual bool canSeeInvisibility() const;
 	uint32_t isMuted();
 	void addMessageBuffer();
 	void removeMessageBuffer();
 
-	double getCapacity() const;
-	double getFreeCapacity() const;
 	void updateAttributes();
-	virtual int32_t getMaxHealth() const { return m_skills[PLAYER_SKILL_HEALTH_POINTS]; }
-	virtual int32_t getMaxMana() const { return m_skills[PLAYER_SKILL_MANA_POINTS]; }
-
-	// Returns the inventory item in the slot position
-	Item* getInventoryItem(slots_t slot) const;
-	// As above, but returns NULL if the item can not be weared in that slot (armor in hand for example)
-	Item* getEquippedItem(slots_t slot) const;
-
+	
 	bool isItemAbilityEnabled(slots_t slot) const {return inventoryAbilities[slot];}
 	void setItemAbility(slots_t slot, bool enabled) {inventoryAbilities[slot] = enabled;}
 
-	int32_t getVarSkill(skills_t skill) const {return varSkills[skill];}
 	void setVarSkill(skills_t skill, int32_t modifier) {varSkills[skill] += modifier;}
 
-	int32_t getVarStats(stats_t stat) const {return varStats[stat];}
 	void setVarStats(stats_t stat, int32_t modifier);
-	int32_t getDefaultStats(stats_t stat);
-
+	
 	void setConditionSuppressions(uint32_t conditions, bool remove);
 
-	double getRateValue(levelTypes_t rateType) const {return rateValue[rateType];}
 	void setRateValue(levelTypes_t rateType, double value){rateValue[rateType] = value;}
 
-	uint32_t getLossPercent(lossTypes_t lossType) const {return lossPercent[lossType];}
 	void setLossPercent(lossTypes_t lossType, uint32_t newPercent)
 	{
 		if(newPercent > 100){
@@ -264,19 +297,15 @@ public:
 		lossPercent[lossType] = newPercent;
 	}
 
-	Depot* getDepot(uint32_t depotId, bool autoCreateDepot);
 	bool addDepot(Depot* depot, uint32_t depotId);
 
 	virtual bool canSee(const Position& pos) const;
 	virtual bool canSeeCreature(const Creature* creature) const;
 
-	virtual RaceType_t getRace() const {return RACE_BLOOD;}
-
+	
 	//safe-trade functions
 	void setTradeState(tradestate_t state) {tradeState = state;}
-	tradestate_t getTradeState() {return tradeState;}
-	Item* getTradeItem() {return tradeItem;}
-
+	
 	//V.I.P. functions
 	void notifyLogIn(Player* player);
 	void notifyLogOut(Player* player);
@@ -295,9 +324,7 @@ public:
 	virtual void onWalkComplete();
 
 	void setChaseMode(chaseMode_t mode);
-	chaseMode_t getChaseMode() const {return chaseMode;}
 	void setFightMode(fightMode_t mode);
-	fightMode_t getFightMode() const {return fightMode;}
 	void setSafeMode(bool _safeMode) {safeMode = _safeMode;}
 	bool hasSafeMode() const {return safeMode;}
 
@@ -317,36 +344,18 @@ public:
 		bool checkDefense = false, bool checkArmor = false);
 	virtual void doAttacking(uint32_t interval);
 	virtual bool hasExtraSwing() {return lastAttack > 0 && ((OTSYS_TIME() - lastAttack) >= getAttackSpeed());}
-	int32_t getShootRange() const {return shootRange;}
-
-	int32_t getSkill(skills_t skilltype, skillsid_t skillinfo) const;
-	bool getAddAttackSkill() const {return addAttackSkillPoint;}
-	BlockType_t getLastAttackBlockType() const {return lastAttackBlockType;}
-
-	Item* getWeapon(bool ignoreAmmu = false);
-	virtual WeaponType_t getWeaponType();
-	int32_t getWeaponSkill(const Item* item) const;
-	void getShieldAndWeapon(const Item* &shield, const Item* &weapon) const;
-
 	virtual void drainHealth(Creature* attacker, CombatType_t combatType, int32_t damage);
 	virtual void drainMana(Creature* attacker, int32_t manaLoss);
 	void addManaSpent(uint32_t amount, bool useMultiplier = true);
 
 
-	virtual int32_t getShieldDefense() const;
-	virtual int32_t getWeaponDefense() const;
-	virtual int32_t getArmor() const;
-	virtual int32_t getDefense() const;
-	virtual float getAttackFactor() const;
-	virtual float getDefenseFactor() const;
-
+	
 	void addCombatExhaust(uint32_t ticks);
 	void addHealExhaust(uint32_t ticks);
 	void addInFightTicks(bool pzlock = false);
 	void addDefaultRegeneration(uint32_t addTicks);
 
-	virtual uint64_t getGainedExperience(Creature* attacker, bool useMultiplier = true) const;
-
+	
 	//combat event functions
 	virtual void onAddCondition(ConditionType_t type);
 	virtual void onAddCombatCondition(ConditionType_t type);
@@ -365,8 +374,7 @@ public:
 	virtual void onIdleStatus();
 	virtual void onPlacedCreature();
 	virtual void onRemovedCreature();
-	virtual void getCreatureLight(LightInfo& light) const;
-
+	
 	void setParty(Party* _party) {party = _party;}
 	Party* getParty() const {return party;}
 	PartyShields_t getPartyShield(const Player* player) const;
@@ -529,8 +537,8 @@ public:
 		{if(client) client->sendTextWindow(windowTextId, itemId, text);}
 	void sendToChannel(Creature* creature, SpeakClasses type, const std::string& text, uint16_t channelId, uint32_t time = 0) const
 		{if(client) client->sendToChannel(creature, type, text, channelId, time);}
-	void sendSpellLearned(std::string spellName)
-		{ if (client) client->sendSpellLearned(spellName); }
+	void sendSpellLearned(std::string spellName, int level)
+		{ if (client) client->sendSpellLearned(spellName,level); }
 	
 	
 	
@@ -567,23 +575,18 @@ public:
 	virtual void postAddNotification(Thing* thing, const Cylinder* oldParent, int32_t index, cylinderlink_t link = LINK_OWNER);
 	virtual void postRemoveNotification(Thing* thing, const Cylinder* newParent, int32_t index, bool isCompleteRemoval, cylinderlink_t link = LINK_OWNER);
 
-	Item* getWriteItem(uint32_t& _windowTextId, uint16_t& _maxWriteLen);
 	void setWriteItem(Item* item, uint16_t _maxWriteLen = 0);
 
-	House* getEditHouse(uint32_t& _windowTextId, uint32_t& _listId);
 	void setEditHouse(House* house, uint32_t listId = 0);
 	
 	void setNextAction(int64_t time) {if(time > nextAction) {nextAction = time;}}
 	bool canDoAction() const {return nextAction <= OTSYS_TIME();}
-	uint32_t getNextActionTime() const;
-
-	void learnInstantSpell(const std::string& name);
-	bool hasLearnedInstantSpell(const std::string& name) const;
+	
+	void learnInstantSpell(const std::string& name, int level);
+	bool hasLearnedInstantSpell(const std::string& name, int level) const;
 	void stopWalk();
 
-	virtual uint32_t getAttackSpeed() const;
-	int getAvoindanceDefense(){ return getSkillValue(PLAYER_SKILL_AVOIDANCE); }
-
+	
 
 	VIPListSet VIPList;
 	uint32_t maxVipLimit;
@@ -810,7 +813,9 @@ protected:
 	friend class ProtocolGame;
 
 	uint16_t m_levelPoints;
+	//count of magic points to use in the spell tree
+	uint16_t m_unusedMagicPoints;
 	double m_skills[NUMBER_OF_SKILLS];
 };
 
-#endif
+#endif //__PLAYER_H__

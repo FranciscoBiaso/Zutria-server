@@ -433,7 +433,7 @@ public:
 
 	//interface
 	bool playerAddSkillPoint(uint32_t playerId, uint8_t skillId);
-	bool playerAddSpellLevel(uint32_t playerId, std::string spellName);
+	bool playerAddSpellLevel(uint32_t playerId, std::string spellName, int spellLevel);
 
 	bool bugReport(uint32_t playerId, std::string report);
 	bool violationWindow(uint32_t playerId, std::string name, uint8_t reason, std::string comment, uint8_t action, bool IPBanishment);

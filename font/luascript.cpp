@@ -2464,28 +2464,28 @@ int LuaScriptInterface::luaGetPlayerByNameWildcard(lua_State *L)
 int LuaScriptInterface::luaPlayerLearnInstantSpell(lua_State *L)
 {
 	//playerLearnInstantSpell(cid, name)
-	std::string spellName = popString(L);
-	uint32_t cid = popNumber(L);
+	//std::string spellName = popString(L);
+	//uint32_t cid = popNumber(L);
 
-	ScriptEnviroment* env = getScriptEnv();
+	//ScriptEnviroment* env = getScriptEnv();
 
-	Player* player = env->getPlayerByUID(cid);
-	if(!player){
-		reportErrorFunc(getErrorDesc(LUA_ERROR_PLAYER_NOT_FOUND));
-		lua_pushboolean(L, false);
-		return 1;
-	}
+	//Player* player = env->getPlayerByUID(cid);
+	//if(!player){
+	//	reportErrorFunc(getErrorDesc(LUA_ERROR_PLAYER_NOT_FOUND));
+	//	lua_pushboolean(L, false);
+	//	return 1;
+	//}
 
-	InstantSpell* spell = g_spells->getInstantSpellByName(spellName);
-	if(!spell){
-		std::string error_str = (std::string)"Spell \"" + spellName +  (std::string)"\" not found";
-		reportErrorFunc(error_str);
-		lua_pushboolean(L, false);
-		return 1;
-	}
+	//InstantSpell* spell = g_spells->getInstantSpellByName(spellName);
+	//if(!spell){
+	//	std::string error_str = (std::string)"Spell \"" + spellName +  (std::string)"\" not found";
+	//	reportErrorFunc(error_str);
+	//	lua_pushboolean(L, false);
+	//	return 1;
+	//}
 
-	player->learnInstantSpell(spell->getName());
-	lua_pushboolean(L, true);
+	//player->learnInstantSpell(spell->getName());
+	//lua_pushboolean(L, true);
 	return 1;
 }
 
@@ -2531,7 +2531,7 @@ int LuaScriptInterface::luaCanPlayerLearnInstantSpell(lua_State *L)
 int LuaScriptInterface::luaGetPlayerLearnedInstantSpell(lua_State *L)
 {
 	//getPlayerLearnedInstantSpell(cid, name)
-	std::string spellName = popString(L);
+	/*std::string spellName = popString(L);
 	uint32_t cid = popNumber(L);
 
 	ScriptEnviroment* env = getScriptEnv();
@@ -2556,7 +2556,7 @@ int LuaScriptInterface::luaGetPlayerLearnedInstantSpell(lua_State *L)
 		return 1;
 	}
 
-	lua_pushboolean(L, true);
+	lua_pushboolean(L, true);*/
 	return 1;
 }
 
