@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<monsters>
+
+	<monster name="Anão guerreiro" file="anão guerreiro.xml"/>
+</monsters>
