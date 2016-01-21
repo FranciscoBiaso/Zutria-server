@@ -566,6 +566,8 @@ void mainLoader(const CommandLineOptions& command_opts)
                 exit(-1);
 		}
 	}
+
+	g_game.loadSpellsTree();
 	
 	g_game.setGameState(GAME_STATE_INIT);
 	g_game.loadPlayersRecord();

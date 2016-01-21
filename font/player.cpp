@@ -1067,12 +1067,6 @@ void Player::sendStats()
 	}
 }
 
-void Player::sendFirstStats()
-{
-	if (client){
-		client->sendFirstStats();
-	}
-}
 
 void Player::sendPing(uint32_t interval)
 {
@@ -3692,14 +3686,29 @@ void Player::learnInstantSpell(const std::string& name, int level)
 		learnedInstantSpellList.push_back(std::make_pair(name, level));
 }
 
-bool Player::hasLearnedInstantSpell(const std::string& name, int level) const
+bool Player::hasLearnedInstantSpell(const std::string& name, int level /* level = -1 */) const
 {
 	std::pair<std::string, int> spellToFind = std::make_pair(name, level);
 	for (LearnedInstantSpellList::const_iterator it = learnedInstantSpellList.begin(); it != learnedInstantSpellList.end(); ++it)
-		if ((*it).first == name && (*it).second == level)
-			return true;
+		if (level != -1)
+		{
+			if ((*it).first == name && (*it).second == level)
+				return true;			
+		}
+		else
+			if ((*it).first == name)
+				return true;
 
 	return false;
+}
+
+bool Player::hasDependentSpellsPurchased(const std::string& spellName) const
+{
+	std::vector<std::string> dependentSpells = getDependentSpells(spellName);
+	for (int i = 0; i < dependentSpells.size();i++)
+		if (!hasLearnedInstantSpell(dependentSpells[i]))
+			return false;
+	return true;
 }
 
 bool Player::withdrawMoney(uint32_t amount)

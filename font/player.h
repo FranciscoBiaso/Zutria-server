@@ -209,13 +209,20 @@ public:
 	int getAvoindanceDefense(){ return getSkillValue(PLAYER_SKILL_AVOIDANCE); }
 	int getCountOfSpellMagicPoints(std::string spellName, int level)
 	{
-		for (int i = 0; i < NUMBER_OF_SPELLS; i++)
-		{
-			if (_player_::g_spellsTree[i].name == spellName)
-				return _player_::g_spellsTree[i].magicPoints[level];
-		}
+		return _player_::g_spellsTree[spellName].magicLevels[level];		
+	}
 
-		return 0;
+	std::vector<std::string> getDependentSpells(std::string spellName) const
+	{
+		std::vector<std::string> dependentSpells;
+		std::string dependentSpell = _player_::g_spellsTree[spellName].dependentSpell;
+		dependentSpells.push_back(dependentSpell);
+		while (dependentSpell != "no dependency")
+		{
+			dependentSpell = _player_::g_spellsTree[dependentSpell].dependentSpell;
+			dependentSpells.push_back(dependentSpell);
+		}
+		return dependentSpells;
 	}
 
 
@@ -526,7 +533,6 @@ public:
 		{if(client) client->sendMagicEffect(pos,type);}
 	void sendPing(uint32_t interval);
 	void sendStats();
-	void sendFirstStats();
 	void sendSkills() const
 		{if(client) client->sendSkills();}
 	void sendTextMessage(MessageClasses mclass, const std::string& message) const
@@ -583,7 +589,8 @@ public:
 	bool canDoAction() const {return nextAction <= OTSYS_TIME();}
 	
 	void learnInstantSpell(const std::string& name, int level);
-	bool hasLearnedInstantSpell(const std::string& name, int level) const;
+	bool hasLearnedInstantSpell(const std::string& name, int level = -1) const;
+	bool hasDependentSpellsPurchased(const std::string& name) const;
 	void stopWalk();
 
 	

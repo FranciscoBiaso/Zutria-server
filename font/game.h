@@ -116,10 +116,6 @@ public:
 	void updateTextForDecayItem(Item *);
 
 
-
-
-
-
 	//---------------------------------------------------------------------------------------------------
 	/**
 	  * Load a map.
@@ -128,6 +124,12 @@ public:
 	  * \return Int 0 built-in spawns, 1 needs xml spawns, 2 needs sql spawns, -1 if got error
 	  */
 	int loadMap(std::string filename, std::string filekind);
+	
+	//---------------------------------------------------------------------------------------------------
+	/**
+	* Load player spells tree.
+	*/
+	int loadSpellsTree();
 
 	/**
 	  * Get the map size - info purpose only

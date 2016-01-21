@@ -45,6 +45,7 @@
 #include "ioaccount.h"
 #include "movement.h"
 #include "globalevent.h"
+#include "const.h"
 
 #if defined __EXCEPTION_TRACER__
 #include "exception.h"
@@ -72,6 +73,7 @@ extern MoveEvents* g_moveEvents;
 extern Npcs g_npcs;
 extern CreatureEvents* g_creatureEvents;
 extern GlobalEvents* g_globalEvents;
+std::map<std::string, _player_::spell> _player_::g_spellsTree;
 
 Game::Game()
 {
@@ -219,6 +221,15 @@ int Game::loadMap(std::string filename, std::string filekind)
 
 	return map->loadMap(filename, filekind);
 }
+
+
+int Game::loadSpellsTree()
+{
+	const int map_start_values_size = sizeof(_player_::g_map_table) / sizeof(_player_::g_map_table[0]);
+	_player_::g_spellsTree.insert(_player_::g_map_table, _player_::g_map_table + map_start_values_size);
+	return true;
+}
+
 
 void Game::refreshMap(Map::TileMap::iterator* map_iter, int clean_max)
 {
@@ -3159,8 +3170,10 @@ bool Game::playerAddSpellLevel(uint32_t playerId, std::string spellName, int spe
 	//The player already has this spell?
 	if (!player->hasLearnedInstantSpell(spellName,spellLevel))
 	{
+		if (!player->hasDependentSpellsPurchased(spellName))
+			return false;
 		int spellCountMagicPoints = player->getCountOfSpellMagicPoints(spellName, spellLevel);
-		//This is spell exists?
+		//This is spell exists in this level?
 		if (!spellCountMagicPoints)
 			return false;
 		//create a spellTree object for inspect count of magic points
@@ -3172,10 +3185,11 @@ bool Game::playerAddSpellLevel(uint32_t playerId, std::string spellName, int spe
 			//learn spell and send to client for update spell tree
 			player->learnInstantSpell(spellName,spellLevel);
 			player->sendSpellLearned(spellName, spellLevel);
+			return true;
 		}		
 	}
 	
-	return true;
+	return false;
 }
 
 bool Game::playerSetFightModes(uint32_t playerId, fightMode_t fightMode, chaseMode_t chaseMode, bool safeMode)

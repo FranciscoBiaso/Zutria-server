@@ -1,8 +1,59 @@
-﻿Build started 19/01/2016 21:16:25.
+﻿Build started 21/01/2016 02:26:57.
      1>Project "C:\Users\francisco\Documents\GitHub\Zutria-server\font\ZutriaServer.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\sqlite3" /I"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\mysql" /I"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\mpir" /I"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\lua" /I"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\libxml" /I"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\libiconv" /IC:\local\boost_1_58_0 /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D __USE_OTPCH__ /D __USE_MYSQL__ /D _WINSOCK_DEPRECATED_NO_WARNINGS /D __PROTOCOL_76__ /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt game.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\sqlite3" /I"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\mysql" /I"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\mpir" /I"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\lua" /I"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\libxml" /I"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\libiconv" /IC:\local\boost_1_58_0 /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D __USE_OTPCH__ /D __USE_MYSQL__ /D _WINSOCK_DEPRECATED_NO_WARNINGS /D __PROTOCOL_76__ /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt actions.cpp ban.cpp beds.cpp chat.cpp combat.cpp commands.cpp condition.cpp connection.cpp container.cpp creature.cpp creatureevent.cpp game.cpp globalevent.cpp house.cpp housetile.cpp iomapotbm.cpp iomapserialize.cpp iomapxml.cpp ioplayer.cpp item.cpp items.cpp luascript.cpp mailbox.cpp map.cpp monster.cpp monsters.cpp movement.cpp networkmessage.cpp npc.cpp otserv.cpp outfit.cpp party.cpp player.cpp protocolgame.cpp protocollogin.cpp raids.cpp scriptmanager.cpp spawn.cpp spells.cpp status.cpp talkaction.cpp tasks.cpp teleport.cpp thing.cpp tile.cpp trashholder.cpp waitlist.cpp weapons.cpp
+         actions.cpp
+         ban.cpp
+         beds.cpp
+         chat.cpp
+         combat.cpp
+     1>combat.cpp(460): warning C4800: 'uint32_t' : forcing value to bool 'true' or 'false' (performance warning)
+         commands.cpp
+         condition.cpp
+         connection.cpp
+         container.cpp
+         creature.cpp
+         creatureevent.cpp
          game.cpp
+         globalevent.cpp
+         house.cpp
+         housetile.cpp
+         iomapotbm.cpp
+         iomapserialize.cpp
+         iomapxml.cpp
+         ioplayer.cpp
+         item.cpp
+         Compiling...
+         items.cpp
+         luascript.cpp
+         mailbox.cpp
+         map.cpp
+         monster.cpp
+         monsters.cpp
+         movement.cpp
+         networkmessage.cpp
+         npc.cpp
+         otserv.cpp
+         outfit.cpp
+         party.cpp
+         player.cpp
+     1>player.cpp(3708): warning C4018: '<' : signed/unsigned mismatch
+         protocolgame.cpp
+         protocollogin.cpp
+         raids.cpp
+         scriptmanager.cpp
+         spawn.cpp
+         spells.cpp
+         status.cpp
+         Compiling...
+         talkaction.cpp
+         tasks.cpp
+         teleport.cpp
+         thing.cpp
+         tile.cpp
+         trashholder.cpp
+         waitlist.cpp
+         weapons.cpp
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"..\app\ZutriaServer.exe" /NOLOGO /LIBPATH:"C:\local\boost_1_58_0\lib32-msvc-12.0" /LIBPATH:"C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\lib" libmysql.lib libxml2.lib lua5.1.lib mpir.lib sqlite3.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"..\app\ZutriaServer.pdb" /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"..\app\ZutriaServer.lib" /MACHINE:X86 /SAFESEH Release\account.obj
          Release\actions.obj
@@ -83,4 +134,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:01:13.26
+Time Elapsed 00:04:34.72

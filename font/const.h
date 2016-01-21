@@ -371,21 +371,50 @@ namespace _player_{
 #define NUMBER_OF_SPELLS 1
 
 	struct spell
-	{
-		spell::spell(std::string name, int magPointsLevelOne, int magPointsLevelTwo = 0, int magPointsLevelTree = 0)
+	{	
+		std::vector<int> magicLevels; //magic points for lvl 1,2,3, ...
+		std::string dependentSpell;
+
+		spell()
 		{
-			this->name = name;
-			this->magicPoints[0] = magPointsLevelOne;
-			this->magicPoints[1] = magPointsLevelTwo;
-			this->magicPoints[2] = magPointsLevelTree;
+
 		}
-		std::string name; //name of spell	
-		int magicPoints[3];	//magic points for lvl 1,2,3
+		spell(std::vector<int> magicLevels, std::string dependentSpell)
+		{
+			this->magicLevels = magicLevels;;
+			this->dependentSpell = dependentSpell; //-1 no dependency
+		}
+		
 	};
 
-	const spell g_spellsTree[] = {
-		spell("Bola de fogo", 15, 20) // 1
+	typedef std::pair<std::string, spell> spellPair;
+	const spellPair g_map_table[] = {
+		spellPair("Bola de fogo", spell({ 15, 20 }, "no dependency")),
+		spellPair("Runa de bola de fogo", spell({ 18, 22 }, "Bola de fogo")),
+		spellPair("Explosão espiral de b.f.", spell({ 15, 20 }, "Bola de fogo")),
+		spellPair("Escudo de fogo", spell({ 15, 20 }, "Bola de fogo")),
+		spellPair("Grande explosão espiral de b.f.", spell({ 15, 20 }, "Explosão espiral de b.f.")),
+		spellPair("Runa de fogo vivo", spell({ 15, 20 }, "Teleporte de fogo")),
+		spellPair("Runa de meteoro de b.f.", spell({ 15, 20 }, "Grande explosão espiral de b.f.")),
+		spellPair("Teleporte de fogo", spell({ 15, 20 }, "Runa de bola de fogo")),
+		spellPair("Cuspe do dragão", spell({ 15, 20 }, "Escudo de fogo")),
+		spellPair("Onda de fogo", spell({ 15, 20 }, "Cuspe do dragão"))
 	};
+
+	extern std::map<std::string, struct spell> g_spellsTree;
+	
+		/*{std::make_pair("Bola de fogo", spell({ 15, 20 }, "no dependency")),
+		{ "Runa de bola de fogo", spell({ 18, 22 }, "Bola de fogo") },
+		{ "Explosão espiral de b.f.", spell({ 15, 20 }, "Bola de fogo") },
+		{ "Escudo de fogo", spell({ 15, 20 }, "Bola de fogo") },
+		{ "Grande explosão espiral de b.f.", spell({ 15, 20 }, "Explosão espiral de b.f.") },
+		{ "Runa de fogo vivo", spell({ 15, 20 }, "Teleporte de fogo") },
+		{ "Runa de meteoro de b.f.", spell({ 15, 20 }, "Grande explosão espiral de b.f.") },
+		{ "Teleporte de fogo", spell({ 15, 20 }, "Runa de bola de fogo") },
+		{ "Cuspe do dragão", spell({ 15, 20 }, "Escudo de fogo") },
+		{ "Onda de fogo", spell({ 15, 20 }, "Cuspe do dragão") }*/
+
+	
 };
 
 
