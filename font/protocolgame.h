@@ -186,7 +186,6 @@ private:
 	void sendCreatureOutfit(const Creature* creature, const Outfit_t& outfit);
 	void sendCreatureInvisible(const Creature* creature);
 	void sendStats();
-	void sendFirstStats();
 	void sendTextMessage(MessageClasses mclass, const std::string& message);
 
 	void sendTradeItemRequest(const Player* player, const Item* item, bool ack);

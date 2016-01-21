@@ -1656,15 +1656,6 @@ void ProtocolGame::sendStats()
 	}
 }
 
-void ProtocolGame::sendFirstStats()
-{
-	NetworkMessage_ptr msg = getOutputBuffer();
-	if (msg){
-		TRACK_MESSAGE(msg);
-		AddPlayerFirstStats(msg);
-	}
-}
-
 void ProtocolGame::sendTextMessage(MessageClasses mclass, const std::string& message)
 {
 	NetworkMessage_ptr msg = getOutputBuffer();
@@ -2082,33 +2073,41 @@ void ProtocolGame::sendUpdateTile(const Tile* tile, const Position& pos)
 
 void ProtocolGame::sendAddCreature(const Creature* creature, bool isLogin)
 {
-	if(canSee(creature->getPosition())){
+	if(canSee(creature->getPosition()))
+	{
 		NetworkMessage_ptr msg = getOutputBuffer();
-		if(msg){
+		if(msg)
+		{
 			TRACK_MESSAGE(msg);
-			if(creature == player){
+			if(creature == player)
+			{
 				msg->AddByte(0x0A);
 				msg->AddU32(player->getID());
 				msg->AddByte(0x32);
 				msg->AddByte(0x00);
 
-				if(player->getAccessLevel() > 1){
+				if(player->getAccessLevel() > 1)
+				{
 				    msg->AddByte(0x01);
 			    }
-			    else{
+			    else
+				{
 				    msg->AddByte(0x00);
 			    }
 
-				if(player->getAccessLevel() > 1){
+				if(player->getAccessLevel() > 1)
+				{
 					msg->AddByte(0x0B);
-					for (uint8_t i = 0; i < 32; i++) {
+					for (uint8_t i = 0; i < 32; i++) 
+					{
 						msg->AddByte(0xFF);
 					}
 				}
 
 				AddMapDescription(msg, player->getPosition());
 
-				if(isLogin){
+				if(isLogin)
+				{
 					AddMagicEffect(msg, player->getPosition(), NM_ME_ENERGY_AREA);
 				}
 
@@ -2123,7 +2122,7 @@ void ProtocolGame::sendAddCreature(const Creature* creature, bool isLogin)
 				AddInventoryItem(msg, SLOT_RING, player->getInventoryItem(SLOT_RING));
 				AddInventoryItem(msg, SLOT_AMMO, player->getInventoryItem(SLOT_AMMO));
 
-				AddPlayerFirstStats(msg);				
+				AddPlayerFirstStats(msg);
 				AddPlayerSkills(msg);
 
 				//gameworld light-settings
@@ -2134,13 +2133,16 @@ void ProtocolGame::sendAddCreature(const Creature* creature, bool isLogin)
 				//player light level
 				AddCreatureLight(msg, creature);
 
-				if(isLogin){
+				if(isLogin)
+				{
 					std::string tempstring = g_config.getString(ConfigManager::LOGIN_MSG);
-					if(tempstring.size() > 0){
+					if(tempstring.size() > 0)
+					{
 						AddTextMessage(msg, MSG_STATUS_DEFAULT, tempstring.c_str());
 					}
 
-					if(player->getLastLoginSaved() != 0){
+					if(player->getLastLoginSaved() != 0)
+					{
 						tempstring = "Your last visit was on ";
 						time_t lastLogin = player->getLastLoginSaved();
 						tempstring += ctime(&lastLogin);
@@ -2148,7 +2150,8 @@ void ProtocolGame::sendAddCreature(const Creature* creature, bool isLogin)
 						tempstring += ".";
 						AddTextMessage(msg, MSG_STATUS_DEFAULT, tempstring.c_str());
 					}
-					else{
+					else
+					{
 						tempstring = "Welcome to ";
 						tempstring += g_config.getString(ConfigManager::SERVER_NAME);
 						tempstring += ". Please choose an outfit.";
@@ -2156,19 +2159,23 @@ void ProtocolGame::sendAddCreature(const Creature* creature, bool isLogin)
 					}
 				}
 
-				for(VIPListSet::iterator it = player->VIPList.begin(); it != player->VIPList.end(); it++){
+				for(VIPListSet::iterator it = player->VIPList.begin(); it != player->VIPList.end(); it++)
+				{
 					bool online;
 					std::string vip_name;
-					if(IOPlayer::instance()->getNameByGuid((*it), vip_name)){
+					if(IOPlayer::instance()->getNameByGuid((*it), vip_name))
+					{
 						online = (g_game.getPlayerByName(vip_name) != NULL);
 						sendVIP((*it), vip_name, online);
 					}
 				}
 			}
-			else{
+			else
+			{
 				AddTileCreature(msg, creature->getPosition(), creature);
 
-				if(isLogin){
+				if(isLogin)
+				{
 					AddMagicEffect(msg, creature->getPosition(), NM_ME_ENERGY_AREA);
 				}
 			}
@@ -2596,7 +2603,7 @@ void ProtocolGame::AddPlayerStats(NetworkMessage_ptr msg)
 
 void ProtocolGame::AddPlayerFirstStats(NetworkMessage_ptr msg)
 {
-	// connection protocol 0xA0
+	// connection protocol 0xFB
 	msg->AddByte(0xFB);
 	// all player status
 	msg->AddU16(player->getHealth());
