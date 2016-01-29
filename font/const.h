@@ -22,6 +22,8 @@
 #define __OTSERV_CONST_H__
 
 #include "definitions.h"
+#include "Color.h"
+#include <utility>  
 
 #define NETWORKMESSAGE_MAXSIZE 16768
 
@@ -414,18 +416,24 @@ namespace _player_{
 		{ "Cuspe do dragão", spell({ 15, 20 }, "Escudo de fogo") },
 		{ "Onda de fogo", spell({ 15, 20 }, "Cuspe do dragão") }*/
 
-	
+	const std::pair<Color, Color> outfitAttributeColors[] =
+	{
+		//0 %  to 100%
+		//min -- max
+		std::make_pair(Color(0, 100, 0), Color(0, 255, 0)), //health points
+		std::make_pair(Color(98, 59, 59), Color(0, 0, 0)), //physical attack
+		std::make_pair(Color(98, 59, 59), Color(0, 0, 0)), //physical defense
+		std::make_pair(Color(0, 100, 0), Color(0, 255, 0)), //capacity
+		std::make_pair(Color(0, 0, 100), Color(0, 0, 255)), //mana points
+		std::make_pair(Color(100, 0, 0), Color(255, 0, 0)), //magic attack
+		std::make_pair(Color(100, 0, 0), Color(255, 0, 0)), //magic deffense
+		std::make_pair(Color(0, 0, 100), Color(0, 0, 255)), //magic points
+		std::make_pair(Color(100, 0, 100), Color(255, 0, 255)), //speed character
+		std::make_pair(Color(100, 0, 100), Color(255, 0, 255)), //attack speed
+		std::make_pair(Color(100, 100, 0), Color(255, 255, 0)),//cooldown
+		std::make_pair(Color(100, 100, 0), Color(255, 255, 0))//avoidance
+	};
 };
-
-
-
-
-
-
-
-
-
-
 
 
 

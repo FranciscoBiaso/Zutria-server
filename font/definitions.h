@@ -116,3 +116,6 @@ enum passwordType_t{
 #endif
 
 #endif
+
+
+#include <cstdlib> // random function
