@@ -539,15 +539,20 @@ bool Combat::CombatHealthFunc(Creature* caster, Creature* target, const CombatPa
 	Combat2Var* var = (Combat2Var*)data;
 	int32_t healthChange = random_range(var->minChange, var->maxChange, DISTRO_NORMAL);
 
-	if(g_game.combatBlockHit(params.combatType, caster, target, healthChange, params.blockedByShield, params.blockedByArmor)){
+	if(g_game.combatBlockHit(params.combatType, caster, target, healthChange, params.blockedByShield, params.blockedByArmor))
+	{
 		return false;
 	}
 
-	if(healthChange < 0){
-		if (caster && target) {
+	if(healthChange < 0)
+	{
+		if (caster && target) 
+		{
 			Player* casterPlayer = caster->getPlayer();
 			Player* targetPlayer = target->getPlayer();
-			if (casterPlayer && targetPlayer) {
+			//player vs player
+			if (casterPlayer && targetPlayer) 
+			{
 				healthChange = healthChange / 2;
 
 				if (g_config.getBoolean(ConfigManager::TEAM_MODE) && 
@@ -562,7 +567,8 @@ bool Combat::CombatHealthFunc(Creature* caster, Creature* target, const CombatPa
 
 	bool result = g_game.combatChangeHealth(params.combatType, params.hitEffect, params.hitTextColor, caster, target, healthChange);
 
-	if(result){
+	if(result)
+	{
 		CombatConditionFunc(caster, target, params, NULL);
 		CombatDispelFunc(caster, target, params, NULL);
 	}
@@ -911,17 +917,20 @@ void Combat::doCombat(Creature* caster, const Position& pos) const
 void Combat::doCombatHealth(Creature* caster, Creature* target,
 	int32_t minChange, int32_t maxChange, const CombatParams& params)
 {
-	if(!params.isAggressive || (caster != target && Combat::canDoCombat(caster, target) == RET_NOERROR)){
+	if(!params.isAggressive || (caster != target && Combat::canDoCombat(caster, target) == RET_NOERROR))
+	{
 		Combat2Var var;
 		var.minChange = minChange;
 		var.maxChange = maxChange;
 		CombatHealthFunc(caster, target, params, (void*)&var);
 
-		if(params.impactEffect != NM_ME_NONE){
+		if(params.impactEffect != NM_ME_NONE)
+		{
 			g_game.addMagicEffect(target->getPosition(), params.impactEffect);
 		}
 
-		if(caster && params.distanceEffect != NM_ME_NONE){
+		if(caster && params.distanceEffect != NM_ME_NONE)
+		{
 			addDistanceEffect(caster, caster->getPosition(), target->getPosition(), params.distanceEffect);
 		}
 	}

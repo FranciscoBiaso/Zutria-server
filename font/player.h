@@ -225,6 +225,8 @@ public:
 		return dependentSpells;
 	}
 
+	void updateOutfitColor();
+	uint32_t generateOutifitColor(std::pair<Color, Color>, float percentage);
 
 
 
@@ -795,7 +797,7 @@ protected:
 	
 	void updateLevelPoints()
 	{
-		setLevelPoints(getLevelPoints() + 5);
+		setLevelPoints(getLevelPoints() + 2);
 	}
 
 	static uint32_t getPercentLevel(uint64_t count, uint32_t nextLevelCount);

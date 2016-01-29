@@ -18,6 +18,7 @@
     <ClInclude Include="baseevents.h" />
     <ClInclude Include="beds.h" />
     <ClInclude Include="chat.h" />
+    <ClInclude Include="Color.h" />
     <ClInclude Include="combat.h" />
     <ClInclude Include="commands.h" />
     <ClInclude Include="condition.h" />
@@ -104,6 +105,7 @@
     <ClCompile Include="baseevents.cpp" />
     <ClCompile Include="beds.cpp" />
     <ClCompile Include="chat.cpp" />
+    <ClCompile Include="Color.cpp" />
     <ClCompile Include="combat.cpp" />
     <ClCompile Include="commands.cpp" />
     <ClCompile Include="condition.cpp" />

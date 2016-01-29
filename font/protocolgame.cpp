@@ -1193,10 +1193,10 @@ void ProtocolGame::parseSetOutfit(NetworkMessage& msg)
 		lookType <= lastMaleOutfit))
 	{
 		newOutfit.lookType = lookType;
-		newOutfit.lookHead = msg.GetByte();
-		newOutfit.lookBody = msg.GetByte();
-		newOutfit.lookLegs = msg.GetByte();
-		newOutfit.lookFeet = msg.GetByte();
+		newOutfit.lookHead = msg.GetU32();
+		newOutfit.lookBody = msg.GetU32();
+		newOutfit.lookLegs = msg.GetU32();
+		newOutfit.lookFeet = msg.GetU32();
 	}
     
     addGameTask(&Game::playerChangeOutfit, player->getID(), newOutfit);
@@ -2154,8 +2154,9 @@ void ProtocolGame::sendAddCreature(const Creature* creature, bool isLogin)
 					{
 						tempstring = "Welcome to ";
 						tempstring += g_config.getString(ConfigManager::SERVER_NAME);
-						tempstring += ". Please choose an outfit.";
-						sendOutfitWindow(player);
+						tempstring += ".";
+						//tempstring += ". Please choose an outfit.";
+						//sendOutfitWindow(player);
 					}
 				}
 
@@ -2728,11 +2729,12 @@ void ProtocolGame::AddCreatureOutfit(NetworkMessage_ptr msg, const Creature* cre
 	msg->AddByte(outfit.lookType);
 #endif // __PROTOCOL_77__
 
-	if(outfit.lookType != 0){
-		msg->AddByte(outfit.lookHead);
-		msg->AddByte(outfit.lookBody);
-		msg->AddByte(outfit.lookLegs);
-		msg->AddByte(outfit.lookFeet);
+	if(outfit.lookType != 0)
+	{
+		msg->AddU32(outfit.lookHead);
+		msg->AddU32(outfit.lookBody);
+		msg->AddU32(outfit.lookLegs);
+		msg->AddU32(outfit.lookFeet);
 	}
 	else{
 		msg->AddItemId(outfit.lookTypeEx);

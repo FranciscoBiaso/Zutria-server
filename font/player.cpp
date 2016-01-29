@@ -346,13 +346,14 @@ Item* Player::getWeapon(bool ignoreAmmu /*= false*/)
 {
 	Item* item;
 
-	for(uint32_t slot = SLOT_RIGHT; slot <= SLOT_LEFT; slot++){
+	for(uint32_t slot = SLOT_RIGHT; slot <= SLOT_LEFT; slot++)
+	{
 		item = getInventoryItem((slots_t)slot);
-		if(!item){
-			continue;
-		}
+		if(!item) 
+			continue;		
 
-		switch(item->getWeaponType()){
+		switch(item->getWeaponType())
+		{
 			case WEAPON_SWORD:
 			case WEAPON_AXE:
 			case WEAPON_CLUB:
@@ -506,10 +507,10 @@ int32_t Player::getDefense() const
 float Player::getAttackFactor() const
 {
 	switch(fightMode){
-		case FIGHTMODE_ATTACK:	return 1.0f;
-		case FIGHTMODE_BALANCED: return 1.2f;
-		case FIGHTMODE_DEFENSE: return 2.0f;
-		default: return 1.0f;
+		case FIGHTMODE_ATTACK:	return 0.3f;  // increments 30% of attack
+		case FIGHTMODE_BALANCED: return 0.2f; // increments 20% of attack
+		case FIGHTMODE_DEFENSE: return 0.1f;  // increments 10% of attack
+		default: return 0.2f;
 	}
 }
 
@@ -1839,6 +1840,44 @@ bool Player::hasShield() const
 	return result;
 }
 
+
+void Player::updateOutfitColor()
+{
+	float countPoints = 0;
+	int attributeMaxValue = 0;
+	int indeceAttrMaxValue = 0;
+	for (int i = 0; i < 12; i++)
+	{
+		uint16_t attributeValue = getSkillValue(i);
+		if (attributeMaxValue < attributeValue)
+		{
+			attributeMaxValue = attributeValue;
+			indeceAttrMaxValue = i;
+		}
+		countPoints += attributeValue;
+	}
+
+	float percentageOfAttributeMaxPerTotalAttributes = attributeMaxValue / 100.0f;
+	currentOutfit.lookHead = generateOutifitColor(_player_::outfitAttributeColors[indeceAttrMaxValue], percentageOfAttributeMaxPerTotalAttributes);
+	currentOutfit.lookBody = generateOutifitColor(_player_::outfitAttributeColors[indeceAttrMaxValue], percentageOfAttributeMaxPerTotalAttributes);
+	currentOutfit.lookLegs = generateOutifitColor(_player_::outfitAttributeColors[indeceAttrMaxValue], percentageOfAttributeMaxPerTotalAttributes);
+	currentOutfit.lookFeet = generateOutifitColor(_player_::outfitAttributeColors[indeceAttrMaxValue], percentageOfAttributeMaxPerTotalAttributes);
+}
+
+
+uint32_t Player::generateOutifitColor(std::pair<Color, Color> minMaxColor, float percentage)
+{
+	uint8_t difRed, difGreen, difBlue, difAlpha;
+	difRed = minMaxColor.second.r - minMaxColor.first.r;
+	difGreen = minMaxColor.second.g - minMaxColor.first.g;
+	difBlue = minMaxColor.second.b - minMaxColor.first.b;
+	difAlpha = minMaxColor.second.a - minMaxColor.first.a;
+	return uint32_t((minMaxColor.first.r + (uint8_t)(percentage * difRed)) << 24 |
+		   (minMaxColor.first.g + (uint8_t)(percentage * difGreen)) << 16 |
+		   (minMaxColor.first.b + (uint8_t)(percentage * difBlue)) << 8 |
+		   (minMaxColor.first.a + (uint8_t)(percentage * difAlpha)) << 0);
+}
+
 BlockType_t Player::blockHit(Creature* attacker, CombatType_t combatType, int32_t& damage, 
 							 bool checkDefense /* = false*/, bool checkArmor /* = false*/) 
 { 
@@ -3030,17 +3069,20 @@ void Player::onAttacking(uint32_t interval)
 
 void Player::doAttacking(uint32_t interval)
 {
-	if(lastAttack == 0){
+	if(lastAttack == 0)
+		lastAttack = OTSYS_TIME() - getAttackSpeed() - 1; 
 		// - 1 to compensate for timer resolution etc.
-		lastAttack = OTSYS_TIME() - getAttackSpeed() - 1;
-	}
 
-	if((OTSYS_TIME() - lastAttack) >= getAttackSpeed() ){
+
+	if((OTSYS_TIME() - lastAttack) >= getAttackSpeed() )
+	{
 		Item* tool = getWeapon();
 		bool result = false;
 		const Weapon* weapon = g_weapons->getWeapon(tool);
-		if(weapon){
-			if(!weapon->interruptSwing()){
+		if(weapon)
+		{
+			if(!weapon->interruptSwing())
+			{
 				result = weapon->useWeapon(this, tool, attackedCreature);
 			}
 			else if(!canDoAction()){
@@ -3049,17 +3091,21 @@ void Player::doAttacking(uint32_t interval)
 					&g_game, getID()));
 				setNextActionTask(task);
 			}
-			else {
-                if (!weapon->hasExhaustion()) {
+			else 
+			{
+                if (!weapon->hasExhaustion()) 
+				{
 					result = weapon->useWeapon(this, tool, attackedCreature);
 				}
 			}
 		}
-		else{
+		else
+		{
 			result = Weapon::useFist(this, attackedCreature);
 		}
 
-		if(result){
+		if(result)
+		{
 			lastAttack = OTSYS_TIME();
 		}
 	}

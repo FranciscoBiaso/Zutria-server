@@ -3153,8 +3153,15 @@ bool Game::playerAddSkillPoint(uint32_t playerId, uint8_t skillId)
 			player->sendStats();
 		if (skillId == PLAYER_SKILL_MAGIC_POINTS)
 			player->setUnusedMagicPoints(player->getUnusedMagicPoints() + 1);		
+		if (skillId == skillsID::PLAYER_SKILL_SPEED)
+		{
+			player->setBaseSpeed(player->getBaseSpeed() + 1);
+			changeSpeed(player, 0);
+		}
 			
 		player->sendSkills();
+		player->updateOutfitColor();
+		player->sendCreatureChangeOutfit(player, player->getCurrentOutfit());
 	}
 	return true;
 }
@@ -3785,14 +3792,16 @@ void Game::changeLight(const Creature* creature)
 bool Game::combatBlockHit(CombatType_t combatType, Creature* attacker, Creature* target,
 	int32_t& healthChange, bool checkDefense, bool checkArmor)
 {
-	if(healthChange > 0){
+	if(healthChange > 0)
+	{
 		return false;
 	}
 
 	const Position& targetPos = target->getPosition();
 	const SpectatorVec& list = getSpectators(targetPos);
 
-	if(!target->isAttackable() || Combat::canDoCombat(attacker, target) != RET_NOERROR){
+	if(!target->isAttackable() || Combat::canDoCombat(attacker, target) != RET_NOERROR)
+	{
 		addMagicEffect(list, targetPos, NM_ME_PUFF);
 		return true;
 	}

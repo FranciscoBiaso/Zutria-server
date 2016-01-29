@@ -438,26 +438,42 @@ bool Weapon::useWeapon(Player* player, Item* item, Creature* target) const
 
 bool Weapon::useFist(Player* player, Creature* target)
 {
-	/*const Position& playerPos = player->getPosition();
+	const Position& playerPos = player->getPosition();
 	const Position& targetPos = target->getPosition();
 
-	if(Position::areInRange<1,1>(playerPos, targetPos)){
+	if(Position::areInRange<1,1>(playerPos, targetPos))
+	{
 		float attackFactor = player->getAttackFactor();
-		int32_t attackSkill = player->getSkill(SKILL_FIST, SKILL_LEVEL);
-		int32_t attackValue = 7;
+		float playerPhysicalAttack = player->getSkillValue(skillsID::PLAYER_SKILL_PHYSICAL_ATTACK);
 
-		int32_t maxDamage = Weapons::getMaxMeleeWeaponDamage(attackSkill, attackValue, attackFactor);
-		int32_t damage = -random_range(0, maxDamage, DISTRO_NORMAL);
+		
+		int32_t minDamage = playerPhysicalAttack / 4.0 + playerPhysicalAttack * attackFactor;
+		int32_t maxDamage = playerPhysicalAttack / 2.0 + playerPhysicalAttack * attackFactor;
+
+		//max damage can be +- 20%
+		int firstNumber = std::rand() % 10; // 0 to 9
+		int secondNumber = std::rand() % 3; // 0 to 2
+		float percentage = firstNumber;
+		percentage /= 10;
+		percentage += secondNumber;
+		percentage /= 10;
+
+		//50% change to change value
+		if (firstNumber <= 4)
+			percentage *= -1;
+
+		maxDamage += maxDamage * percentage;
 
 		CombatParams params;
 		params.combatType = COMBAT_PHYSICALDAMAGE;
 		params.blockedByArmor = true;
 		params.blockedByShield = true;
-		Combat::doCombatHealth(player, target, damage, damage, params);
+
+		Combat::doCombatHealth(player, target, maxDamage * -1, minDamage * -1, params);
 
 		return true;
 	}
-*/
+
 	return false;
 }
 
