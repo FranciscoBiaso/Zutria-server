@@ -349,8 +349,8 @@ public:
 
 
 	bool isPzLocked() const { return pzLocked; }
-	virtual BlockType_t blockHit(Creature* attacker, CombatType_t combatType, int32_t& damage,
-		bool checkDefense = false, bool checkArmor = false);
+	virtual int blockHit(Creature* attacker, CombatType_t combatType, int32_t& damage,
+		bool checkDefense = false, bool checkArmor = false, float * missPorcentage = nullptr);
 	virtual void doAttacking(uint32_t interval);
 	virtual bool hasExtraSwing() {return lastAttack > 0 && ((OTSYS_TIME() - lastAttack) >= getAttackSpeed());}
 	virtual void drainHealth(Creature* attacker, CombatType_t combatType, int32_t damage);
@@ -595,6 +595,20 @@ public:
 	bool hasDependentSpellsPurchased(const std::string& name) const;
 	void stopWalk();
 
+
+	//-- spells functions --//
+
+	//+ add a player spell inside a spells list
+	void addSpell(unsigned char spellId, unsigned char level)
+	{
+		m_spells.push_back(std::make_pair(spellId, level));
+	}
+
+	//+ get the spells list
+	std::list<std::pair<unsigned char, unsigned char>> getSpells(void) const
+	{
+		return m_spells;
+	}
 	
 
 	VIPListSet VIPList;
@@ -716,8 +730,8 @@ protected:
 	uint32_t lastip;
 
 	//inventory variables
-	Item* inventory[11];
-	bool inventoryAbilities[11];
+	Item* inventory[16];
+	bool inventoryAbilities[16];
 
 	//player advances variables
 	uint32_t skills[12];
@@ -825,6 +839,7 @@ protected:
 	//count of magic points to use in the spell tree
 	uint16_t m_unusedMagicPoints;
 	double m_skills[NUMBER_OF_SKILLS];
+	std::list<std::pair<unsigned char, unsigned char>> m_spells;
 };
 
 #endif //__PLAYER_H__

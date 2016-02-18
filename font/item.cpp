@@ -94,11 +94,11 @@ Item* Item::CreateItem(PropStream& propStream)
 	}
 	const ItemType& iType = Item::items[_id];
 	uint8_t _count = 0;
-
 	if(iType.stackable || iType.isSplash() || iType.isFluidContainer()){
 		if(!propStream.GET_UINT8(_count)){
 			return NULL;
 		}
+
 	}
 
 	return Item::CreateItem(_id, _count);
@@ -264,7 +264,7 @@ Attr_ReadValue Item::readAttr(AttrTypes_t attr, PropStream& propStream)
 		case ATTR_COUNT:
 		{
 			uint8_t _count = 0;
-			if(!propStream.GET_UINT8(_count)){
+			if (!propStream.GET_UINT8(_count)){
 				return ATTR_READ_ERROR;
 			}
 
@@ -440,7 +440,7 @@ Attr_ReadValue Item::readAttr(AttrTypes_t attr, PropStream& propStream)
 		}
 
 		default:
-			std::cout << "attr=" << attr <<"\n";
+			std::cout << "attribute =" << attr <<"\n";
 			return ATTR_READ_ERROR;
 	}
 
@@ -650,13 +650,13 @@ std::string Item::getDescription(const ItemType& it, int32_t lookDistance,
 	else if(it.weaponType != WEAPON_NONE){
 		if(it.weaponType == WEAPON_DIST && it.amuType != AMMO_NONE){
 			if(it.attack != 0){
-				s << ", Atk" << std::showpos << it.attack << std::noshowpos;
+				s << ", Atq" << std::showpos << it.attack << std::noshowpos;
 			}
 		}
 		else if(it.weaponType != WEAPON_AMMO && it.weaponType != WEAPON_WAND){ // Arrows and Bolts doesn't show atk
 			s << " (";
 			if(it.attack != 0){
-				s << "Atk:" << (int)it.attack;
+				s << "Atq:" << (int)it.attack;
 			}
 
 			if(it.defense != 0){
@@ -811,7 +811,18 @@ std::string Item::getDescription(const ItemType& it, int32_t lookDistance,
 		s << std::endl << item->getSpecialDescription().c_str();
 	}
 	else if(it.description.length() && lookDistance <= 1){
-		s << std::endl << it.description;
+		int count = 0;
+		while (count < it.description.size() - 1)
+		{
+			if (count % 35 == 0)
+			{
+				s << std::endl << it.description[count];
+			}	
+			else
+				s << it.description[count];
+			count++;
+		}
+		s << ".";
 	}
 
 	return s.str();
@@ -866,10 +877,10 @@ std::string Item::getWeightDescription(const ItemType& it, double weight, uint32
 {
 	std::stringstream ss;
 	if(it.stackable && count > 1){
-		ss << "They weigh " << std::fixed << std::setprecision(2) << weight << " oz.";
+		ss << "Pesam " << std::fixed << std::setprecision(2) << weight << " izes.";
 	}
 	else{
-		ss << "It weighs " << std::fixed << std::setprecision(2) << weight << " oz.";
+		ss << "Pesa " << std::fixed << std::setprecision(2) << weight << " izes.";
 	}
 	return ss.str();
 }

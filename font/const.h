@@ -282,8 +282,8 @@ enum item_t {
 	ITEM_ROLL             = 2690,
 	ITEM_CHEESE           = 2696,
 
-	ITEM_FULLSPLASH       = 511,
-	ITEM_SMALLSPLASH      = 511,
+	ITEM_FULLSPLASH       = 2233,
+	ITEM_SMALLSPLASH      = 2234,
 
 	ITEM_PARCEL           = 2595,
 	ITEM_PARCEL_STAMPED   = 2596,

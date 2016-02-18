@@ -2120,10 +2120,11 @@ void ProtocolGame::sendAddCreature(const Creature* creature, bool isLogin)
 				AddInventoryItem(msg, SLOT_LEGS, player->getInventoryItem(SLOT_LEGS));
 				AddInventoryItem(msg, SLOT_FEET, player->getInventoryItem(SLOT_FEET));
 				AddInventoryItem(msg, SLOT_RING, player->getInventoryItem(SLOT_RING));
-				AddInventoryItem(msg, SLOT_AMMO, player->getInventoryItem(SLOT_AMMO));
-
-				AddPlayerFirstStats(msg);
+				//AddInventoryItem(msg, SLOT_AMMO, player->getInventoryItem(SLOT_AMMO));
+				player->updateInventoryWeigth();
 				AddPlayerSkills(msg);
+				AddPlayerFirstStats(msg);
+				AddPlayerTreeSpells(msg);
 
 				//gameworld light-settings
 				LightInfo lightInfo;
@@ -2609,13 +2610,30 @@ void ProtocolGame::AddPlayerFirstStats(NetworkMessage_ptr msg)
 	// all player status
 	msg->AddU16(player->getHealth());
 	msg->AddU16(player->getMana());
-	msg->AddU32(player->getFreeCapacity());
+	msg->AddU32(player->getFreeCapacity()/100);
 	msg->AddU32(player->getExperience());
 	msg->AddU16(player->getPlayerInfo(PLAYERINFO_LEVEL));
 	msg->AddByte(player->getPlayerInfo(PLAYERINFO_LEVELPERCENT));
 	msg->AddU16(player->getBaseSpeed());
 	msg->AddU16(player->getMaxHealth());
 	msg->AddU16(player->getMaxMana());
+}
+
+void ProtocolGame::AddPlayerTreeSpells(NetworkMessage_ptr msg)
+{
+	// connection protocol 0xFC = 252
+	msg->AddByte(0xFC);
+	//sending player spells
+	std::list<std::pair<unsigned char, unsigned char>> spells = player->getSpells();
+	//number of spells
+	msg->AddByte(spells.size());
+	for (auto i = spells.begin(); i != spells.end(); i++)
+	{
+		//spell id
+		msg->AddByte((*i).first);
+		//spell level
+		msg->AddByte((*i).second);
+	}
 }
 
 void ProtocolGame::AddPlayerSkills(NetworkMessage_ptr msg)

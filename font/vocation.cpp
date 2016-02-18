@@ -193,7 +193,7 @@ bool Vocations::getVocationId(const std::string& name, int32_t& vocationId) cons
 
 Vocation::Vocation()
 {
-	name = "none";
+	name = "nenhuma";
 	gainHealthTicks = 6;
 	gainHealthAmount = 1;
 	gainManaTicks = 6;

@@ -3227,7 +3227,7 @@ int LuaScriptInterface::luaDoPlayerAddItemEx(lua_State *L) // fix me
 	//doPlayerAddItemEx(cid, uid, <optional: default: false> canDropOnMap, <optional> slot)
 	int32_t parameters = lua_gettop(L);
 
-	uint32_t slot = SLOT_WHEREEVER;
+	uint32_t slot = 0;
 	if(parameters > 3){
 		slot = popNumber(L);
 		if(slot >= SLOT_LAST){ //depot is not a real slot, it IS >=

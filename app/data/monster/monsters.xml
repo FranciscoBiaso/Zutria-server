@@ -2,4 +2,6 @@
 <monsters>
 
 	<monster name="Anão guerreiro" file="anão guerreiro.xml"/>
+	<monster name="besta" file="besta.xml"/>
+	<monster name="cobra" file="cobra.xml"/>
 </monsters>

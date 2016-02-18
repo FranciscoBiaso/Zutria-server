@@ -332,7 +332,6 @@ bool IOMapOTBM::loadMap(Map* map, const std::string& identifier)
 
 							PropStream propStream;
 							f.getProps(nodeItem, propStream);
-							
 							Item* item = Item::CreateItem(propStream);
 							if(!item){
 								std::stringstream ss;

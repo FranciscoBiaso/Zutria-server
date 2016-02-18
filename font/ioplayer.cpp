@@ -212,11 +212,12 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 		db->freeResult(result);
 	}
 	query.str("");
-	query << "SELECT `name` FROM `player_spells` WHERE `player_id` = " << player->getGUID();
+	query << "SELECT `spell_id`, `level` FROM `player_spells` WHERE `player_id` = " << player->getGUID();
 	if((result = db->storeQuery(query.str()))){
 		do{
-			std::string spellName = result->getDataString("name");
-			player->learnedInstantSpellList.push_back(std::make_pair(spellName,0));
+			unsigned char spellid= result->getDataInt("spell_id");
+			unsigned char level = result->getDataInt("level");
+			player->addSpell(spellid, level);
 		}while(result->next());
 
 		db->freeResult(result);

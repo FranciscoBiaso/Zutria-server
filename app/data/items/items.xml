@@ -508,8 +508,35 @@
 		<attribute key="decayTo" value="0"/>
 		<attribute key="duration" value="120"/>
 	</item>
+  
+  <!-- corpo da besta  -->
+  <item id="2226" name="cadáver da besta">	
+		<attribute key="decayTo" value="2227"/>
+		<attribute key="duration" value="20"/>
+		<attribute key="containersize" value="12"/>
+	</item>
+  <item id="2227" name="cadáver da besta">	
+		<attribute key="decayTo" value="2228"/>
+		<attribute key="duration" value="20"/>
+		<attribute key="containersize" value="12"/>
+	</item>  
+  <item id="2228" name="cadáver da besta">	
+		<attribute key="decayTo" value="0"/>
+		<attribute key="duration" value="20"/>
+		<attribute key="containersize" value="12"/>
+	</item>
+  
+  <!-- corpo da cobra  -->
+  <item id="2231" name="cobra morta">	
+		<attribute key="decayTo" value="2232"/>
+		<attribute key="duration" value="20"/>
+	</item>
+  <item id="2232" name="cobra morta">	
+		<attribute key="decayTo" value="0"/>
+		<attribute key="duration" value="20"/>
+	</item>   
 	
-	<!-- corpo humano -->
+  <!-- corpo humano -->
 	<item id="515" name="cadáver do mago de fogo">	
 		<attribute key="decayTo" value="0"/>
 		<attribute key="duration" value="3000"/>
@@ -650,6 +677,116 @@
 			<attribute key="decayTo" value="0"/>
 			<attribute key="duration" value="5"/>
 	</item>
+  
+  <!-- items -->
+  <item id="2201" name="hachet">
+			<attribute key="name" value="machadinha"/>
+			<attribute key="attack" value="20"/>
+			<attribute key="article" value="a"/>
+			<attribute key="plural" value="machadsssinha"/>
+			<attribute key="description" value="machadsssinha"/>
+			<attribute key="weight" value="23"/>
+			<attribute key="slottype" value="hand"/>
+			<attribute key="weapontype" value="axe"/>
+	</item>
 	
-
-	</items>
+  <item id="2217" name="corrente bestial">    
+		<attribute key="weight" value="3800" />
+	</item>
+  
+  <item id="2218" name="chifre bestial">    
+		<attribute key="weight" value="3800" />
+	</item>
+  
+  <item id="2219" name="capa bestial">    
+		<attribute key="weight" value="3800" />
+		<attribute key="slotType" value="cape" />
+	</item>
+  
+  <item id="2220" name="clava valorosa bestial">    
+		<attribute key="weight" value="3800" />
+		<attribute key="defense" value="11" />
+		<attribute key="attack" value="16" />
+		<attribute key="weaponType" value="club" />
+	</item>
+  
+  <item id="2221" name="colar bestial">    
+		<attribute key="weight" value="300" />
+		<attribute key="slotType" value="necklace" />
+	</item>
+  
+  <item id="2222" name="mochila bestial">    
+		<attribute key="weight" value="1500" />
+		<attribute key="containerSize" value="24" />
+		<attribute key="slotType" value="backpack" />
+	</item>
+  
+  <item id="2223" name="cinto bestial">    
+		<attribute key="weight" value="1500" />
+		<attribute key="containerSize" value="24" />
+		<attribute key="slotType" value="belt" />
+	</item>
+  
+  <item id="2224" name="bota bestial">    
+		<attribute key="armor" value="4" />
+		<attribute key="slotType" value="feet" />
+	</item>
+  
+  <item id="2225" name="couro de besta"> 
+		<attribute key="weight" value="1500" />   
+	</item>
+  
+  <item id="2229" name="moedas de ouro">    
+		<attribute key="weight" value="3800" />
+	</item>
+  
+  <item id="2230" name="moedas de prata">    
+		<attribute key="weight" value="3800" />
+	</item>
+  
+  <item id="2236" name="moedas de prata">    
+		<attribute key="weight" value="3800" />
+		<attribute key="slotType" value="necklace" />
+	</item>
+  
+  <item id="2237" name="moedas de prata">    
+		<attribute key="weight" value="3800" />
+		<attribute key="slotType" value="ring" />
+	</item>
+  
+  <item id="2238" name="moedas de prata">    
+		<attribute key="weight" value="3800" />
+		<attribute key="slotType" value="belt" />
+	</item>
+  
+  <item id="2239" name="moedas de prata">    
+		<attribute key="weight" value="3800" />
+		<attribute key="slotType" value="bracelet" />
+	</item>
+  
+  <item id="2240" name="moedas de prata">    
+		<attribute key="weight" value="3800" />
+		<attribute key="slotType" value="legs" />
+	</item>
+  
+  <item id="2241" name="moedas de prata">    
+		<attribute key="weight" value="3800" />
+	</item>
+  
+  <!-- sangue vermelho -->
+	<item id="2233" name="sangue">	
+		<attribute key="decayTo" value="2234"/>
+		<attribute key="duration" value="12"/>
+	</item>
+  
+	<item id="2234" name="sangue">	
+		<attribute key="decayTo" value="2235"/>
+		<attribute key="duration" value="12"/>
+	</item>
+  
+  <item id="2235" name="sangue">	
+		<attribute key="decayTo" value="0"/>
+		<attribute key="duration" value="12"/>
+	</item>
+    
+</items>

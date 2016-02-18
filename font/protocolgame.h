@@ -253,6 +253,7 @@ private:
 	void AddCreature(NetworkMessage_ptr msg,const Creature* creature, bool known, uint32_t remove);
 	void AddPlayerStats(NetworkMessage_ptr msg);
 	void AddPlayerFirstStats(NetworkMessage_ptr msg);
+	void AddPlayerTreeSpells(NetworkMessage_ptr msg);
 	void AddCreatureSpeak(NetworkMessage_ptr msg, const Creature* creature, SpeakClasses type, std::string text, uint16_t channelId, uint32_t time = 0);
 	void AddCreatureHealth(NetworkMessage_ptr msg,const Creature* creature);
 	void AddCreatureOutfit(NetworkMessage_ptr msg, const Creature* creature, const Outfit_t& outfit);

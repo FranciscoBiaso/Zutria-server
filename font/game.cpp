@@ -2933,43 +2933,71 @@ bool Game::internalCloseTrade(Player* player)
 bool Game::playerLookAt(uint32_t playerId, const Position& pos, uint16_t spriteId, uint8_t stackPos)
 {
 	Player* player = getPlayerByID(playerId);
-	if(!player || player->isRemoved())
+	if (!player || player->isRemoved())
 		return false;
 
 	Thing* thing = internalGetThing(player, pos, stackPos, spriteId, STACKPOS_LOOK);
-	if(!thing){
+	if (!thing)
+	{
 		player->sendCancelMessage(RET_NOTPOSSIBLE);
 		return false;
 	}
 
 	Position thingPos = thing->getPosition();
-	if(!player->canSee(thingPos)){
+	if (!player->canSee(thingPos))
+	{
 		player->sendCancelMessage(RET_NOTPOSSIBLE);
 		return false;
 	}
 
 	Position playerPos = player->getPosition();
 
+	unsigned char thingType = 0x00;
 	int32_t lookDistance = 0;
-	if(thing == player)
+
+	if (thing == player)
+	{
 		lookDistance = -1;
-	else{
+	}
+	else
+	{
 		lookDistance = std::max(std::abs(playerPos.x - thingPos.x), std::abs(playerPos.y - thingPos.y));
-		if(playerPos.z != thingPos.z)
+		if (playerPos.z != thingPos.z)
 			lookDistance = lookDistance + 9 + 6;
 	}
 
 	uint16_t itemId = 0;
-	if(thing->getItem())
+	if (thing->getItem())
+	{
 		itemId = thing->getItem()->getID();
-	if(!player->onLookEvent(thing, itemId))
+	}
+
+	uint16_t id = 0;
+	if (thing->getCreature())
+	{
+		if (thing->getCreature()->getPlayer())
+			thingType = 0x01;
+		else
+		{
+			thingType = 0x02;
+			id = thing->getCreature()->getID();
+		}
+	}
+	else
+	{
+		thingType = 0x03;
+		id = itemId;
+	}
+
+	if (!player->onLookEvent(thing, itemId))
 		return true;
 
-	std::stringstream ss;
-	ss << "You see " << thing->getDescription(lookDistance);
 
+	std::stringstream ss;
+	ss << (int)thingType << "#" << id << "#" << thing->getDescription(lookDistance);
+	
 	//x-ray (special description)
-	if(player->hasFlag(PlayerFlag_CanSeeSpecialDescription)){
+	if (player->hasFlag(PlayerFlag_CanSeeSpecialDescription)){
 		ss << std::endl;
 		ss << thing->getXRayDescription();
 	}
@@ -3146,9 +3174,10 @@ bool Game::playerAddSkillPoint(uint32_t playerId, uint8_t skillId)
 
 	if (player->getLevelPoints() > 0)
 	{
-		player->setSkillValue(skillId,player->getSkillValue(skillId) + 1);
-		
 		player->setLevelPoints(player->getLevelPoints() - 1);
+		player->setSkillValue(skillId,player->getSkillValue(skillId) + 1);
+		player->sendSkills();
+
 		if (skillId == PLAYER_SKILL_CAPACITY)
 			player->sendStats();
 		if (skillId == PLAYER_SKILL_MAGIC_POINTS)
@@ -3158,8 +3187,11 @@ bool Game::playerAddSkillPoint(uint32_t playerId, uint8_t skillId)
 			player->setBaseSpeed(player->getBaseSpeed() + 1);
 			changeSpeed(player, 0);
 		}
+		if (skillId == skillsID::PLAYER_SKILL_HEALTH_POINTS)
+		{
+			player->sendCreatureHealth(player);
+		}
 			
-		player->sendSkills();
 		player->updateOutfitColor();
 		player->sendCreatureChangeOutfit(player, player->getCurrentOutfit());
 	}
@@ -3813,11 +3845,11 @@ bool Game::combatBlockHit(CombatType_t combatType, Creature* attacker, Creature*
 
 
 
-	//if(blockType & BLOCK_DEFENSE)
-	//{
-	//	addMagicEffect(list, targetPos, NM_ME_PUFF);
-	//	return true;
-	//}
+	if(blockType & BLOCK_DEFENSE)
+	{
+		addMagicEffect(list, targetPos, NM_ME_PUFF);
+		return true;
+	}
 	if (blockType & BLOCK_AVOIDANCE)
 	{
 		addAnimatedText(targetPos, TEXTCOLOR_LIGHTGREY, "miss " + std::to_string(missPorcentage));

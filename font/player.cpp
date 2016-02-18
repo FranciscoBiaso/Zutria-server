@@ -127,7 +127,7 @@ Creature()
 	actionTaskEvent = 0;
 	nextStepEvent = 0;
 
-	for(int32_t i = 0; i < 11; i++){
+	for(int32_t i = 0; i < SLOT_LAST; i++){
 		inventory[i] = NULL;
 		inventoryAbilities[i] = false;
 	}
@@ -186,7 +186,7 @@ Creature()
 
 Player::~Player()
 {
-	for(int i = 0; i < 11; i++){
+	for(int i = 0; i < SLOT_LAST; i++){
 		if(inventory[i]){
 			inventory[i]->setParent(NULL);
 			inventory[i]->releaseThing2();
@@ -227,6 +227,7 @@ bool Player::setVocation(uint32_t vocId)
 		condition->setParam(CONDITIONPARAM_MANATICKS, vocation->getManaGainTicks() * 1000);
 	}
 
+	m_spells.clear();
 	return true;
 }
 
@@ -252,7 +253,6 @@ std::string Player::getDescription(int32_t lookDistance) const
 	std::string str;
 
 	if(lookDistance == -1){
-		s << "você.";
 
 		if(hasFlag(PlayerFlag_ShowGroupInsteadOfVocation))
 			s << " Você é " << getGroupName() << ".";
@@ -1878,10 +1878,10 @@ uint32_t Player::generateOutifitColor(std::pair<Color, Color> minMaxColor, float
 		   (minMaxColor.first.a + (uint8_t)(percentage * difAlpha)) << 0);
 }
 
-BlockType_t Player::blockHit(Creature* attacker, CombatType_t combatType, int32_t& damage, 
-							 bool checkDefense /* = false*/, bool checkArmor /* = false*/) 
+int Player::blockHit(Creature* attacker, CombatType_t combatType, int32_t& damage, 
+	bool checkDefense /* = false*/, bool checkArmor /* = false*/, float * missPorcentage)
 { 
-	BlockType_t blockType = (BlockType_t)Creature::blockHit(attacker, combatType, damage, checkDefense, checkArmor);
+	int blockType = Creature::blockHit(attacker, combatType, damage, checkDefense, checkArmor,missPorcentage);
 
 	if(attacker) 
 		sendCreatureSquare(attacker, SQ_COLOR_BLACK); 
@@ -1892,7 +1892,8 @@ BlockType_t Player::blockHit(Creature* attacker, CombatType_t combatType, int32_
 	if (damage != 0) { 
 		//reduce damage against inventory items 
 		Item* item = NULL; 
-		for (int32_t slot = SLOT_FIRST; slot < SLOT_LAST; ++slot) {
+		/*for (int32_t slot = SLOT_FIRST; slot < SLOT_LAST; ++slot) 
+		{
 			if(!(item = getEquippedItem((slots_t)slot)))
 				continue; 
 
@@ -1904,7 +1905,7 @@ BlockType_t Player::blockHit(Creature* attacker, CombatType_t combatType, int32_
 					g_game.transformItem(item, item->getID(), charges - 1); 
 			} 
 		}
-
+*/
 		if (damage <= 0) { 
 			damage = 0; 
 			blockType = BLOCK_DEFENSE; 
@@ -2340,7 +2341,11 @@ ReturnValue Player::__queryAdd(int32_t index, const Thing* thing, uint32_t count
 		(item->getSlotPosition() & SLOTP_ARMOR) ||
 		(item->getSlotPosition() & SLOTP_LEGS) ||
 		(item->getSlotPosition() & SLOTP_FEET) ||
-		(item->getSlotPosition() & SLOTP_RING)){
+		(item->getSlotPosition() & SLOTP_RING) ||
+		(item->getSlotPosition() & SLOTP_CAPE) ||
+		(item->getSlotPosition() & SLOTP_BAG) ||
+		(item->getSlotPosition() & SLOTP_BRACELET) ||
+		(item->getSlotPosition() & SLOTP_BELT)){
 		ret = RET_CANNOTBEDRESSED;
 	}
 	else if(item->getSlotPosition() & SLOTP_TWO_HAND){
@@ -2351,7 +2356,7 @@ ReturnValue Player::__queryAdd(int32_t index, const Thing* thing, uint32_t count
 	}
 
 	//check if we can dress this object
-	switch(index){
+	switch (index){
 		case SLOT_HEAD:
 			if(item->getSlotPosition() & SLOTP_HEAD)
 				ret = RET_NOERROR;
@@ -2457,19 +2462,36 @@ ReturnValue Player::__queryAdd(int32_t index, const Thing* thing, uint32_t count
 				ret = RET_NOERROR;
 			break;
 		case SLOT_FEET:
-			if(item->getSlotPosition() & SLOTP_FEET)
+			if (item->getSlotPosition() & SLOTP_FEET)
 				ret = RET_NOERROR;
 			break;
 		case SLOT_RING:
 			if(item->getSlotPosition() & SLOTP_RING)
 				ret = RET_NOERROR;
 			break;
-		case SLOT_AMMO:
+		/*case SLOT_AMMO:
 			if(item->getSlotPosition() & SLOTP_AMMO)
 				ret = RET_NOERROR;
+			break;*/
+		case SLOT_BELT:
+			if (item->getSlotPosition() & SLOTP_BELT)
+				ret = RET_NOERROR;
 			break;
-		case SLOT_WHEREEVER:
-			ret = RET_NOTENOUGHROOM;
+		case SLOT_ROBE:
+			if (item->getSlotPosition() & SLOTP_CAPE)
+				ret = RET_NOERROR;
+			break;
+		case SLOT_BRACELET:
+			if (item->getSlotPosition() & SLOTP_BRACELET)
+				ret = RET_NOERROR;
+			break;
+		case SLOT_BAG:
+			if (item->getSlotPosition() & SLOTP_BAG)
+				ret = RET_NOERROR;
+			break; 
+		case SLOT_EXTRA:
+			if (item->getSlotPosition() & SLOTP_EXTRA)
+				ret = RET_NOERROR;
 			break;
 		case -1:
 			ret = RET_NOTENOUGHROOM;
@@ -2647,7 +2669,7 @@ void Player::__addThing(Thing* thing)
 
 void Player::__addThing(int32_t index, Thing* thing)
 {
-	if(index < 0 || index > 11){
+	if(index < 0 || index > SLOT_LAST){
 #ifdef __DEBUG__MOVESYS__
 		std::cout << "Failure: [Player::__addThing], " << "player: " << getName() << ", index: " << index << ", index < 0 || index > 11" << std::endl;
 		DEBUG_REPORT
@@ -2717,7 +2739,7 @@ void Player::__updateThing(Thing* thing, uint16_t itemId, uint32_t count)
 
 void Player::__replaceThing(uint32_t index, Thing* thing)
 {
-	if(index < 0 || index > 11){
+	if(index < 0 || index > SLOT_LAST){
 #ifdef __DEBUG__MOVESYS__
 		std::cout << "Failure: [Player::__replaceThing], " << "player: " << getName() << ", index: " << index << ",  index < 0 || index > 11" << std::endl;
 		DEBUG_REPORT
@@ -2997,7 +3019,7 @@ void Player::__internalAddThing(uint32_t index, Thing* thing)
 		return;
 	}
 
-	if(index > 0 && index < 11){
+	if(index > 0 && index < SLOT_LAST){
 		if(inventory[index]){
 #ifdef __DEBUG__MOVESYS__
 			std::cout << "Warning: [Player::__internalAddThing], player: " << getName() << ", items[index] is not empty." << std::endl;

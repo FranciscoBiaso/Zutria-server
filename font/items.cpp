@@ -78,7 +78,7 @@ ItemType::ItemType()
 	weight        = 0;  // weight of the item, e.g. throwing distance depends on it
 	showCount     = true;
 	weaponType    = WEAPON_NONE;
-	slot_position = SLOTP_RIGHT | SLOTP_LEFT | SLOTP_AMMO;
+	slot_position = SLOTP_RIGHT | SLOTP_LEFT;
 	wield_position= SLOT_HAND;
 	amuType       = AMMO_NONE;
 	ammoAction    = AMMOACTION_NONE;
@@ -692,6 +692,25 @@ bool Items::loadFromXml(const std::string& datadir)
 									}
 									else if(asLowerCaseString(strValue) == "ammo"){
 										it.wield_position = SLOT_AMMO;
+									}
+									else if (asLowerCaseString(strValue) == "belt"){
+										it.slot_position |= SLOTP_BELT;
+										it.wield_position = SLOT_BELT;
+									}
+									else if (asLowerCaseString(strValue) == "cape"){
+										it.slot_position |= SLOTP_CAPE;
+										it.wield_position = SLOT_ROBE;
+									}
+									else if (asLowerCaseString(strValue) == "bracelet"){
+										it.slot_position |= SLOTP_BRACELET;
+										it.wield_position = SLOT_BRACELET;
+									}
+									else if (asLowerCaseString(strValue) == "bag"){
+										it.slot_position |= SLOTP_BAG;
+										it.wield_position = SLOT_BAG;
+									}
+									else if (asLowerCaseString(strValue) == "extra"){
+										it.wield_position = SLOT_EXTRA;
 									}
 									else{
 										std::cout << "Warning: [Items::loadFromXml] " << "Unknown slotType " << strValue  << std::endl;

@@ -224,8 +224,13 @@ MoveEvent* MoveEvents::getEvent(Item* item, MoveEvent_t eventType, slots_t slot)
 		case SLOT_LEFT: slotp = SLOTP_LEFT; break;
 		case SLOT_LEGS: slotp = SLOTP_LEGS; break;
 		case SLOT_FEET: slotp = SLOTP_FEET; break;
-		case SLOT_AMMO: slotp = SLOTP_AMMO; break;
+		//case SLOT_AMMO: slotp = SLOTP_AMMO; break;
 		case SLOT_RING: slotp = SLOTP_RING; break;
+		case SLOT_BELT: slotp = SLOTP_BELT; break;
+		case SLOT_ROBE: slotp = SLOTP_CAPE; break;
+		case SLOT_BRACELET: slotp = SLOTP_BRACELET; break;
+		case SLOT_BAG: slotp = SLOTP_BAG; break;
+		case SLOT_EXTRA: slotp = SLOTP_EXTRA; break;
 		default: slotp = 0; break;
 	}
 
@@ -609,6 +614,21 @@ bool MoveEvent::configureEvent(xmlNodePtr p)
 				}
 				else if(asLowerCaseString(str) == "ammo"){
 					slot = SLOTP_AMMO;
+				}
+				else if (asLowerCaseString(str) == "belt"){
+					slot = SLOTP_BELT;
+				}
+				else if (asLowerCaseString(str) == "cape"){
+					slot = SLOTP_CAPE;
+				}
+				else if (asLowerCaseString(str) == "bag"){
+					slot = SLOTP_BAG;
+				}
+				else if (asLowerCaseString(str) == "extra"){
+					slot = SLOTP_EXTRA;
+				}
+				else if (asLowerCaseString(str) == "bracelet"){
+					slot = SLOTP_BRACELET;
 				}
 				else{
 					std::cout << "Warning: [MoveEvent::configureMoveEvent] " << "Unknown slot type " << str << std::endl;

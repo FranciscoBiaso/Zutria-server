@@ -42,6 +42,11 @@
 #define	SLOTP_AMMO 512
 #define	SLOTP_DEPOT 1024
 #define	SLOTP_TWO_HAND 2048
+#define	SLOTP_BELT 4096
+#define	SLOTP_CAPE 8192
+#define	SLOTP_BRACELET 16384
+#define	SLOTP_BAG 32768
+#define	SLOTP_EXTRA 65536
 
 enum ItemTypes_t {
 	ITEM_TYPE_NONE = 0,
