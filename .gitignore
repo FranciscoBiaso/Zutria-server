@@ -1,7 +1,7 @@
+*.sdf
 *.obj
 *.tlog
 *.log
 *.pdb
 *.suo
-*.sdf
 *.filters
