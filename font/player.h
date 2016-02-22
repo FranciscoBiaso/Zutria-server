@@ -545,8 +545,8 @@ public:
 		{if(client) client->sendTextWindow(windowTextId, itemId, text);}
 	void sendToChannel(Creature* creature, SpeakClasses type, const std::string& text, uint16_t channelId, uint32_t time = 0) const
 		{if(client) client->sendToChannel(creature, type, text, channelId, time);}
-	void sendSpellLearned(std::string spellName, int level)
-		{ if (client) client->sendSpellLearned(spellName,level); }
+	void sendSpellLearned(unsigned char spellId, unsigned char spellLevel)
+		{ if (client) client->sendSpellLearned(spellId,spellLevel); }
 	
 	
 	
@@ -591,7 +591,7 @@ public:
 	bool canDoAction() const {return nextAction <= OTSYS_TIME();}
 	
 	void learnInstantSpell(const std::string& name, int level);
-	bool hasLearnedInstantSpell(const std::string& name, int level = -1) const;
+	bool hasLearnedInstantSpell(uint8_t spellId) const;
 	bool hasDependentSpellsPurchased(const std::string& name) const;
 	void stopWalk();
 
@@ -608,6 +608,14 @@ public:
 	std::list<std::pair<unsigned char, unsigned char>> getSpells(void) const
 	{
 		return m_spells;
+	}
+
+	unsigned char getSpellLevel(uint8_t spellId)
+	{
+		for (auto it = m_spells.begin(); it != m_spells.end(); it++)
+			if (std::get<0>(*it) == spellId)
+				return std::get<1>(*it);
+		return 0;
 	}
 	
 

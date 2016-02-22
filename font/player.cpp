@@ -1745,11 +1745,11 @@ void Player::addExperience(uint64_t exp)
 	if (levelUp)
 	{
 		level = currentLevel;
-		g_game.changeSpeed(this, 0);
+		//g_game.changeSpeed(this, 0);
 		g_game.addCreatureHealth(this);
 
 		std::stringstream levelMsg;
-		levelMsg << "Você avançou do level " << oldLevel << " para o level " << currentLevel << ".";
+		levelMsg << "Você alcançou o nível " << currentLevel << "!";
 		sendTextMessage(MSG_EVENT_LEVELUP, levelMsg.str());
 
 		//scripting event - onAdvance
@@ -2520,8 +2520,13 @@ ReturnValue Player::__queryAdd(int32_t index, const Thing* thing, uint32_t count
 		}
 
 		//check if enough capacity
-		if(hasCapacity(item, count))
+		if (hasCapacity(item, count))
+		{
+			float freeCapBytotalCap = const_cast<Player*>(this)->getFreeCapacity() / const_cast<Player*>(this)->getCapacity();
+			const_cast<Player*>(this)->setBaseSpeed(const_cast<Player*>(this)->getBaseSpeed() * freeCapBytotalCap);
+			g_game.changeSpeed(const_cast<Player*>(this), 0);
 			return ret;
+		}
 		else
 			return RET_NOTENOUGHCAPACITY;
 	}
@@ -3750,32 +3755,25 @@ void Player::setSex(PlayerSex_t playerSex)
 
 void Player::learnInstantSpell(const std::string& name, int level)
 {
-	if(!hasLearnedInstantSpell(name, level))
-		learnedInstantSpellList.push_back(std::make_pair(name, level));
+	/*if(!hasLearnedInstantSpell(name, level))
+		learnedInstantSpellList.push_back(std::make_pair(name, level));*/
 }
 
-bool Player::hasLearnedInstantSpell(const std::string& name, int level /* level = -1 */) const
+bool Player::hasLearnedInstantSpell(uint8_t spellId) const
 {
-	std::pair<std::string, int> spellToFind = std::make_pair(name, level);
-	for (LearnedInstantSpellList::const_iterator it = learnedInstantSpellList.begin(); it != learnedInstantSpellList.end(); ++it)
-		if (level != -1)
-		{
-			if ((*it).first == name && (*it).second == level)
-				return true;			
-		}
-		else
-			if ((*it).first == name)
-				return true;
+	for (auto it = m_spells.begin(); it != m_spells.end(); ++it)
+		if (spellId == (*it).first)
+			return true;
 
 	return false;
 }
 
 bool Player::hasDependentSpellsPurchased(const std::string& spellName) const
 {
-	std::vector<std::string> dependentSpells = getDependentSpells(spellName);
+	/*std::vector<std::string> dependentSpells = getDependentSpells(spellName);
 	for (int i = 0; i < dependentSpells.size();i++)
 		if (!hasLearnedInstantSpell(dependentSpells[i]))
-			return false;
+			return false;*/
 	return true;
 }
 

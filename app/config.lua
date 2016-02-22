@@ -19,10 +19,10 @@
     WorldType = "pvp"
 
     -- Exhausted time in ms (1000 = 1 second) for yelling
-    Exhausted = 1000
+    Exhausted = 2000
 
     -- Exhausted time in ms (1000 = 1 second) for aggressive spells/weapons
-    FightExhausted = 2000
+    FightExhausted = 3000
 
     -- Exhausted time in ms (1000 = 1 second) for none-aggressive spells/weapons
     HealExhausted = 1000

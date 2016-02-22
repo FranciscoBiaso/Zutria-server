@@ -3198,7 +3198,7 @@ bool Game::playerAddSkillPoint(uint32_t playerId, uint8_t skillId)
 	return true;
 }
 
-bool Game::playerAddSpellLevel(uint32_t playerId, std::string spellName, int spellLevel)
+bool Game::playerAddSpellLevel(uint32_t playerId, uint8_t spellId)
 {
 
 	//get player
@@ -3207,25 +3207,25 @@ bool Game::playerAddSpellLevel(uint32_t playerId, std::string spellName, int spe
 	if (!player || player->isRemoved())
 		return false;
 	//The player already has this spell?
-	if (!player->hasLearnedInstantSpell(spellName,spellLevel))
+	if (!player->hasLearnedInstantSpell(spellId))
 	{
-		if (!player->hasDependentSpellsPurchased(spellName))
-			return false;
-		int spellCountMagicPoints = player->getCountOfSpellMagicPoints(spellName, spellLevel);
+		/*if (!player->hasDependentSpellsPurchased(spellName))
+			return false;*/
+		//int spellCountMagicPoints = player->getCountOfSpellMagicPoints(spellName, spellLevel);
 		//This is spell exists in this level?
-		if (!spellCountMagicPoints)
-			return false;
+		/*if (!spellCountMagicPoints)
+			return false;*/
 		//create a spellTree object for inspect count of magic points
 		//He has magic points to learn the spell?
-		if ((player->getUnusedMagicPoints() - spellCountMagicPoints) >= 0)
-		{
-			player->setUnusedMagicPoints(player->getUnusedMagicPoints() - player->getCountOfSpellMagicPoints(spellName, spellLevel));
-			player->sendSkills();
+		/*if ((player->getUnusedMagicPoints() - spellCountMagicPoints) >= 0)
+		{*/
+			//player->setUnusedMagicPoints(player->getUnusedMagicPoints() - player->getCountOfSpellMagicPoints(spellName, spellLevel));
+			//player->sendSkills();
 			//learn spell and send to client for update spell tree
-			player->learnInstantSpell(spellName,spellLevel);
-			player->sendSpellLearned(spellName, spellLevel);
-			return true;
-		}		
+			//player->learnInstantSpell(spellName,spellLevel);
+		player->sendSpellLearned(spellId, player->getSpellLevel(spellId));
+		return true;
+		//}		
 	}
 	
 	return false;
@@ -3398,7 +3398,8 @@ bool Game::playerSaySpell(Player* player, SpeakClasses type, const std::string& 
 	TalkActionResult_t result;
 	result = g_spells->playerSaySpell(player, type, text);
 	if(result == TALKACTION_BREAK){
-		return internalCreatureSay(player, SPEAK_SAY, text);
+		return true;
+		//return internalCreatureSay(player, SPEAK_SAY, text);
 	}
 	else if(result == TALKACTION_FAILED){
 		return true;

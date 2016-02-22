@@ -1,7 +1,4 @@
 <?xml version="1.0"?>
 <spawns>
-	<spawn centerx="779" centery="851" centerz="7" radius="1">
-		<monster name="cobra" x="-1" y="-1" z="7" spawntime="58" />
-		<monster name="cobra" x="0" y="-1" z="7" spawntime="58" />
-	</spawn>
+	<spawn centerx="778" centery="857" centerz="7" radius="5" />
 </spawns>

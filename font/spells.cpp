@@ -725,11 +725,11 @@ bool Spell::playerSpellCheck(Player* player) const
 #endif // __PROTOCOL_76__
 
 		if(isInstant() && isLearnable()){
-			if(!player->hasLearnedInstantSpell(getName(), 0)){
+			/*if(!player->hasLearnedInstantSpell(get)){
 				player->sendCancelMessage(RET_YOUNEEDTOLEARNTHISSPELL);
 				g_game.addMagicEffect(player->getPosition(), NM_ME_PUFF);
 				return false;
-			}
+			}*/
 		}
 		else{
 			if(!vocSpellMap.empty()){
@@ -1777,9 +1777,9 @@ bool InstantSpell::canCast(const Player* player) const
 	}
 
 	if(isLearnable()){
-		if(player->hasLearnedInstantSpell(getName(), 0)){
+		//if(player->hasLearnedInstantSpell(getName(), 0)){
 			return true;
-		}
+		//}
 	}
 	else{
 		if(vocSpellMap.empty() || vocSpellMap.find(player->getVocationId()) != vocSpellMap.end()){

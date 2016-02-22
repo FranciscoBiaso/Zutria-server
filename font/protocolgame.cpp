@@ -799,7 +799,7 @@ void ProtocolGame::parsePacket(NetworkMessage &msg)
 		parseAddSkillButtonClick(msg);
 		break;
 
-	case 0xFB: // 251 add Spell Level point
+	case 0xFB: // 251 try to add Spell Level point
 		parseAddSpellLevelButtonClick(msg);
 		break;
 
@@ -1437,10 +1437,9 @@ void ProtocolGame::parseAddSkillButtonClick(NetworkMessage& msg)
 
 void ProtocolGame::parseAddSpellLevelButtonClick(NetworkMessage& msg)
 {
-	uint32_t creatureId = msg.GetU32();
-	std::string spellName = msg.GetString();
-	uint8_t spellLevel = msg.GetByte();
-	addGameTask(&Game::playerAddSpellLevel, player->getID(), spellName, spellLevel);
+	uint8_t spellId = msg.GetByte();
+
+	addGameTask(&Game::playerAddSpellLevel, player->getID(), spellId);
 }
 
 void ProtocolGame::parseRequestTrade(NetworkMessage& msg)
@@ -1955,12 +1954,12 @@ void ProtocolGame::sendSkills()
 	}
 }
 
-void ProtocolGame::sendSpellLearned(std::string spellName, int level)
+void ProtocolGame::sendSpellLearned(unsigned char spellId, unsigned char spellLevel)
 {
 	NetworkMessage_ptr msg = getOutputBuffer();
 	if (msg){
 		TRACK_MESSAGE(msg);
-		AddSpellLearned(msg, spellName, level);
+		AddSpellLearned(msg, spellId, spellLevel);
 	}
 }
 
@@ -2657,11 +2656,11 @@ void ProtocolGame::AddPlayerSkills(NetworkMessage_ptr msg)
 	msg->AddByte(player->getUnusedMagicPoints());
 }
 
-void ProtocolGame::AddSpellLearned(NetworkMessage_ptr msg, std::string spellName, int spellLevel)
+void ProtocolGame::AddSpellLearned(NetworkMessage_ptr msg, unsigned char spellId, unsigned char spellLevel)
 {
-	// conection protocol 0xFC -- decimal = 252
-	msg->AddByte(0xFC);
-	msg->AddString(spellName);
+	// conection protocol 0xFD -- decimal = 253
+	msg->AddByte(0xFD);
+	msg->AddByte(spellId);
 	msg->AddByte(spellLevel);
 }
 
