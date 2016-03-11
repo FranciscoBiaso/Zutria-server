@@ -41,6 +41,15 @@ extern Monsters g_monsters;
 extern Vocations g_vocations;
 extern ConfigManager g_config;
 
+int getSpellPoints(std::string spellName, int level)
+{
+	//level 1,2,3
+	if (level >= 0 && level < 3)
+		return _player_::g_spellsTree[spellName].magicLevels[level];
+	else
+		return 0;
+}
+
 Spells::Spells():
 m_scriptInterface("Spell Interface")
 {
@@ -354,16 +363,15 @@ bool CombatSpell::loadScriptCombat()
 
 bool CombatSpell::castSpell(Creature* creature)
 {
-	if(m_scripted){
+	if(m_scripted)
+	{
 		LuaVariant var;
 		var.type = VARIANT_POSITION;
 
-		if(needDirection){
-			var.pos = Spells::getCasterPosition(creature, creature->getDirection());
-		}
-		else{
-			var.pos = creature->getPosition();
-		}
+		if(needDirection)
+			var.pos = Spells::getCasterPosition(creature, creature->getDirection());	
+		else
+			var.pos = creature->getPosition();		
 
 		return executeCastSpell(creature, var);
 	}
@@ -383,96 +391,39 @@ bool CombatSpell::castSpell(Creature* creature)
 
 bool CombatSpell::castSpell(Creature* creature, Creature* target)
 {
-	if(m_scripted){
+	if(m_scripted)
+	{
 		LuaVariant var;
 
-		if(combat->hasArea()){
-			var.type = VARIANT_POSITION;
+		var.type = VARIANT_POSITION;
 
-			if(needTarget){
-				var.pos = target->getPosition();
-			}
-			else if(needDirection){
-				var.pos = Spells::getCasterPosition(creature, creature->getDirection());
-			}
-			else{
-				var.pos = creature->getPosition();
-			}
-		}
-		else{
-			var.type = VARIANT_NUMBER;
-			var.number = target->getID();
-		}
-		/*AreaCombat * areaCombat = new AreaCombat();
-		std::list<Tile*> tileList;
-		combat->getCombatArea(creature->getPosition(), var.pos, areaCombat, tileList);
-		
-
-		int32_t area[13][13] = {
-			{ 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0 },
-			{ 0, 0, 0, 0, 8, 8, 7, 8, 8, 0, 0, 0, 0 },
-			{ 0, 0, 0, 8, 7, 6, 6, 6, 7, 8, 0, 0, 0 },
-			{ 0, 0, 8, 7, 6, 5, 5, 5, 6, 7, 8, 0, 0 },
-			{ 0, 8, 7, 6, 5, 4, 4, 4, 5, 6, 7, 8, 0 },
-			{ 0, 8, 6, 5, 4, 3, 2, 3, 4, 5, 6, 8, 0 },
-			{ 8, 7, 6, 5, 4, 2, 1, 2, 4, 5, 6, 7, 8 },
-			{ 0, 8, 6, 5, 4, 3, 2, 3, 4, 5, 6, 8, 0 },
-			{ 0, 8, 7, 6, 5, 4, 4, 4, 5, 6, 7, 8, 0 },
-			{ 0, 0, 8, 7, 6, 5, 5, 5, 6, 7, 8, 0, 0 },
-			{ 0, 0, 0, 8, 7, 6, 6, 6, 7, 8, 0, 0, 0 },
-			{ 0, 0, 0, 0, 8, 8, 7, 8, 8, 0, 0, 0, 0 },
-			{ 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0 }
-		};
-
-		std::list<uint32_t> list;
-		uint32_t x, y = 0;
-		for (int32_t y = 0; y < 5; ++y){
-			for (int32_t x = 0; x < 5; ++x){
-				if (area[y][x] == 1){
-					list.push_back(3);
-				}
-				else if (area[y][x] > 0 && area[y][x] <= 3){
-					list.push_back(1);
-				}
-				else{
-					list.push_back(0);
-				}
-			}
-		}
-
-		areaCombat->setupArea(list, 5);
-
-		combat->setArea(areaCombat);*/
-
+		if(needTarget)
+			var.pos = target->getPosition();			
+		else if(needDirection)
+			var.pos = Spells::getCasterPosition(creature, creature->getDirection());			
+		else
+			var.pos = creature->getPosition();
+			
 		return executeCastSpell(creature, var);
 	}
-
-	if(combat->hasArea()){
-		if(needTarget){
+	if (combat->hasArea()){
+		if (needTarget)
 			combat->doCombat(creature, target->getPosition());
-		}
-		else{
+		else
 			return castSpell(creature);
-		}
 	}
 	else{
 		combat->doCombat(creature, target);
 	}
-
 	return true;
 }
 
 bool CombatSpell::executeCastSpell(Creature* creature, const LuaVariant& var)
 {
 	// onCastSpell(cid, var)
-	if(m_scriptInterface->reserveScriptEnv()){
+	if(m_scriptInterface->reserveScriptEnv())
+	{
 		ScriptEnviroment* env = m_scriptInterface->getScriptEnv();
-
-		#ifdef __DEBUG_LUASCRIPTS__
-		std::stringstream desc;
-		desc << "onCastSpell - " << creature->getName();
-		env->setEventDesc(desc.str());
-		#endif
 
 		env->setScriptId(m_scriptId, m_scriptInterface);
 		env->setRealPos(creature->getPosition());
@@ -490,7 +441,8 @@ bool CombatSpell::executeCastSpell(Creature* creature, const LuaVariant& var)
 
 		return result;
 	}
-	else{
+	else
+	{
 		std::cout << "[Error] Call stack overflow. CombatSpell::executeCastSpell" << std::endl;
 		return false;
 	}
@@ -1141,21 +1093,26 @@ bool InstantSpell::playerCastInstant(Player* player, const std::string& param)
 
 	LuaVariant var;
 
-	if(selfTarget){
+	if(selfTarget)//key -> use 
+	{
 		var.type = VARIANT_NUMBER;
 		var.number = player->getID();
 	}
-	else if(needTarget || casterTargetOrDirection){
+	else if(needTarget || casterTargetOrDirection)// It depends on the target
+	{
 		Creature* target = NULL;
 		bool useDirection = false;
 
-		if(hasParam){
+		if(hasParam)
+		{
 			Player* playerTarget = NULL;
 			ReturnValue ret = g_game.getPlayerByNameWildcard(param, playerTarget);
 			target = playerTarget;
 
-			if(!target || target->getHealth() <= 0){
-				if(!casterTargetOrDirection){
+			if(!target || target->getHealth() <= 0)
+			{
+				if(!casterTargetOrDirection)
+				{
 					player->sendCancelMessage(ret);//RET_PLAYERWITHTHISNAMEISNOTONLINE);
 					g_game.addMagicEffect(player->getPosition(), NM_ME_PUFF);
 					return false;
@@ -1196,29 +1153,26 @@ bool InstantSpell::playerCastInstant(Player* player, const std::string& param)
 			}
 		}
 	}
-	else if(hasParam){
+	else if(hasParam)
+	{
 		var.type = VARIANT_STRING;
 		var.text = param;
 	}
-	else{
+	else
+	{
 		var.type = VARIANT_POSITION;
-		if(needDirection){
-			var.pos = Spells::getCasterPosition(player, player->getDirection());
-		}
-		else{
+		if(needDirection)
+			var.pos = Spells::getCasterPosition(player, player->getDirection());		
+		else
 			var.pos = player->getPosition();
-		}
-
-		if(!playerInstantSpellCheck(player, var.pos)){
-			return false;
-		}
+		if(!playerInstantSpellCheck(player, var.pos))
+			return false;		
 	}
 
 	bool result = internalCastSpell(player, var);
 
-	if(result){
-		Spell::postCastSpell(player);
-	}
+	if(result)
+		Spell::postCastSpell(player);	
 
 	return result;
 }
@@ -1240,7 +1194,8 @@ bool InstantSpell::canThrowSpell(const Creature* creature, const Creature* targe
 bool InstantSpell::castSpell(Creature* creature)
 {
 	LuaVariant var;
-	if(casterTargetOrDirection){
+	if(casterTargetOrDirection)
+	{
 		Creature* target = creature->getAttackedCreature();
 
 		if(target && target->getHealth() > 0){
@@ -1284,14 +1239,11 @@ bool InstantSpell::internalCastSpell(Creature* creature, const LuaVariant& var)
 {
 	bool result = false;
 
-	if(m_scripted){
+	if(m_scripted)
 		result =  executeCastSpell(creature, var);
-	}
-	else{
-		if(function){
+	else
+		if(function)
 			result = function(this, creature, var.text);
-		}
-	}
 
 	return result;
 }

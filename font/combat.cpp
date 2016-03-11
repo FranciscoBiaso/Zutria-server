@@ -29,6 +29,7 @@
 #include "tools.h"
 #include "weapons.h"
 #include "spells.h"
+#include "graphicsmath.h"
 
 #include <sstream>
 
@@ -380,95 +381,7 @@ void Combat::setPlayerCombatValues(formulaType_t _type, double _mina, double _mi
 	maxb = _maxb;
 }
 
-bool Combat::setParam(CombatParam_t param, uint32_t value)
-{
-	switch(param){
-		case COMBATPARAM_COMBATTYPE:
-		{
-			params.combatType = (CombatType_t)value;
-			return true;
-		}
 
-		case COMBATPARAM_EFFECT:
-		{
-			params.impactEffect = (uint8_t)value;
-			return true;
-		}
-
-		case COMBATPARAM_DISTANCEEFFECT:
-		{
-			params.distanceEffect = (uint8_t)value;
-			return true;
-		}
-
-		case COMBATPARAM_BLOCKEDBYARMOR:
-		{
-			params.blockedByArmor = (value != 0);
-			return true;
-		}
-
-		case COMBATPARAM_BLOCKEDBYSHIELD:
-		{
-			params.blockedByShield = (value != 0);
-			return true;
-		}
-
-		case COMBATPARAM_TARGETCASTERORTOPMOST:
-		{
-			params.targetCasterOrTopMost = (value != 0);
-			return true;
-		}
-
-		case COMBATPARAM_CREATEITEM:
-		{
-			params.itemId = value;
-			return true;
-		}
-
-		case COMBATPARAM_AGGRESSIVE:
-		{
-			params.isAggressive = (value != 0);
-			return true;
-		}
-
-		case COMBATPARAM_DISPEL:
-		{
-			params.dispelType = (ConditionType_t)value;
-			return true;
-		}
-		
-		case COMBATPARAM_USECHARGES:
-        {
-            params.useCharges = (value != 0);
-            return true;
-        }
-
-		case COMBATPARAM_HITEFFECT:
-		{
-			params.hitEffect = (MagicEffectClasses)value;
-			return true;
-		}
-
-		case COMBATPARAM_HITTEXTCOLOR:
-		{
-			params.hitTextColor = (TextColor_t)value;
-			return true;
-		}
-
-		case COMBATPARAM_MAGIC_WITH_INTERVALS:
-		{
-			params.magicWithIntervals = (bool)value;
-			return true;
-		}
-
-		default:
-		{
-			break;
-		}
-	}
-
-	return false;
-}
 
 bool Combat::setCallback(CallBackParam_t key)
 {
@@ -727,9 +640,8 @@ void Combat::CombatFunc(Creature* caster, const Position& pos,
 {
 	std::list<Tile*> tileList;
 
-	if(caster){
+	if(caster)
 		getCombatArea(caster->getPosition(), pos, area, tileList);
-	}
 	else{
 		getCombatArea(pos, pos, area, tileList);
 	}
@@ -799,27 +711,146 @@ void Combat::doCombat(Creature* caster, Creature* target) const
 {
 	//target combat callback function
 
-	if(params.combatType != COMBAT_NONE){
+	if(params.combatType != COMBAT_NONE)
+	{
 		int32_t minChange = 0;
 		int32_t maxChange = 0;
 		getMinMaxValues(caster, target, minChange, maxChange);
 
-		if(params.combatType != COMBAT_MANADRAIN){
+		if(params.combatType != COMBAT_MANADRAIN)
 			doCombatHealth(caster, target, minChange, maxChange, params);
-		}
-		else{
+		else
 			doCombatMana(caster, target, minChange, maxChange, params);
-		}
 	}
-	else{
+	else
 		doCombatDefault(caster, target, params);
-	}
 }
 
-void Combat::doCombat(Creature* caster, const Position& pos) const
+bool Combat::setParam(CombatParam_t param, float value)
+{
+	switch (param){
+		case COMBATPARAM_COMBATTYPE:
+		{
+			params.combatType = (CombatType_t)(int)value;
+			return true;
+		}
+
+		case COMBATPARAM_EFFECT:
+		{
+			params.impactEffect = (uint8_t)value;
+			return true;
+		}
+
+		case COMBATPARAM_DISTANCEEFFECT:
+		{
+			params.distanceEffect = (uint8_t)value;
+			return true;
+		}
+
+		case COMBATPARAM_BLOCKEDBYARMOR:
+		{
+			params.blockedByArmor = ((int)value != 0);
+			return true;
+		}
+
+		case COMBATPARAM_BLOCKEDBYSHIELD:
+		{
+			params.blockedByShield = ((int)value != 0);
+			return true;
+		}
+
+		case COMBATPARAM_TARGETCASTERORTOPMOST:
+		{
+			params.targetCasterOrTopMost = ((int)value != 0);
+			return true;
+		}
+
+		case COMBATPARAM_CREATEITEM:
+		{
+			params.itemId = value;
+			return true;
+		}
+
+		case COMBATPARAM_AGGRESSIVE:
+		{
+			params.isAggressive = ((int)value != 0);
+			return true;
+		}
+
+		case COMBATPARAM_DISPEL:
+		{
+			params.dispelType = (ConditionType_t)(int)value;
+			return true;
+		}
+
+		case COMBATPARAM_USECHARGES:
+		{
+			params.useCharges = (value != 0);
+			return true;
+		}
+
+		case COMBATPARAM_HITEFFECT:
+		{
+			params.hitEffect = (MagicEffectClasses)(int)value;
+			return true;
+		}
+
+		case COMBATPARAM_HITTEXTCOLOR:
+		{
+			params.hitTextColor = (TextColor_t)(int)value;
+			return true;
+		}
+
+		case COMBATPARAM_MAGIC_INTERVALS:
+		{
+			params.magicIntervals = value;
+			return true;
+		}
+
+		case COMBATPARAM_COORDINATE_SYSTEM:
+		{
+			params.coordinateSystem = (uint8_t)value;
+			return true;
+		}
+
+		case COMBATPARAM_DRAW_FUNCTION:
+		{
+			params.drawFunction = (uint8_t)value;
+			return true;
+		}
+
+		case COMBATPARAM_COEFFICIENT_A:
+		{
+			params.coefficientA = value;
+			return true;
+		}
+
+		case COMBATPARAM_COEFFICIENT_B:
+		{
+			params.coefficientB = value;
+			return true;
+		}
+
+		case COMBATPARAM_THETA:
+		{
+			params.tetha = value;
+			return true;
+		}
+
+		default:
+		{
+			break;
+		}
+	}
+
+	return false;
+}
+
+
+void Combat::doCombat(Creature* caster, const Position& pos)
 {
 	//area combat callback function
-	if(params.combatType != COMBAT_NONE)
+	if (params.combatType != COMBAT_NONE)
 	{
 		int32_t minChange = 0;
 		int32_t maxChange = 0;
@@ -827,91 +858,60 @@ void Combat::doCombat(Creature* caster, const Position& pos) const
 
 		if (params.combatType != COMBAT_MANADRAIN)
 		{
-			if (!params.magicWithIntervals)
+
+		}
+			
+		//check coordinateSystem
+		if (params.coordinateSystem == 1) // polar coordinate 
+		{
+			AreaCombat * areaCombat = new AreaCombat();
+			areaCombat->setupArea(1);
+
+			double x = -1, y = -1;
+			Position oldPosition;
+			Position newPosition;
+			Position casterPosition = caster->getPosition();
+			for (int theta = 0; theta <= params.tetha; theta += 1)
 			{
-				doCombatHealth(caster, pos, area, minChange, maxChange, params);
-			}
-			else
-			{
-				MatrixArea *  matrixArea = area->getArea(caster->getPosition(), pos);
-				Position positionCenter = matrixArea->getCenter();
-				Position positionMagic = caster->getPosition();
-				Direction dir = caster->getDirection();
-				AreaCombat * areaCombat = new AreaCombat();
-				areaCombat->setupArea(1);
-
-
-				std::list<Tile*> tileList;
-				area->getList(caster->getPosition(), pos, tileList);
-
-				int timeDelay = 50;
-
-				//for (int x = 0; x < matrixArea->getCols(); x++)
-				//	for (int y = 0; y < matrixArea->getRows(); y++)
-				//	{
-				//		if (matrixArea->getValue(x, y) != 0)
-				//		{
-				//			int deltax = 0;
-				//			int deltay = 0;
-				//			if (x < positionCenter.y)
-				//			{
-				//				deltax = positionCenter.y - x;
-				//				//if (dir == direction::north)
-				//				positionMagic.x -= deltax;
-				//			}
-				//			else if (x > positionCenter.y)
-				//			{
-				//				deltax = x - positionCenter.y;
-				//				positionMagic.x += deltax;
-				//			}
-
-				//			if (y < positionCenter.x)
-				//			{
-				//				deltay = positionCenter.x - y;
-				//				positionMagic.y -= deltay;
-				//			}
-				//			else if (y > positionCenter.x)
-				//			{
-
-				//				deltay = y - positionCenter.x;
-				//				positionMagic.y += deltay;
-				//			}
-
-				//			int max = deltay;
-				//			if (deltax > deltay)
-				//				max = deltax;
-				//			if (max == 0)
-				//			{
-				//				int time = 50;
-				//				max = 1;
-				//			}							
-				//			else
-				//				timeDelay = 100;
-				//			Scheduler::getScheduler().addEvent(createSchedulerTask(max * timeDelay, boost::bind(&Combat::doCombatHealth, caster, positionMagic,
-				//				areaCombat, minChange, maxChange, params)));
-				//		}
-				//		positionMagic = caster->getPosition();
-				//	}	
-				int max = 1;
-				while (!tileList.empty())
+				oldPosition.x = x + casterPosition.x;
+				oldPosition.y = y + casterPosition.y;
+				switch (params.drawFunction)
 				{
-					Tile *  t = tileList.back();
-					Scheduler::getScheduler().addEvent(createSchedulerTask(max * timeDelay, boost::bind(&Combat::doCombatHealth, caster, t->getPosition(),
+				case 0: //arquimedes spiral
+					polarFormula("arquimedesSpiral", theta * 3.141516 / 180.0, params.coefficientA, params.coefficientB, &x, &y);
+					break;
+				case 1: //fermat
+					polarFormula("fermatSpiral", theta * 3.141516 / 180.0, params.coefficientA, params.coefficientB, &x, &y);
+					break;
+
+				}
+				newPosition = Position(x + casterPosition.x, y + casterPosition.y, 0 + casterPosition.z);
+				if ((int)oldPosition.x != (int)newPosition.x || (int)oldPosition.y != (int)newPosition.y)
+				{
+					uint8_t dir = caster->getDirection();
+					Position distanceMagic;
+					if (dir == Direction::EAST)
+						distanceMagic = Position(3, 0, 0);
+					else if (dir == Direction::WEST)
+						distanceMagic = Position(-3, 0, 0);
+					else if (dir == Direction::NORTH)
+						distanceMagic = Position(0, -3, 0);
+					else if (dir == Direction::SOUTH)
+						distanceMagic = Position(0, 3, 0);
+
+
+					newPosition = newPosition + distanceMagic;
+					Scheduler::getScheduler().addEvent(createSchedulerTask(20 + theta * params.magicIntervals,
+						boost::bind(&Combat::doCombatHealth, caster,
+						newPosition,
 						areaCombat, minChange, maxChange, params)));
-					tileList.pop_back();
-					max++;
 				}
 			}
-			
-			
 		}
-		else{
-			doCombatMana(caster, pos, area, minChange, maxChange, params);
-		}
+		
 	}
-	else{
+	else
 		CombatFunc(caster, pos, area, params, CombatNullFunc, NULL);
-	}
 }
 
 void Combat::doCombatHealth(Creature* caster, Creature* target,
@@ -925,14 +925,10 @@ void Combat::doCombatHealth(Creature* caster, Creature* target,
 		CombatHealthFunc(caster, target, params, (void*)&var);
 
 		if(params.impactEffect != NM_ME_NONE)
-		{
 			g_game.addMagicEffect(target->getPosition(), params.impactEffect);
-		}
 
 		if(caster && params.distanceEffect != NM_ME_NONE)
-		{
 			addDistanceEffect(caster, caster->getPosition(), target->getPosition(), params.distanceEffect);
-		}
 	}
 }
 

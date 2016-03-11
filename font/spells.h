@@ -38,6 +38,8 @@ class Spell;
 typedef std::map<uint32_t, RuneSpell*> RunesMap;
 typedef std::map<std::string, InstantSpell*> InstantsMap;
 
+int getSpellPoints(std::string spellName, int level);
+
 class Spells : public BaseEvents
 {
 public:

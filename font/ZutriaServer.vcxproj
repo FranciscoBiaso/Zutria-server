@@ -35,6 +35,7 @@
     <ClInclude Include="databasesqlite.h" />
     <ClInclude Include="definitions.h" />
     <ClInclude Include="depot.h" />
+    <ClInclude Include="graphicsmath.h" />
     <ClInclude Include="enums.h" />
     <ClInclude Include="exception.h" />
     <ClInclude Include="fileloader.h" />
@@ -119,6 +120,7 @@
     <ClCompile Include="databasemysql.cpp" />
     <ClCompile Include="databasesqlite.cpp" />
     <ClCompile Include="depot.cpp" />
+    <ClCompile Include="graphicsmath.cpp" />
     <ClCompile Include="exception.cpp" />
     <ClCompile Include="fileloader.cpp" />
     <ClCompile Include="game.cpp" />

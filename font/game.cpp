@@ -3200,32 +3200,45 @@ bool Game::playerAddSkillPoint(uint32_t playerId, uint8_t skillId)
 
 bool Game::playerAddSpellLevel(uint32_t playerId, uint8_t spellId)
 {
+	uint16_t unusedPoints;
+	int spellPoints;
 
-	//get player
+	//get player by id
 	Player* player = getPlayerByID(playerId);
-	//a player exists?
+	//this player exists?
 	if (!player || player->isRemoved())
 		return false;
-	//The player already has this spell?
-	if (!player->hasLearnedInstantSpell(spellId))
+	//first of all get player unused points
+	unusedPoints = player->getUnusedMagicPoints();
+
+	//this player dont has the spell, so lets try to add
+	if (!player->hasSpell(spellId))
 	{
-		/*if (!player->hasDependentSpellsPurchased(spellName))
-			return false;*/
-		//int spellCountMagicPoints = player->getCountOfSpellMagicPoints(spellName, spellLevel);
-		//This is spell exists in this level?
-		/*if (!spellCountMagicPoints)
-			return false;*/
-		//create a spellTree object for inspect count of magic points
-		//He has magic points to learn the spell?
-		/*if ((player->getUnusedMagicPoints() - spellCountMagicPoints) >= 0)
-		{*/
-			//player->setUnusedMagicPoints(player->getUnusedMagicPoints() - player->getCountOfSpellMagicPoints(spellName, spellLevel));
-			//player->sendSkills();
-			//learn spell and send to client for update spell tree
-			//player->learnInstantSpell(spellName,spellLevel);
-		player->sendSpellLearned(spellId, player->getSpellLevel(spellId));
-		return true;
-		//}		
+		//get count points of first spell
+		spellPoints = getSpellPoints(_player_::g_map_table[spellId].first, 0);
+		//player may have this spell
+		if (unusedPoints >= spellPoints)
+		{
+			//update unused magic points
+			player->setUnusedMagicPoints(player->getUnusedMagicPoints() - spellPoints);
+			//update player spell list with the new spell			
+			player->addSpell(spellId, 0 /* first spell */); 
+			//update client
+			//update unused magic points
+			player->sendSkills();
+			//update new spell
+			player->sendSpellLearned(spellId, player->getSpellLevel(spellId));
+			player->sendTextMessage(MSG_GAMEWINDOW_GREEN, "Você adquiriu a magia: " + _player_::g_map_table[spellId].first + ".");
+		}
+		//can't has this spell, don't have enough points
+		else
+		{
+			player->sendTextMessage(MSG_STATUS_SMALL, "Você não tem pontos suficientes para adquirir a magia: " + _player_::g_map_table[spellId].first + ".");
+		}		
+		return true;		
+	}
+	else
+	{	
 	}
 	
 	return false;

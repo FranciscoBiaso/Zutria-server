@@ -3759,7 +3759,7 @@ void Player::learnInstantSpell(const std::string& name, int level)
 		learnedInstantSpellList.push_back(std::make_pair(name, level));*/
 }
 
-bool Player::hasLearnedInstantSpell(uint8_t spellId) const
+bool Player::hasSpell(uint8_t spellId) const
 {
 	for (auto it = m_spells.begin(); it != m_spells.end(); ++it)
 		if (spellId == (*it).first)

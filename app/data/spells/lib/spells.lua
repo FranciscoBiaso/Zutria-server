@@ -190,3 +190,15 @@ CORPSES = {
 
 -- This array contains all destroyable field items
 FIELDS = {1487,1488,1489,1490,1491,1492,1493,1494,1495,1496,1500,1501,1502,1503,1504}
+
+function arquimedesSpiral(tetha, a, b)
+  local e = 2.7182818284590452353602874
+  local r = a + b * tetha
+  return  r * math.cos(tetha), r * math.sin(tetha)
+end
+
+function fermatSpiral(tetha, a, b)
+  local e = 2.7182818284590452353602874
+  local r = tetha ^ (1/2)
+  return  r * math.cos(tetha), r * math.sin(tetha)
+end

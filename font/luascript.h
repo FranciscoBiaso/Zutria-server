@@ -329,6 +329,7 @@ public:
 	static void setFieldBool(lua_State *L, const char* index, bool val);
 	static bool getFieldBool(lua_State *L, const char *key);
 	static std::string escapeString(const std::string& string);
+	int getScriptEnvIndex(){ return m_scriptEnvIndex; }
 
 protected:
 	virtual bool closeState();
@@ -560,6 +561,7 @@ protected:
 	static int luaCreateCombatObject(lua_State *L);
 	static int luaCreateCombatArea(lua_State *L);
 	static int luaSetCombatArea(lua_State *L);
+	static int luaSetCombatLuaState(lua_State *L);
 	static int luaSetCombatCondition(lua_State *L);
 	static int luaSetCombatParam(lua_State *L);
 	static int luaCreateConditionObject(lua_State *L);
@@ -710,6 +712,7 @@ protected:
 
 	lua_State* m_luaState;
 	std::string m_lastLuaError;
+
 
 private:
 

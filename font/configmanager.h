@@ -125,7 +125,7 @@ public:
 		LAST_INTEGER_CONFIG /* this must be the last one */
 	};
 
-
+	lua_State * getLuaState(){ return L; }
 	bool loadFile(const std::string& _filename);
 	bool reload();
 

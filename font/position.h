@@ -111,6 +111,10 @@ public:
 	Position operator-(const Position p1){
 		return Position(x-p1.x, y-p1.y,z-p1.z);
 	}
+
+	Position operator+(const Position & p2){	
+		return Position(this->x + p2.x, this->y + p2.y, this->z + p2.z);
+	}
 };
 
 std::ostream& operator<<(std::ostream&, const Position&);

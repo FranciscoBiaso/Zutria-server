@@ -128,7 +128,7 @@
     WorldName = "Aldora"
 
     -- Server owner name
-    OwnerName = "Ferrus"
+    OwnerName = "itrus"
 
     -- Server owner email
     OwnerEmail = ""
@@ -137,7 +137,7 @@
     URL = ""
 
     -- Server location
-    Location = "Poland"
+    Location = "Brazil"
 
 
 ---- ITEM USAGE ----
@@ -186,7 +186,7 @@
 --- STATUS ---
 
     -- Message Of The Day box that you sometimes get before you choose characters)
-    MOTD = "Welcome to OTServ!"
+    MOTD = "Bem vindo ao universo zutria!"
     MOTD_Num = "1"
 
     -- Max number of players allowed
@@ -232,6 +232,5 @@
     -- ID of temple to which player will get teleported when his prem end out
     -- 0 to disable
     -- not tested
-    FACCTempleID = 0
-
+    FACCTempleID = 0   
  

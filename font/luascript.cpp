@@ -1708,6 +1708,9 @@ void LuaScriptInterface::registerFunctions()
 	//setCombatCallBack(combat, key, function_name)
 	lua_register(m_luaState, "setCombatCallback", LuaScriptInterface::luaSetCombatCallBack);
 
+	//
+	lua_register(m_luaState, "setCombatLuaState", LuaScriptInterface::luaSetCombatLuaState);
+
 	//setCombatFormula(combat, type, mina, minb, maxa, maxb)
 	lua_register(m_luaState, "setCombatFormula", LuaScriptInterface::luaSetCombatFormula);
 
@@ -5612,7 +5615,7 @@ int LuaScriptInterface::luaSetCombatCondition(lua_State *L)
 int LuaScriptInterface::luaSetCombatParam(lua_State *L)
 {
 	//setCombatParam(combat, key, value)
-	uint32_t value = popNumber(L, true);
+	float value = popFloatNumber(L);	
 	CombatParam_t key = (CombatParam_t)popNumber(L);
 	uint32_t combatId = popNumber(L);
 
@@ -5623,7 +5626,7 @@ int LuaScriptInterface::luaSetCombatParam(lua_State *L)
 		lua_pushboolean(L, false);
 		return 1;
 	}
-
+	
 	Combat* combat = env->getCombatObject(combatId);
 
 	if(combat){
@@ -5772,6 +5775,31 @@ int LuaScriptInterface::luaSetCombatCallBack(lua_State *L)
 	return 1;
 }
 
+int LuaScriptInterface::luaSetCombatLuaState(lua_State *L)
+{
+	//setCombatFormula(combat, type, mina, minb, maxa, maxb)
+	ScriptEnviroment* env = getScriptEnv();
+
+	if (env->getScriptId() != EVENT_ID_LOADING){
+		reportError(__FUNCTION__, "This function can only be used while loading the script.");
+		lua_pushboolean(L, false);
+		return 1;
+	}
+	
+	uint32_t combatId = popNumber(L);
+	Combat* combat = env->getCombatObject(combatId);
+
+	if (combat){
+		combat->setLuaState(env->getScriptInterface()->getLuaState());
+		lua_pushboolean(L, true);
+	}
+	else{
+		reportErrorFunc(getErrorDesc(LUA_ERROR_COMBAT_NOT_FOUND));
+		lua_pushboolean(L, false);
+	}
+	return 1;
+}
+
 int LuaScriptInterface::luaSetCombatFormula(lua_State *L)
 {
 	//setCombatFormula(combat, type, mina, minb, maxa, maxb)
@@ -5856,7 +5884,7 @@ int LuaScriptInterface::luaDoCombat(lua_State *L)
 		}
 	}
 
-	const Combat* combat = env->getCombatObject(combatId);
+	Combat* combat = env->getCombatObject(combatId);
 	if(!combat){
 		reportErrorFunc(getErrorDesc(LUA_ERROR_COMBAT_NOT_FOUND));
 		lua_pushboolean(L, false);
@@ -5874,7 +5902,8 @@ int LuaScriptInterface::luaDoCombat(lua_State *L)
 		{
 			Creature* target = g_game.getCreatureByID(var.number);
 
-			if(!target){
+			if(!target)
+			{
 				lua_pushboolean(L, false);
 				return 1;
 			}

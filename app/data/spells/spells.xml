@@ -9,13 +9,16 @@
 		<rune name="extractus blum" id="599" maglv="0" blocktype="all" charges="0" script="attack/fire/fire random explosion rune.lua" />
 	
 		<!-- instante spells -->
-		<instant name="Bola de fogo" words="Bola de fogo" maglv="0" mana="0" needtarget="1" customexhaust="2000" script="attack/fire/fireball.lua">
+		<instant name="bola de fogo" words="bola de fogo" maglv="0" mana="0" target="1" customexhaust="10" script="attack/fire/fireball.lua">
 			<vocation name="Mago de Fogo"/> <vocation name="Master Sorcerer"/>
 		</instant>
-		<instant name="Bola de fogo circular" words="extractum circlum" maglv="0" mana="0" seltarget="1"  customexhaust="1000" script="attack/fire/circular fireball.lua">
+		<instant name="espiral fogosa" words="espiral fogosa" maglv="0" mana="0" seltarget="1"  customexhaust="10" script="attack/fire/spiral fiery level 1.lua">
 			<vocation name="Mago de Fogo"/> <vocation name="Master Sorcerer"/>
     </instant>    
-		<instant name="Explosão de Bola de fogo" words="extractum explum" maglv="0" mana="0" seltarget="1"  customexhaust="1000" script="attack/fire/explosion fireball.lua">
+    <instant name="espiral fogosa lvl 2" words="espiral fogosa lvl 2" maglv="0" mana="0" seltarget="1"  customexhaust="10" script="attack/fire/spiral fiery level 2.lua">
+			<vocation name="Mago de Fogo"/> <vocation name="Master Sorcerer"/>
+    </instant> 
+		<instant name="espiral incendiária" words="espiral incendiária" maglv="0" mana="0" seltarget="1"  customexhaust="10" script="attack/fire/spiral incendiary.lua">
 			<vocation name="Mago de Fogo"/> <vocation name="Master Sorcerer"/>
     </instant> 	
 		<instant name="Explosão de Bola de fogo elevada" words="extractum expludum" maglv="0" mana="0" seltarget="1"  customexhaust="1000" script="attack/fire/great explosion fireball.lua">

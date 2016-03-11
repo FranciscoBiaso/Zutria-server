@@ -27,6 +27,7 @@
 #include "map.h"
 #include "baseevents.h"
 #include "otsystem.h"
+#include <typeinfo>
 
 #include <vector>
 
@@ -78,11 +79,16 @@ struct CombatParams{
 		condition = NULL;
 		dispelType = CONDITION_NONE;
 		useCharges = false;
-		magicWithIntervals = false;
+		magicIntervals = 20;
+		coordinateSystem = 0;
 
 		valueCallback = NULL;
 		tileCallback = NULL;
 		targetCallback = NULL;
+		coefficientA = 1;
+		coefficientA = 1;
+		tetha = 360;
+		drawFunction = 0;
 	}
 
 	const Condition* condition;
@@ -98,11 +104,16 @@ struct CombatParams{
 	uint8_t impactEffect;
 	uint8_t distanceEffect;
 	bool useCharges;
-	bool magicWithIntervals;
+	float magicIntervals;
+	uint8_t coordinateSystem; //0 cartesion - 1 polar
 
 	ValueCallback* valueCallback;
 	TileCallback* tileCallback;
 	TargetCallback* targetCallback;
+	float coefficientA;
+	float coefficientB;
+	float tetha;
+	uint8_t drawFunction; // 0 - arquimedes spiral, 
 };
 
 typedef bool (*COMBATFUNC)(Creature*, Creature*, const CombatParams&, void*);
@@ -299,12 +310,13 @@ public:
 	uint8_t effect);
 
 	void doCombat(Creature* caster, Creature* target) const;
-	void doCombat(Creature* caster, const Position& pos) const;
+	void doCombat(Creature* caster, const Position& pos);
 
 	bool setCallback(CallBackParam_t key);
 	CallBack* getCallback(CallBackParam_t key);
 
-	bool setParam(CombatParam_t param, uint32_t value);
+	bool setParam(CombatParam_t param, float value);
+	
 	void setArea(AreaCombat* _area)
     {
         if(area){
@@ -317,7 +329,7 @@ public:
 	void setCondition(const Condition* _condition) {params.condition = _condition;}
 	void setPlayerCombatValues(formulaType_t _type, double _mina, double _minb, double _maxa, double _maxb);
 	void postCombatEffects(Creature* caster, const Position& pos) const {Combat::postCombatEffects(caster, pos, params);}
-
+	void setLuaState(lua_State *L){ this->L = L; }
 protected:
 	static void doCombatDefault(Creature* caster, Creature* target, const CombatParams& params);
 
@@ -344,6 +356,23 @@ protected:
 	double maxb;
 
 	AreaCombat* area;
+	lua_State *L;
+
+	void polarFormula(const char * functionName, double tetha, double a, double b, double *x, double *y)
+	{
+		lua_getglobal(this->L, functionName);
+		lua_pushnumber(this->L, tetha);
+		lua_pushnumber(this->L, a);
+		lua_pushnumber(this->L, b);
+
+		if (lua_pcall(this->L, 3, 2, 0) != 0)
+			std::cout << "error running function `polarFormula':" << lua_tostring(L, -1) << std::endl;
+
+		*y = lua_tonumber(this->L, -1);
+		lua_pop(this->L, 1);
+		*x = lua_tonumber(this->L, -1);
+		lua_pop(this->L, 1);
+	}
 };
 
 class MagicField : public Item{

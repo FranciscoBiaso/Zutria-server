@@ -207,10 +207,6 @@ public:
 	House* getEditHouse(uint32_t& _windowTextId, uint32_t& _listId);
 	uint32_t getNextActionTime() const;
 	int getAvoindanceDefense(){ return getSkillValue(PLAYER_SKILL_AVOIDANCE); }
-	int getCountOfSpellMagicPoints(std::string spellName, int level)
-	{
-		return _player_::g_spellsTree[spellName].magicLevels[level];		
-	}
 
 	std::vector<std::string> getDependentSpells(std::string spellName) const
 	{
@@ -591,7 +587,7 @@ public:
 	bool canDoAction() const {return nextAction <= OTSYS_TIME();}
 	
 	void learnInstantSpell(const std::string& name, int level);
-	bool hasLearnedInstantSpell(uint8_t spellId) const;
+	bool hasSpell(uint8_t spellId) const;
 	bool hasDependentSpellsPurchased(const std::string& name) const;
 	void stopWalk();
 

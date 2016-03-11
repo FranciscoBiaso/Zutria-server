@@ -118,9 +118,10 @@ enum MessageClasses {
     MSG_INFO_DESCR                  = 0x16, //Green message in game window and in the console
     MSG_STATUS_SMALL                = 0x17, //White message at the bottom of the game window"
     MSG_STATUS_CONSOLE_BLUE         = 0x18, //Blue message in the console
-    MSG_STATUS_CONSOLE_RED          = 0x19, //Red message in the console
-
-	MSG_EVENT_LEVELUP				= 0x1A// level up
+    MSG_STATUS_CONSOLE_RED          = 0x19, //Red message in the console	
+	MSG_EVENT_LEVELUP				= 0x1A, //level up
+	MSG_GAMEWINDOW_GREEN            = 0x1B, //green message in the game window
+	MSG_GAMEWINDOW_ORANGE           = 0x1C, //orange message in the game window
 };
 
 enum FluidClasses {
@@ -383,6 +384,8 @@ namespace _player_{
 		}
 		spell(std::vector<int> magicLevels, std::string dependentSpell)
 		{
+			// 3 levels
+			this->magicLevels = std::vector<int>(3, 0);
 			this->magicLevels = magicLevels;;
 			this->dependentSpell = dependentSpell; //-1 no dependency
 		}
@@ -390,31 +393,21 @@ namespace _player_{
 	};
 
 	typedef std::pair<std::string, spell> spellPair;
+	
 	const spellPair g_map_table[] = {
-		spellPair("Bola de fogo", spell({ 15, 20 }, "no dependency")),
-		spellPair("Runa de bola de fogo", spell({ 18, 22 }, "Bola de fogo")),
-		spellPair("Explosão espiral de b.f.", spell({ 15, 20 }, "Bola de fogo")),
-		spellPair("Escudo de fogo", spell({ 15, 20 }, "Bola de fogo")),
-		spellPair("Grande explosão espiral de b.f.", spell({ 15, 20 }, "Explosão espiral de b.f.")),
-		spellPair("Runa de fogo vivo", spell({ 15, 20 }, "Teleporte de fogo")),
-		spellPair("Runa de meteoro de b.f.", spell({ 15, 20 }, "Grande explosão espiral de b.f.")),
-		spellPair("Teleporte de fogo", spell({ 15, 20 }, "Runa de bola de fogo")),
-		spellPair("Cuspe do dragão", spell({ 15, 20 }, "Escudo de fogo")),
-		spellPair("Onda de fogo", spell({ 15, 20 }, "Cuspe do dragão"))
+		spellPair("escudo infernal", spell({ 2, 4 }, "no dependency")),
+		spellPair("espiral fogosa", spell({ 18, 22 }, "Bola de fogo")),
+		spellPair("bola de fogo", spell({ 15, 20 }, "Bola de fogo")),
+		spellPair("espiral incendiária", spell({ 15, 20 }, "Bola de fogo")),
+		spellPair("runa de bolas de fogo", spell({ 15, 20 }, "Explosão espiral de b.f.")),
+		spellPair("teleporte de chamas", spell({ 15, 20 }, "Teleporte de fogo")),
+		spellPair("runa de fogo vivo", spell({ 15, 20 }, "Grande explosão espiral de b.f.")),
+		spellPair("chuva fogosa de meteoro", spell({ 15, 20 }, "Runa de bola de fogo")),
+		spellPair("cuspe do dragão", spell({ 15, 20 }, "Escudo de fogo")),
+		spellPair("rajada fogosa", spell({ 15, 20 }, "Cuspe do dragão"))
 	};
 
 	extern std::map<std::string, struct spell> g_spellsTree;
-	
-		/*{std::make_pair("Bola de fogo", spell({ 15, 20 }, "no dependency")),
-		{ "Runa de bola de fogo", spell({ 18, 22 }, "Bola de fogo") },
-		{ "Explosão espiral de b.f.", spell({ 15, 20 }, "Bola de fogo") },
-		{ "Escudo de fogo", spell({ 15, 20 }, "Bola de fogo") },
-		{ "Grande explosão espiral de b.f.", spell({ 15, 20 }, "Explosão espiral de b.f.") },
-		{ "Runa de fogo vivo", spell({ 15, 20 }, "Teleporte de fogo") },
-		{ "Runa de meteoro de b.f.", spell({ 15, 20 }, "Grande explosão espiral de b.f.") },
-		{ "Teleporte de fogo", spell({ 15, 20 }, "Runa de bola de fogo") },
-		{ "Cuspe do dragão", spell({ 15, 20 }, "Escudo de fogo") },
-		{ "Onda de fogo", spell({ 15, 20 }, "Cuspe do dragão") }*/
 
 	const std::pair<Color, Color> outfitAttributeColors[] =
 	{
@@ -434,7 +427,6 @@ namespace _player_{
 		std::make_pair(Color(100, 100, 0), Color(255, 255, 0))//avoidance
 	};
 };
-
 
 
 
