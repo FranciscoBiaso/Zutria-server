@@ -1,0 +1,22 @@
+DELIMITER $$
+
+CREATE TRIGGER `oncreate_players`
+AFTER INSERT
+ON `players`
+FOR EACH ROW
+BEGIN
+    INSERT INTO `player_skills` (`player_id`, `attribute`, `value`) VALUES (NEW.`id`, 0, 300);
+    INSERT INTO `player_skills` (`player_id`, `attribute`, `value`) VALUES (NEW.`id`, 1, 300);
+    INSERT INTO `player_skills` (`player_id`, `attribute`, `value`) VALUES (NEW.`id`, 2, 300);
+    INSERT INTO `player_skills` (`player_id`, `attribute`, `value`) VALUES (NEW.`id`, 3, 300);
+    INSERT INTO `player_skills` (`player_id`, `attribute`, `value`) VALUES (NEW.`id`, 4, 300);
+    INSERT INTO `player_skills` (`player_id`, `attribute`, `value`) VALUES (NEW.`id`, 5, 300);
+    INSERT INTO `player_skills` (`player_id`, `attribute`, `value`) VALUES (NEW.`id`, 6, 300);
+    INSERT INTO `player_skills` (`player_id`, `attribute`, `value`) VALUES (NEW.`id`, 7, 300);
+    INSERT INTO `player_skills` (`player_id`, `attribute`, `value`) VALUES (NEW.`id`, 8, 300);
+    INSERT INTO `player_skills` (`player_id`, `attribute`, `value`) VALUES (NEW.`id`, 9, 300);
+    INSERT INTO `player_skills` (`player_id`, `attribute`, `value`) VALUES (NEW.`id`, 10, 300);
+    INSERT INTO `player_skills` (`player_id`, `attribute`, `value`) VALUES (NEW.`id`, 11, 300);
+END $$
+
+DELIMITER ;

@@ -85,9 +85,9 @@ bool TalkActions::registerEvent(Event* event, xmlNodePtr p)
 	return true;
 }
 
-TalkActionResult_t TalkActions::onPlayerSpeak(Player* player, SpeakClasses type, const std::string& words)
+TalkActionResult_t TalkActions::onPlayerSpeak(Player* player, MessageClasses type, const std::string& words)
 {
-	if(type != SPEAK_SAY){
+	if(type != MSG_PLAYER_TALK){
 		return TALKACTION_CONTINUE;
 	}
 
@@ -142,7 +142,7 @@ TalkActionResult_t TalkActions::onPlayerSpeak(Player* player, SpeakClasses type,
 			bool ret = true;
 			if(player->getAccessLevel() < it->second->getAccessLevel()){
 				if(player->getAccessLevel() > 0){
-					player->sendTextMessage(MSG_STATUS_SMALL, "You can not execute this command.");
+					//player->sendTextMessage(msg_tar, "Você não pode usar este comando.");
 					ret = false;
 				}
 			}

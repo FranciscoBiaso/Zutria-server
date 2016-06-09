@@ -53,7 +53,7 @@ public:
 	bool addUser(Player* player);
 	bool removeUser(Player* player);
 	
-	bool talk(Player* fromPlayer, SpeakClasses type, const std::string& text, uint32_t time = 0);
+	bool talk(Player* fromPlayer, MessageClasses type, const std::string& text, uint32_t time = 0);
 	
 	const std::string& getName(){ return m_name; }
 	const uint16_t getId(){ return m_id; }
@@ -109,9 +109,9 @@ public:
 
 	uint16_t getFreePrivateChannelId();
 	bool isPrivateChannel(uint16_t channelId);
-	bool isMuteableChannel(uint16_t channelId, SpeakClasses type);
+	bool isMuteableChannel(uint16_t channelId, MessageClasses type);
 	
-	bool talkToChannel(Player* player, SpeakClasses type,
+	bool talkToChannel(Player* player, MessageClasses type,
 		const std::string& text, unsigned short channelId);	
 	
 	std::string getChannelName(Player* player, uint16_t channelId);	

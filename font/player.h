@@ -207,6 +207,8 @@ public:
 	House* getEditHouse(uint32_t& _windowTextId, uint32_t& _listId);
 	uint32_t getNextActionTime() const;
 	int getAvoindanceDefense(){ return getSkillValue(PLAYER_SKILL_AVOIDANCE); }
+	void setCurrentNpc(Npc * npc){ this->currentNpc = npc; }
+	Npc* getCurrentNpc() const { return this->currentNpc; }
 
 	std::vector<std::string> getDependentSpells(std::string spellName) const
 	{
@@ -221,10 +223,9 @@ public:
 		return dependentSpells;
 	}
 
-	void updateOutfitColor();
-	uint32_t generateOutifitColor(std::pair<Color, Color>, float percentage);
 
-
+	void setBreath(uint8_t breath){ this->breath = breath; }
+	uint8_t getBreath() const{ return this->breath; }
 
 
 
@@ -390,6 +391,7 @@ public:
 	bool removePartyInvitation(Party* party);
 	void clearPartyInvitations();
 
+
 #ifdef __SKULLSYSTEM__
 	Skulls_t getSkull() const;
 	Skulls_t getSkullClient(const Player* player) const;
@@ -431,7 +433,7 @@ public:
 
 	void sendCreatureTurn(const Creature* creature, uint32_t stackpos)
 		{if(client) client->sendCreatureTurn(creature, (uint8_t)stackpos);}
-	void sendCreatureSay(const Creature* creature, SpeakClasses type, const std::string& text)
+	void sendCreatureSay(const Creature* creature, MessageClasses type, const std::string& text)
 		{if(client) client->sendCreatureSay(creature, type, text);}
 	void sendCreatureSquare(const Creature* creature, SquareColor_t color)
 		{if(client) client->sendCreatureSquare(creature, color);}
@@ -484,7 +486,7 @@ public:
 	virtual void onAttackedCreatureDissapear(bool isLogout);
 	virtual void onFollowCreatureDissapear(bool isLogout);
 
-	//virtual void onCreatureSay(const Creature* creature, SpeakClasses type, const std::string& text);
+	//virtual void onCreatureSay(const Creature* creature, MessageClasses type, const std::string& text);
 	//virtual void onCreatureTurn(const Creature* creature, uint32_t stackpos);
 	//virtual void onCreatureChangeOutfit(const Creature* creature, const Outfit_t& outfit);
 
@@ -533,13 +535,15 @@ public:
 	void sendStats();
 	void sendSkills() const
 		{if(client) client->sendSkills();}
-	void sendTextMessage(MessageClasses mclass, const std::string& message) const
-		{if(client) client->sendTextMessage(mclass, message);}
+	void sendTextMessage(uint8_t GUItarget,MessageClasses mclass,MessageColors color, const std::string& message) const
+	{
+		if (client) client->sendTextMessage(GUItarget, mclass, color, message);
+	}
 	void sendTextWindow(Item* item, uint16_t maxlen, bool canWrite) const
 		{if(client) client->sendTextWindow(windowTextId, item, maxlen, canWrite);}
 	void sendTextWindow(uint32_t itemId, const std::string& text) const
 		{if(client) client->sendTextWindow(windowTextId, itemId, text);}
-	void sendToChannel(Creature* creature, SpeakClasses type, const std::string& text, uint16_t channelId, uint32_t time = 0) const
+	void sendToChannel(Creature* creature, MessageClasses type, const std::string& text, uint16_t channelId, uint32_t time = 0) const
 		{if(client) client->sendToChannel(creature, type, text, channelId, time);}
 	void sendSpellLearned(unsigned char spellId, unsigned char spellLevel)
 		{ if (client) client->sendSpellLearned(spellId,spellLevel); }
@@ -558,6 +562,10 @@ public:
 		{if(client) client->sendOpenPrivateChannel(receiver);}
 	void sendOutfitWindow(const Player* player)
 		{if(client) client->sendOutfitWindow(player);}
+	void sendNpcWindow(uint16_t windowId)
+	{
+		if (client) client->sendNpcWindow(windowId);
+	}
 	void sendCloseContainer(uint32_t cid)
 		{if(client) client->sendCloseContainer(cid);}
 	void sendChannel(uint16_t channelId, const std::string& channelName)
@@ -587,7 +595,7 @@ public:
 	bool canDoAction() const {return nextAction <= OTSYS_TIME();}
 	
 	void learnInstantSpell(const std::string& name, int level);
-	bool hasSpell(uint8_t spellId) const;
+	std::list<std::pair<unsigned char, unsigned char>>::iterator hasSpell(uint8_t spellId);
 	bool hasDependentSpellsPurchased(const std::string& name) const;
 	void stopWalk();
 
@@ -598,6 +606,13 @@ public:
 	void addSpell(unsigned char spellId, unsigned char level)
 	{
 		m_spells.push_back(std::make_pair(spellId, level));
+	}
+
+	void upgradeSpell(unsigned char spellId)
+	{
+		for (auto it = m_spells.begin(); it != m_spells.end(); it++)
+			if ((*it).first == spellId)
+				(*it).second = (*it).second + 1;
 	}
 
 	//+ get the spells list
@@ -752,6 +767,9 @@ protected:
 	//rate value variables
 	double rateValue[LEVEL_LAST + 1];
 
+	//current npc
+	Npc * currentNpc;
+
 	LearnedInstantSpellList learnedInstantSpellList;
 
 	ConditionList storedConditionList;
@@ -771,6 +789,19 @@ protected:
 	uint32_t guid;
 
 	uint32_t town;
+	uint8_t breath;
+
+	/*ADDON_SETS = {
+		[1] = { 1 },
+		[2] = { 2 },
+		[3] = { 1, 2 },
+		[4] = { 3 },
+		[5] = { 1, 3 },
+		[6] = { 2, 3 },
+		[7] = { 1, 2, 3 }
+	}*/
+	//pair(outfits,addons)
+	std::vector<std::pair<uint8_t,uint8_t>> outfits;
 
 	//guild variables
 	uint32_t guildId;

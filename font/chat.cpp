@@ -66,17 +66,20 @@ bool PrivateChatChannel::removeInvited(Player* player)
 
 void PrivateChatChannel::invitePlayer(Player* player, Player* invitePlayer)
 {
-	if(player != invitePlayer && addInvited(invitePlayer)){
+	if(player != invitePlayer && addInvited(invitePlayer))
+	{
 		std::string msg;
 		msg = player->getName();
-		msg += " invites you to ";
-		msg += (player->getSex() == PLAYERSEX_FEMALE ? "her" : "his");
-		msg += " private chat channel.";
-		invitePlayer->sendTextMessage(MSG_INFO_DESCR, msg.c_str());
+		msg += " invitou você para o seu chat privado!";		
+
+		invitePlayer->sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP | MSG_TARGET_CONSOLE,MSG_INFORMATION,
+			MSG_COLOR_GREEN,msg.c_str());
 		
+		msg.clear();
 		msg = invitePlayer->getName();
-		msg += " has been invited.";
-		player->sendTextMessage(MSG_INFO_DESCR, msg.c_str());
+		msg += " foi invitado.";
+		player->sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP | MSG_TARGET_CONSOLE, MSG_INFORMATION,
+			MSG_COLOR_GREEN, msg.c_str());
 	}
 }
 
@@ -87,10 +90,16 @@ void PrivateChatChannel::excludePlayer(Player* player, Player* excludePlayer)
 
 		std::string msg;
 		msg = excludePlayer->getName();
-		msg += " has been excluded.";
-		player->sendTextMessage(MSG_INFO_DESCR, msg.c_str());
-		
+		msg += " foi excluido.";
+		player->sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP | MSG_TARGET_CONSOLE,MSG_INFORMATION,
+			MSG_COLOR_ORGANE, msg.c_str());		
+
+		msg.clear();
 		excludePlayer->sendClosePrivate(getId());
+		msg += "você foi excluido do canal de comunicação do jogador ";
+		msg += player->getName();
+		excludePlayer->sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP | MSG_TARGET_CONSOLE, MSG_INFORMATION,
+			MSG_COLOR_ORGANE, msg);
 	}
 }
 
@@ -134,7 +143,7 @@ bool ChatChannel::removeUser(Player* player)
 	return true;
 }
 
-bool ChatChannel::talk(Player* fromPlayer, SpeakClasses type, const std::string& text, uint32_t time /*= 0*/)
+bool ChatChannel::talk(Player* fromPlayer, MessageClasses type, const std::string& text, uint32_t time /*= 0*/)
 {
 	// Can't speak to a channel you're not connected to
 	UsersMap::const_iterator iter = m_users.find(fromPlayer->getID());
@@ -226,9 +235,9 @@ bool Chat::isPrivateChannel(uint16_t channelId)
 	return true;
 }
 
-bool Chat::isMuteableChannel(uint16_t channelId, SpeakClasses type)
+bool Chat::isMuteableChannel(uint16_t channelId, MessageClasses type)
 {
-	if (type == SPEAK_CHANNEL_Y) {
+	if (type == MSG_MUTED) {
 		if (channelId == CHANNEL_GUILD || isPrivateChannel(channelId)) {
 			return false;
 		}
@@ -343,7 +352,7 @@ void Chat::removeUserFromAllChannels(Player* player)
 	}
 }
 
-bool Chat::talkToChannel(Player* player, SpeakClasses type, const std::string& text, uint16_t channelId)
+bool Chat::talkToChannel(Player* player, MessageClasses type, const std::string& text, uint16_t channelId)
 {
 	ChatChannel *channel = getChannel(player, channelId);
 	if(!channel)
@@ -363,8 +372,8 @@ bool Chat::talkToChannel(Player* player, SpeakClasses type, const std::string& t
 
 		case CHANNEL_HELP:
 		{
-			if(type == SPEAK_CHANNEL_Y && player->hasFlag(PlayerFlag_TalkOrangeHelpChannel)){
-				type = SPEAK_CHANNEL_O;
+			if(type == MSG_MUTED && player->hasFlag(PlayerFlag_TalkOrangeHelpChannel)){
+				//type = SPEAK_CHANNEL_O;
 			}
 			break;
 		}

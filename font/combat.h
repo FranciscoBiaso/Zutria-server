@@ -89,6 +89,8 @@ struct CombatParams{
 		coefficientA = 1;
 		tetha = 360;
 		drawFunction = 0;
+		randomGrowth = false;
+		onlyDistance = false;
 	}
 
 	const Condition* condition;
@@ -114,6 +116,8 @@ struct CombatParams{
 	float coefficientB;
 	float tetha;
 	uint8_t drawFunction; // 0 - arquimedes spiral, 
+	bool randomGrowth;
+	bool onlyDistance;
 };
 
 typedef bool (*COMBATFUNC)(Creature*, Creature*, const CombatParams&, void*);
@@ -135,10 +139,10 @@ public:
 		rows = _rows;
 		cols = _cols;
 
-		data_ = new bool*[rows];
+		data_ = new uint8_t*[rows];
 
 		for(uint32_t row = 0; row < rows; ++row){
-			data_[row] = new bool[cols];
+			data_[row] = new uint8_t[cols];
 			
 			for(uint32_t col = 0; col < cols; ++col){
 				data_[row][col] = 0;
@@ -153,10 +157,10 @@ public:
         rows = rhs.rows;
         cols = rhs.cols;
         
-        data_ = new bool*[rows];
+		data_ = new uint8_t*[rows];
         
         for(uint32_t row = 0; row < rows; ++row){
-            data_[row] = new bool[cols];
+			data_[row] = new uint8_t[cols];
             
             for(uint32_t col = 0; col < cols; ++col){
                 data_[row][col] = rhs.data_[row][col];
@@ -173,8 +177,8 @@ public:
 		delete[] data_;
 	}
 
-	void setValue(uint32_t row, uint32_t col, bool value) const {data_[row][col] = value;}
-	bool getValue(uint32_t row, uint32_t col) const {return data_[row][col];}
+	void setValue(uint32_t row, uint32_t col, uint8_t value) const { data_[row][col] = value; }
+	uint8_t getValue(uint32_t row, uint32_t col) const {return data_[row][col];}
 
 	void setCenter(uint32_t y, uint32_t x) {centerX = x; centerY = y;}
 	void getCenter(uint32_t& y, uint32_t& x) const { x = centerX; y = centerY; }
@@ -183,8 +187,8 @@ public:
 	size_t getRows() const {return rows;}
 	size_t getCols() const {return cols;}
 
-	inline const bool* operator[](uint32_t i) const { return data_[i]; }
-	inline bool* operator[](uint32_t i) { return data_[i]; }
+	inline const uint8_t* operator[](uint32_t i) const { return data_[i]; }
+	inline uint8_t* operator[](uint32_t i) { return data_[i]; }
 
 protected:
 	uint32_t centerX;
@@ -192,7 +196,7 @@ protected:
 
 	uint32_t rows;
 	uint32_t cols;
-	bool** data_;
+	uint8_t** data_;
 };
 
 typedef std::map<Direction, MatrixArea* > AreaCombatMap;
@@ -205,7 +209,7 @@ public:
 	AreaCombat(const AreaCombat& rhs);
 
 	ReturnValue doCombat(Creature* attacker, const Position& pos, const Combat& combat) const;
-	bool getList(const Position& centerPos, const Position& targetPos, std::list<Tile*>& list) const;
+	bool getList(const Position& centerPos, const Position& targetPos, std::list<std::pair<Tile*,uint8_t>>& list) const;
 
 	void setupArea(const std::list<uint32_t>& list, uint32_t rows);
 	void setupArea(int32_t length, int32_t spread);
@@ -295,7 +299,7 @@ public:
 		const AreaCombat* area, const CombatParams& params);
 
 	static void getCombatArea(const Position& centerPos, const Position& targetPos,
-		const AreaCombat* area, std::list<Tile*>& list);
+		const AreaCombat* area, std::list<std::pair<Tile*,uint8_t>>& list);
 		
 	static bool isInPvpZone(const Creature* attacker, const Creature* target);
 	static bool isPlayerCombat(const Creature* target);

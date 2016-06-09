@@ -39,7 +39,8 @@ Party::~Party()
 
 void Party::disband()
 {
-	getLeader()->sendTextMessage(MSG_INFO_DESCR, "The party has been disbanded.");
+	getLeader()->sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP | MSG_TARGET_CONSOLE,MSG_INFORMATION,
+		MSG_COLOR_ORGANE,"O time foi desfeito!");
 	getLeader()->setParty(NULL);
 	getLeader()->sendPlayerPartyIcons(getLeader());
 	setLeader(NULL);
@@ -70,8 +71,9 @@ bool Party::invitePlayer(Player* player)
 		return false;
 	}
 
-	ss << player->getName() << " has been invited.";
-	getLeader()->sendTextMessage(MSG_INFO_DESCR, ss.str());
+	ss << player->getName() << " foi convidado.";
+	getLeader()->sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP | MSG_TARGET_CONSOLE,MSG_INFORMATION,
+		MSG_COLOR_YELLOW, ss.str());
 
 	inviteList.push_back(player);
 	getLeader()->sendPlayerPartyIcons(player);
@@ -79,9 +81,10 @@ bool Party::invitePlayer(Player* player)
 	player->addPartyInvitation(this);
 
 	ss.str("");
-	ss << getLeader()->getName() << " has invited you to " <<
-		(getLeader()->getSex() == PLAYERSEX_FEMALE ? "her" : "his") << " party.";
-	player->sendTextMessage(MSG_INFO_DESCR, ss.str());
+	ss << getLeader()->getName() << " convidou você para entrar no time.";
+	player->sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP | MSG_TARGET_CONSOLE, MSG_INFORMATION,
+		MSG_COLOR_YELLOW,
+		ss.str());
 	return true;
 }
 
@@ -92,8 +95,8 @@ bool Party::joinParty(Player* player)
 	}
 
 	std::stringstream ss;
-	ss << player->getName() << " has joined the party.";
-	broadcastPartyMessage(MSG_INFO_DESCR, ss.str());
+	ss << player->getName() << " entrou no time.";
+	broadcastPartyMessage(MSG_INFORMATION, ss.str());
 
 	memberList.push_back(player);
 	player->setParty(this);
@@ -107,8 +110,8 @@ bool Party::joinParty(Player* player)
 	updatePartyIcons(player, SHIELD_BLUE);
 
 	ss.str("");
-	ss << "You have joined " << getLeader()->getName() << "'s party.";
-	player->sendTextMessage(MSG_INFO_DESCR, ss.str());
+	ss << "Você entrou no time do jogador " << getLeader()->getName() << ".";
+	player->sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP, MSG_INFORMATION, MSG_COLOR_GREEN, ss.str());
 	return true;
 }
 
@@ -137,13 +140,12 @@ bool Party::removeInvite(Player* player)
 bool Party::revokeInvitation(Player* player)
 {
 	std::stringstream ss;
-	ss << getLeader()->getName() << " has revoked " <<
-		(getLeader()->getSex() == PLAYERSEX_FEMALE ? "her" : "his") << " invitation.";
-	player->sendTextMessage(MSG_INFO_DESCR, ss.str());
+	ss << getLeader()->getName() << " não aceitou o convite.";
+	player->sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP, MSG_INFORMATION, MSG_COLOR_ORGANE, ss.str());
 
 	ss.str("");
-	ss << "Invitation for " << player->getName() << " has been revoked.";
-	getLeader()->sendTextMessage(MSG_INFO_DESCR, ss.str());
+	ss << "O convite para o jogador " << player->getName() << " foi desfeito.";
+	getLeader()->sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP, MSG_INFORMATION, MSG_COLOR_ORGANE, ss.str());
 	removeInvite(player);
 
 	return true;
@@ -162,8 +164,8 @@ bool Party::passPartyLeadership(Player* player)
 	}
 
 	std::stringstream ss;
-	ss << player->getName() << " is now the leader of the party.";
-	broadcastPartyMessage(MSG_INFO_DESCR, ss.str(), true);
+	ss << player->getName() << " é o novo líder do time.";
+	broadcastPartyMessage(MSG_INFORMATION, ss.str(), true);
 
 	Player* oldLeader = getLeader();
 	setLeader(player);
@@ -174,7 +176,8 @@ bool Party::passPartyLeadership(Player* player)
 	updatePartyIcons(oldLeader, SHIELD_BLUE);
 
 	updatePartyIcons(player, SHIELD_YELLOW);
-	player->sendTextMessage(MSG_INFO_DESCR, "You are now the leader of the party.");
+	player->sendTextMessage(MSG_TARGET_CONSOLE | MSG_TARGET_TOP_CENTER_MAP, MSG_INFORMATION,
+		MSG_COLOR_GREEN,"You are now the leader of the party.");
 	return true;
 }
 
@@ -209,14 +212,15 @@ bool Party::leaveParty(Player* player)
 		inviteList.erase(it);
 	}
 
-	player->sendTextMessage(MSG_INFO_DESCR, "You have left the party.");
+	player->sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP, MSG_INFORMATION,
+		MSG_COLOR_ORGANE, "Você deixou o time.");
 	player->setParty(NULL);
 	updatePartyIcons(player, SHIELD_NONE);
 	updateInvitationIcons(player, SHIELD_NONE);
 
 	std::stringstream ss;
-	ss << player->getName() << " has left the party.";
-	broadcastPartyMessage(MSG_INFO_DESCR, ss.str());
+	ss << player->getName() << " deixou o time.";
+	broadcastPartyMessage(MSG_INFORMATION, ss.str());
 
 	if(hasNoLeader || disbandParty()){
 		disband();
@@ -291,15 +295,24 @@ void Party::broadcastPartyMessage(MessageClasses msgClass, const std::string& ms
 	PlayerVector::iterator it;
 	if(!memberList.empty()){
 		for(it = memberList.begin(); it != memberList.end(); ++it){
-			(*it)->sendTextMessage(msgClass, msg);
+			(*it)->sendTextMessage(MSG_TARGET_CONSOLE | MSG_TARGET_TOP_CENTER_MAP,
+				msgClass,
+				MSG_COLOR_ORGANE,
+				msg);
 		}
 	}
 
-	getLeader()->sendTextMessage(msgClass, msg);
+	getLeader()->sendTextMessage(MSG_TARGET_CONSOLE | MSG_TARGET_TOP_CENTER_MAP,
+		msgClass,
+		MSG_COLOR_ORGANE,
+		msg);
 
 	if(sendToInvitations && !inviteList.empty()){
 		for(it = inviteList.begin(); it != inviteList.end(); ++it){
-			(*it)->sendTextMessage(msgClass, msg);
+			(*it)->sendTextMessage(MSG_TARGET_CONSOLE | MSG_TARGET_TOP_CENTER_MAP,
+				msgClass,
+				MSG_COLOR_ORGANE,
+				msg);
 		}
 	}
 }

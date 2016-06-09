@@ -207,7 +207,8 @@ void Connection::parseHeader(const boost::system::error_code& error)
 {
 	m_connectionLock.lock();
 	m_pendingRead--;
-	if(m_closeState == CLOSE_STATE_CLOSING){
+	if(m_closeState == CLOSE_STATE_CLOSING)
+	{
 		if(!closingConnection()){
 			m_connectionLock.unlock();
 		}
@@ -215,7 +216,8 @@ void Connection::parseHeader(const boost::system::error_code& error)
 	}
 
 	int32_t size = m_msg.decodeHeader();
-	if(!error && size > 0 && size < NETWORKMESSAGE_MAXSIZE - 16){
+	if(!error && size > 0 && size < NETWORKMESSAGE_MAXSIZE - 16)
+	{
 		// Read packet content
 		m_pendingRead++;
 		m_msg.setMessageLength(size + NetworkMessage::header_length);
@@ -232,39 +234,48 @@ void Connection::parsePacket(const boost::system::error_code& error)
 {
 	m_connectionLock.lock();
 	m_pendingRead--;
-	if(m_closeState == CLOSE_STATE_CLOSING){
-		if(!closingConnection()){
+	if(m_closeState == CLOSE_STATE_CLOSING)
+	{
+		if(!closingConnection())
+		{
 			m_connectionLock.unlock();
 		}
 		return;
 	}
 
-	if(!error){
+	if(!error)
+	{
 		// Protocol selection
-		if(!m_protocol){
+		if(!m_protocol)
+		{
 			// Protocol depends on the first byte of the packet
 			uint8_t protocolId = m_msg.GetByte();
-			switch(protocolId){
-			case 0x01: // Login server protocol
-				m_protocol = new ProtocolLogin(this);
-				break;
-			case 0x0A: // World server protocol
-				m_protocol = new ProtocolGame(this);
-				break;
-			case 0xFF: // Status protocol
-				m_protocol = new ProtocolStatus(this);
-				break;
-			default:
-				// No valid protocol
-				closeConnection();
-				m_connectionLock.unlock();
-				return;
-				break;
+
+			//std::cout << (int)protocolId << std::endl;
+		
+			switch(protocolId)
+			{
+				case RECV_PROTOCOL::protocol_first_packet: // Login server protocol
+					m_protocol = new ProtocolLogin(this);
+					break;
+				case RECV_PROTOCOL::protocol_entergame: // World server protocol
+					m_protocol = new ProtocolGame(this);
+					break;
+				case 0xFF: // Status protocol
+					m_protocol = new ProtocolStatus(this);
+					break;
+				default:
+					// No valid protocol
+					closeConnection();
+					m_connectionLock.unlock();
+					return;
+					break;
 			}
 
 			m_protocol->onRecvFirstMessage(m_msg);
 		}
-		else{
+		else
+		{
 			// Send the packet to the current protocol
 
 			m_protocol->onRecvMessage(m_msg);

@@ -95,6 +95,10 @@ Item* Item::CreateItem(PropStream& propStream)
 	const ItemType& iType = Item::items[_id];
 	uint8_t _count = 0;
 	if(iType.stackable || iType.isSplash() || iType.isFluidContainer()){
+		//OTBM_ATTR_COUNT 
+		if (!propStream.GET_UINT8(_count)) {
+			return NULL;
+		}
 		if(!propStream.GET_UINT8(_count)){
 			return NULL;
 		}

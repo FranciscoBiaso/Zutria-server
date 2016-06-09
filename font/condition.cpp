@@ -1231,6 +1231,39 @@ bool ConditionDamage::doDamage(Creature* creature, int32_t damage)
 	CombatType_t combatType = Combat::ConditionToDamageType(conditionType);
 	Creature* attacker = g_game.getCreatureByID(owner);
 
+	const Player * playerAttacker = attacker->getPlayer();
+	const Player * defender = creature->getPlayer();
+	//attacker is a player
+	if (playerAttacker)
+	{
+		switch (combatType)
+		{
+			case COMBAT_ENERGYDAMAGE:
+			break;
+		
+			case COMBAT_POISONDAMAGE:
+			break;
+			
+			//spells of fire wizard that burn others
+			case COMBAT_FIREDAMAGE:
+			{
+				if (defender) // player attacking another player
+				{
+					damage -= 3 * playerAttacker->getSkillValue(skillsID::PLAYER_SKILL_MAGIC_ATTACK);
+					//damage += 2 * defender->getSkillValue(skillsID::PLAYER_SKILL_MAGIC_DEFENSE);
+				}
+				else // player attacking a creature
+				{
+					damage -= 3 * playerAttacker->getSkillValue(skillsID::PLAYER_SKILL_MAGIC_ATTACK);
+				}
+			}
+			break;
+			
+			default:
+			break;
+		}
+	}
+
 	if(g_game.combatBlockHit(combatType, attacker, creature, damage, false, false)){
 		return false;
 	}
@@ -1390,10 +1423,10 @@ void ConditionSpeed::setFormulaVars(float _mina, float _minb, float _maxa, float
 	maxb = _maxb;
 }
 
-void ConditionSpeed::getFormulaValues(int32_t var, int32_t& min, int32_t& max) const
+void ConditionSpeed::getFormulaValues(int32_t creatureBaseSpeed, int32_t& min, int32_t& max) const
 {
-	min = (int32_t)std::ceil(var * 1.f * mina + minb);
-	max = (int32_t)std::ceil(var * 1.f * maxa + maxb);
+	min = (int32_t)std::ceil(creatureBaseSpeed * 1.f * mina + minb);
+	max = (int32_t)std::ceil(creatureBaseSpeed * 1.f * maxa + maxb);	
 }
 
 bool ConditionSpeed::setParam(ConditionParam_t param, int32_t value)
@@ -1507,7 +1540,7 @@ bool ConditionSpeed::startCondition(Creature* creature)
 		int32_t min;
 		int32_t max;
 		getFormulaValues(creature->getBaseSpeed(), min, max);
-		speedDelta = random_range(min, max);
+		speedDelta = min + (rand() % (int)(max - min + 1));
 	}
 
 	g_game.changeSpeed(creature, speedDelta);

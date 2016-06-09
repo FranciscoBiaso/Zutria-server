@@ -32,6 +32,9 @@
 #define MONSTER_ID_RANGE 0x40000000
 #define NPC_ID_RANGE 0x80000000
 
+static const int cMaxViewW = 8;
+static const int cMaxViewH = 7;
+
 enum MagicEffectClasses {
 	NM_ME_DRAW_BLOOD       = 0x00,
 	NM_ME_LOSE_ENERGY	   = 0x01,
@@ -51,7 +54,7 @@ enum MagicEffectClasses {
 	NM_ME_MAGIC_POISON     = 0x0E, //14
 	NM_ME_MORT_AREA        = 0x0F, //15
 	NM_ME_POISON           = 0x10, //16
-	NM_ME_HITBY_FIRE       = 0x12, //17
+	NM_ME_HITBY_FIRE       = 0x11, //17
 	NM_ME_SOUND_GREEN      = 0x12, //18
 	NM_ME_SOUND_RED        = 0x13, //19
 	NM_ME_POISON_AREA      = 0x14, //20
@@ -87,41 +90,45 @@ enum ShootType_t {
 	NM_SHOOT_UNK			= 0xFFFF
 };
 
-enum SpeakClasses {
-	SPEAK_SAY           = 0x01,
-	SPEAK_WHISPER       = 0x02,
-	SPEAK_YELL          = 0x03,
-	SPEAK_PRIVATE       = 0x04,
-	SPEAK_CHANNEL_Y     = 0x05,	//yellow
-	SPEAK_RVR_CHANNEL   = 0x06,
-    SPEAK_RVR_ANSWER    = 0x07,
-    SPEAK_RVR_CONTINUE  = 0x08,
-    SPEAK_BROADCAST     = 0x09,
-    SPEAK_CHANNEL_R1    = 0x0A,	//red - #c text
-    SPEAK_PRIVATE_RED   = 0x0B,	//@name@text
-    SPEAK_CHANNEL_O     = 0x0C,	//orange
-    //SPEAK_            = 0x0D,
-    SPEAK_CHANNEL_R2    = 0x0E,	//red anonymous - #d text
-    //SPEAK_            = 0x0F,
-    SPEAK_MONSTER_YELL  = 0x11,
-    SPEAK_MONSTER_SAY   = 0x10,
+enum MessageGUITarget{
+	MSG_TARGET_CONSOLE = 1,
+	MSG_TARGET_TOP_CENTER_MAP = 2,
+	MSG_TARGET_BOTTOM_CENTER_MAP = 4
 };
 
 enum MessageClasses {
-	MSG_STATUS_CONSOLE_YELLOW       = 0x01, //Yellow message in the console
-    MSG_STATUS_CONSOLE_LBLUE        = 0x04, //Light blue message in the console
-    MSG_STATUS_CONSOLE_ORANGE       = 0x11, //Orange message in the console
-    MSG_STATUS_WARNING              = 0x12, //Red message in game window and in the console
-    MSG_EVENT_ADVANCE               = 0x13, //White message in game window and in the console
-    MSG_EVENT_DEFAULT               = 0x14, //White message at the bottom of the game window and in the console
-    MSG_STATUS_DEFAULT              = 0x15, //White message at the bottom of the game window and in the console
-    MSG_INFO_DESCR                  = 0x16, //Green message in game window and in the console
-    MSG_STATUS_SMALL                = 0x17, //White message at the bottom of the game window"
-    MSG_STATUS_CONSOLE_BLUE         = 0x18, //Blue message in the console
-    MSG_STATUS_CONSOLE_RED          = 0x19, //Red message in the console	
-	MSG_EVENT_LEVELUP				= 0x1A, //level up
-	MSG_GAMEWINDOW_GREEN            = 0x1B, //green message in the game window
-	MSG_GAMEWINDOW_ORANGE           = 0x1C, //orange message in the game window
+	MSG_PLAYER_TALK = 1,
+	MSG_PLAYER_WHISPER = 2,
+	MSG_PLAYER_YELL = 3,
+	MSG_PLAYER_PRIVATE_FROM = 4,
+	MSG_PLAYER_PRIVATE_TO = 5,
+	MSG_BROADCAST = 6,
+	MSG_MONSTER_TALK = 7,
+	MSG_MONSTER_YELL = 8,
+	MSG_PLAYER_LEVELUP = 9,
+	MSG_INFORMATION = 10,
+	MSG_MUTED = 11,
+	MSG_LOOK = 12,
+};
+
+enum MessageColors{
+	MSG_COLOR_RED = 1,
+	MSG_COLOR_DARK_RED,
+	MSG_COLOR_LIGHT_RED,
+	MSG_COLOR_GREEN,
+	MSG_COLOR_DARK_GREEN,
+	MSG_COLOR_LIGHT_GREEN,
+	MSG_COLOR_BLUE,
+	MSG_COLOR_DARK_BLUE,
+	MSG_COLOR_LIGHT_BLUE,
+	MSG_COLOR_ORGANE,
+	MSG_COLOR_DARK_ORANGE,
+	MSG_COLOR_LIGHT_ORGANE,
+	MSG_COLOR_YELLOW,
+	MSG_COLOR_DARK_YELLOW,
+	MSG_COLOR_LIGHT_YELLOW,
+	MSG_COLOR_BLACK,
+	MSG_COLOR_WHITE
 };
 
 enum FluidClasses {
@@ -375,19 +382,20 @@ namespace _player_{
 
 	struct spell
 	{	
-		std::vector<int> magicLevels; //magic points for lvl 1,2,3, ...
+		int magicPoints; //magic points for lvl 1,2,3, ...
 		std::string dependentSpell;
+		uint8_t maxLevel;
 
 		spell()
 		{
 
 		}
-		spell(std::vector<int> magicLevels, std::string dependentSpell)
+		spell(int maxlevel, int magicPoints, std::string dependentSpell)
 		{
 			// 3 levels
-			this->magicLevels = std::vector<int>(3, 0);
-			this->magicLevels = magicLevels;;
+			this->magicPoints = magicPoints;
 			this->dependentSpell = dependentSpell; //-1 no dependency
+			this->maxLevel = maxlevel;
 		}
 		
 	};
@@ -395,37 +403,31 @@ namespace _player_{
 	typedef std::pair<std::string, spell> spellPair;
 	
 	const spellPair g_map_table[] = {
-		spellPair("escudo infernal", spell({ 2, 4 }, "no dependency")),
-		spellPair("espiral fogosa", spell({ 18, 22 }, "Bola de fogo")),
-		spellPair("bola de fogo", spell({ 15, 20 }, "Bola de fogo")),
-		spellPair("espiral incendiária", spell({ 15, 20 }, "Bola de fogo")),
-		spellPair("runa de bolas de fogo", spell({ 15, 20 }, "Explosão espiral de b.f.")),
-		spellPair("teleporte de chamas", spell({ 15, 20 }, "Teleporte de fogo")),
-		spellPair("runa de fogo vivo", spell({ 15, 20 }, "Grande explosão espiral de b.f.")),
-		spellPair("chuva fogosa de meteoro", spell({ 15, 20 }, "Runa de bola de fogo")),
-		spellPair("cuspe do dragão", spell({ 15, 20 }, "Escudo de fogo")),
-		spellPair("rajada fogosa", spell({ 15, 20 }, "Cuspe do dragão"))
+		spellPair("teleporte inflamável", spell( 2, 14 , "no dependency")),
+		spellPair("língua de fogo", spell( 2, 20 , "Bola de fogo")),
+		spellPair("bola de fogo", spell(3, 12, "Bola de fogo")),
+		spellPair("onda sísmica", spell(2, 23, "Bola de fogo")),
+		spellPair("chuva de meteoros", spell(2, 23, "Bola de fogo")),
+		spellPair("fogo vivo", spell(2, 23, "Bola de fogo")),
+		spellPair("descarga elétrica", spell(2, 23, "Bola de fogo")),
+		spellPair("choque fulminante", spell(2, 23, "Bola de fogo")),
+		spellPair("onda elétrica", spell(2, 23, "Bola de fogo")),
+		spellPair("raio", spell(2, 23, "Bola de fogo")),
+		spellPair("ciclone elétrico", spell(2, 23, "Bola de fogo")),
+		spellPair("potência energética", spell(2, 23, "Bola de fogo")),
+		spellPair("x", spell(2, 23, "Bola de fogo")),
+		spellPair("x", spell(2, 23, "Bola de fogo")),
+		spellPair("x", spell(2, 23, "Bola de fogo")),//15
+		spellPair("x", spell(2, 23, "Bola de fogo")),
+		spellPair("x", spell(2, 23, "Bola de fogo")),
+		spellPair("x", spell(2, 23, "Bola de fogo")),
+		spellPair("x", spell(2, 23, "Bola de fogo")),
+		spellPair("x", spell(2, 23, "Bola de fogo")),//20
+		spellPair("barreira de galhos", spell(2, 23, "Bola de fogo")),
+
 	};
 
-	extern std::map<std::string, struct spell> g_spellsTree;
-
-	const std::pair<Color, Color> outfitAttributeColors[] =
-	{
-		//0 %  to 100%
-		//min -- max
-		std::make_pair(Color(0, 100, 0), Color(0, 255, 0)), //health points
-		std::make_pair(Color(98, 59, 59), Color(0, 0, 0)), //physical attack
-		std::make_pair(Color(98, 59, 59), Color(0, 0, 0)), //physical defense
-		std::make_pair(Color(0, 100, 0), Color(0, 255, 0)), //capacity
-		std::make_pair(Color(0, 0, 100), Color(0, 0, 255)), //mana points
-		std::make_pair(Color(100, 0, 0), Color(255, 0, 0)), //magic attack
-		std::make_pair(Color(100, 0, 0), Color(255, 0, 0)), //magic deffense
-		std::make_pair(Color(0, 0, 100), Color(0, 0, 255)), //magic points
-		std::make_pair(Color(100, 0, 100), Color(255, 0, 255)), //speed character
-		std::make_pair(Color(100, 0, 100), Color(255, 0, 255)), //attack speed
-		std::make_pair(Color(100, 100, 0), Color(255, 255, 0)),//cooldown
-		std::make_pair(Color(100, 100, 0), Color(255, 255, 0))//avoidance
-	};
+	extern std::map<std::string, struct spell> g_spellsTree;	
 };
 
 

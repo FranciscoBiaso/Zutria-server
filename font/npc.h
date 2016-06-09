@@ -38,6 +38,7 @@ public:
 	Npcs() {};
 	~Npcs() {};
 	void reload();
+	Npc * findNpcByName(std::string name) const;
 };
 
 class NpcScriptInterface : public LuaScriptInterface
@@ -93,9 +94,10 @@ public:
 	virtual void onCreatureAppear(const Creature* creature){};
 	virtual void onCreatureDisappear(const Creature* creature){};
 	virtual void onCreatureMove(const Creature* creature, const Position& oldPos, const Position& newPos){};
-	virtual void onCreatureSay(const Creature* creature, SpeakClasses, const std::string& text){};
+	virtual void onCreatureSay(const Creature* creature, MessageClasses, const std::string& text){};
 	virtual void onThink(){};
-
+	virtual void onCreatureLeftClick(const Creature* creature){};
+	
 	bool isLoaded();
 
 protected:
@@ -112,8 +114,9 @@ public:
 	virtual void onCreatureAppear(const Creature* creature);
 	virtual void onCreatureDisappear(const Creature* creature);
 	virtual void onCreatureMove(const Creature* creature, const Position& oldPos, const Position& newPos);
-	virtual void onCreatureSay(const Creature* creature, SpeakClasses, const std::string& text);
+	virtual void onCreatureSay(const Creature* creature, MessageClasses, const std::string& text);
 	virtual void onThink();
+	virtual void onCreatureLeftClick(const Creature* creature);
 
 private:
 	NpcScriptInterface* m_scriptInterface;
@@ -123,6 +126,7 @@ private:
 	int32_t m_onCreatureMove;
 	int32_t m_onCreatureSay;
 	int32_t m_onThink;
+	int32_t m_onCreatureLeftClick;
 };
 
 class Npc : public Creature
@@ -172,6 +176,9 @@ public:
 
 	NpcScriptInterface* getScriptInterface();
 
+
+	virtual void onCreatureLeftClick(const Creature* creature);
+
 protected:
 	Npc(const std::string& _name);
 
@@ -188,9 +195,10 @@ protected:
 		const Tile* oldTile, const Position& oldPos, uint32_t oldStackPos, bool teleport);
 
 	virtual void onCreatureTurn(const Creature* creature, uint32_t stackpos);
-	virtual void onCreatureSay(const Creature* creature, SpeakClasses type, const std::string& text);
+	virtual void onCreatureSay(const Creature* creature, MessageClasses type, const std::string& text);
 	virtual void onCreatureChangeOutfit(const Creature* creature, const Outfit_t& outfit);
 	virtual void onThink(uint32_t interval);
+
 	virtual std::string getDescription(int32_t lookDistance) const;
 
 	bool isImmune(CombatType_t type) const {return true;}

@@ -80,8 +80,10 @@ bool Combat::getMinMaxValues(Creature* creature, Creature* target, int32_t& min,
 			switch(formulaType){
 				case FORMULA_LEVELMAGIC:
 				{
-					max = (int32_t)((player->getLevel() * 2 + player->getMagicLevel() * 3) * 1. * mina + minb);
-					min = (int32_t)((player->getLevel() * 2 + player->getMagicLevel() * 3) * 1. * maxa + maxb);
+					//max = (int32_t)((player->getLevel() * 2 + player->getMagicLevel() * 3) * 1. * mina + minb);
+					//min = (int32_t)((player->getLevel() * 2 + player->getMagicLevel() * 3) * 1. * maxa + maxb);
+					max = maxa;
+					min = mina;
 					return true;
 				}
 
@@ -133,7 +135,7 @@ bool Combat::getMinMaxValues(Creature* creature, Creature* target, int32_t& min,
 }
 
 void Combat::getCombatArea(const Position& centerPos, const Position& targetPos, const AreaCombat* area,
-	std::list<Tile*>& list)
+	std::list<std::pair<Tile*,uint8_t>>& list)
 {
 	if(area){
 		area->getList(centerPos, targetPos, list);
@@ -147,7 +149,7 @@ void Combat::getCombatArea(const Position& centerPos, const Position& targetPos,
             g_game.setTile(tile);
         }
         
-		list.push_back(tile);
+		list.push_back(std::make_pair(tile,0));
 	}
 }
 
@@ -228,9 +230,9 @@ ReturnValue Combat::canTargetCreature(const Player* player, const Creature* targ
 		if(target->getPlayer()){
 			return RET_YOUMAYNOTATTACKTHISPLAYER;
 		}
-		else{
+		else
 			return RET_YOUMAYNOTATTACKTHISCREATURE;
-		}
+		
 	}
 
 	if (g_config.getBoolean(ConfigManager::TEAM_MODE)) {
@@ -638,10 +640,11 @@ void Combat::addDistanceEffect(Creature* caster, const Position& fromPos, const 
 void Combat::CombatFunc(Creature* caster, const Position& pos,
 	const AreaCombat* area, const CombatParams& params, COMBATFUNC func, void* data)
 {
-	std::list<Tile*> tileList;
+	std::list<std::pair<Tile*,uint8_t>> tileList;
 
-	if(caster)
+	if (caster){
 		getCombatArea(caster->getPosition(), pos, area, tileList);
+	}
 	else{
 		getCombatArea(pos, pos, area, tileList);
 	}
@@ -650,55 +653,55 @@ void Combat::CombatFunc(Creature* caster, const Position& pos,
 	uint32_t maxX = 0;
 	uint32_t maxY = 0;
 	uint32_t diff;
-	
+
 	//calculate the max viewable range
-	for(std::list<Tile*>::iterator it = tileList.begin(); it != tileList.end(); ++it){
-        diff = std::abs((*it)->getPosition().x - pos.x);
-        if(diff > maxX){
-            maxX = diff;
-        }
-        
-        diff = std::abs((*it)->getPosition().y - pos.y);
-        if(diff > maxY){
-            maxY = diff;
-        }
-    }
-    
-     g_game.getSpectators(list, pos, false, true, maxX + Map::maxViewportX, maxX + Map::maxViewportX,
-        maxY + Map::maxViewportY, maxY + Map::maxViewportY);
-    
-    for(std::list<Tile*>::iterator it = tileList.begin(); it != tileList.end(); ++it){
+	for (auto it = tileList.begin(); it != tileList.end(); ++it){
+		diff = std::abs((*it).first->getPosition().x - pos.x);
+		if (diff > maxX){
+			maxX = diff;
+		}
+
+		diff = std::abs((*it).first->getPosition().y - pos.y);
+		if (diff > maxY){
+			maxY = diff;
+		}
+	}
+
+	g_game.getSpectators(list, pos, false, true, maxX + Map::maxViewportX, maxX + Map::maxViewportX,
+		maxY + Map::maxViewportY, maxY + Map::maxViewportY);
+
+	for (auto it = tileList.begin(); it != tileList.end(); ++it){
 		bool bContinue = true;
 
-		if(canDoCombat(caster, *it, params.isAggressive) == RET_NOERROR){
-			for(CreatureVector::iterator cit = (*it)->creatures.begin(); bContinue && cit != (*it)->creatures.end(); ++cit){
-				if(params.targetCasterOrTopMost){
+		if (canDoCombat(caster, (*it).first, params.isAggressive) == RET_NOERROR){
+			for (CreatureVector::iterator cit = (*it).first->creatures.begin(); bContinue && cit != (*it).first->creatures.end(); ++cit){
+				if (params.targetCasterOrTopMost){
 
-					if(g_config.getBoolean(ConfigManager::UH_TRAP) == false && 
-						(caster && caster->getTile() == (*it))){
-							if(*cit == caster){
-								bContinue = false;
-							}
+					if (g_config.getBoolean(ConfigManager::UH_TRAP) == false &&
+						(caster && caster->getTile() == (*it).first)){
+						if (*cit == caster){
+							bContinue = false;
+						}
 					}
-					else if(*cit == (*it)->getTopCreature()){
+					else if (*cit == (*it).first->getTopCreature()){
 						bContinue = false;
 					}
 
-					if(bContinue){
+					if (bContinue){
 						continue;
 					}
 				}
 
-				if(!params.isAggressive || (caster != *cit && Combat::canDoCombat(caster, *cit) == RET_NOERROR)){
+				if (!params.isAggressive || (caster != *cit && Combat::canDoCombat(caster, *cit) == RET_NOERROR)){
 					func(caster, *cit, params, data);
 
-					if(params.targetCallback){
+					if (params.targetCallback){
 						params.targetCallback->onTargetCombat(caster, *cit);
 					}
 				}
 			}
 
-			combatTileEffects(list, caster, *it, params);
+			combatTileEffects(list, caster, (*it).first, params);
 		}
 	}
 
@@ -773,7 +776,7 @@ bool Combat::setParam(CombatParam_t param, float value)
 
 		case COMBATPARAM_AGGRESSIVE:
 		{
-			params.isAggressive = ((int)value != 0);
+			params.isAggressive = ((bool)value != 0);
 			return true;
 		}
 
@@ -836,6 +839,20 @@ bool Combat::setParam(CombatParam_t param, float value)
 			params.tetha = value;
 			return true;
 		}
+		
+		case COMBATPARAM_RANDOMGROWTH:
+		{
+			//true or false
+			params.randomGrowth = (uint32_t)value;
+			return true;
+		}
+
+		case COMBATPARAM_ONLYDISTANCE:
+		{
+			//true or false
+			params.onlyDistance = (bool)value;
+			return true;
+		}
 
 		default:
 		{
@@ -846,6 +863,10 @@ bool Combat::setParam(CombatParam_t param, float value)
 	return false;
 }
 
+bool listPred(std::pair<Tile *, uint8_t> & a, std::pair<Tile *, uint8_t> &b)
+{
+	return (a).second < (b).second;
+}
 
 void Combat::doCombat(Creature* caster, const Position& pos)
 {
@@ -866,47 +887,114 @@ void Combat::doCombat(Creature* caster, const Position& pos)
 		{
 			AreaCombat * areaCombat = new AreaCombat();
 			areaCombat->setupArea(1);
-
-			double x = -1, y = -1;
-			Position oldPosition;
-			Position newPosition;
-			Position casterPosition = caster->getPosition();
-			for (int theta = 0; theta <= params.tetha; theta += 1)
+			
+			Position oldPosition(0,0,0);
+			Position effectPosition;
+			for (float theta = 0; theta <= params.tetha; theta += 1)
 			{
-				oldPosition.x = x + casterPosition.x;
-				oldPosition.y = y + casterPosition.y;
 				switch (params.drawFunction)
 				{
-				case 0: //arquimedes spiral
-					polarFormula("arquimedesSpiral", theta * 3.141516 / 180.0, params.coefficientA, params.coefficientB, &x, &y);
-					break;
-				case 1: //fermat
-					polarFormula("fermatSpiral", theta * 3.141516 / 180.0, params.coefficientA, params.coefficientB, &x, &y);
-					break;
-
+					case 0: //arquimedes spiral
+						//polarFormula("arquimedesSpiral", theta * 3.141516 / 180.0, params.coefficientA, params.coefficientB, &x, &y);
+					break;			
 				}
-				newPosition = Position(x + casterPosition.x, y + casterPosition.y, 0 + casterPosition.z);
-				if ((int)oldPosition.x != (int)newPosition.x || (int)oldPosition.y != (int)newPosition.y)
+				effectPosition = Position((float)caster->getPosition().x + params.coefficientA * std::sin((4 * theta * 3.14159265359) / 180.0) *std::cos((theta * 3.14159265359) / 180.0),
+					(float)caster->getPosition().y + params.coefficientA * std::sin((4 *theta * 3.14159265359) / 180.0) *std::sin((theta * 3.14159265359) / 180.0)
+					, 0 + caster->getPosition().z);
+				if ((int)oldPosition.x != (int)effectPosition.x || (int)oldPosition.y != (int)effectPosition.y)
 				{
 					uint8_t dir = caster->getDirection();
 					Position distanceMagic;
-					if (dir == Direction::EAST)
-						distanceMagic = Position(3, 0, 0);
-					else if (dir == Direction::WEST)
-						distanceMagic = Position(-3, 0, 0);
-					else if (dir == Direction::NORTH)
-						distanceMagic = Position(0, -3, 0);
-					else if (dir == Direction::SOUTH)
-						distanceMagic = Position(0, 3, 0);
-
-
-					newPosition = newPosition + distanceMagic;
+					
 					Scheduler::getScheduler().addEvent(createSchedulerTask(20 + theta * params.magicIntervals,
 						boost::bind(&Combat::doCombatHealth, caster,
-						newPosition,
+						effectPosition,
 						areaCombat, minChange, maxChange, params)));
+					oldPosition = effectPosition;
 				}
 			}
+		}
+		else if (params.coordinateSystem == 2) // cartesian 
+		{						
+			std::list<std::pair<Tile *, uint8_t>> tileList;
+			area->getList(caster->getPosition(), pos, tileList);
+			tileList.sort(listPred);
+
+			uint8_t maxTime = tileList.end()->second;
+			uint8_t distanceEffect;
+			while (!tileList.empty())
+			{
+				//random growth spell
+				if (params.randomGrowth)
+				{
+					AreaCombat * areaCombat = new AreaCombat();
+					areaCombat->setupArea(1);
+					int randomNumber = std::rand() % 100;
+					if (tileList.begin()->second == 1)
+					{
+						//create the first spell
+						doCombatHealth(caster,
+							tileList.begin()->first->getPosition(),
+							areaCombat,
+							minChange, maxChange,
+							params);
+						//remove the distance effect from others
+						params.distanceEffect = NM_ME_NONE;
+					}
+					else
+					{
+						AreaCombat * areaCombat = new AreaCombat();
+						areaCombat->setupArea(1);
+						//fire spell -- stoker
+						if (params.itemId == 595)
+						{
+							float escale[3] = { 0.7, 0.2, 0.1 };//fire scales 
+							if (tileList.begin()->second >= 80)//hight percentage lets burn with intenssive fire (80%)
+								escale[0] = 0.7, escale[1] = 0.2, escale[2] = 0.1;
+							else if (tileList.begin()->second >= 60)
+								escale[0] = 0.60, escale[1] = 0.25, escale[2] = 0.15;
+							else if (tileList.begin()->second >= 40)
+								escale[0] = 0.40, escale[1] = 0.40, escale[2] = 0.20;
+							else if (tileList.begin()->second >= 20)
+								escale[0] = 0.20, escale[1] = 0.50, escale[2] = 0.30;
+							else 
+								escale[0] = 0.05, escale[1] = 0.45, escale[2] = 0.70;
+
+
+							if (randomNumber <= tileList.begin()->second * escale[0])
+								params.itemId = 595;
+							else if (randomNumber <= tileList.begin()->second * escale[1])
+								params.itemId = 517;
+							else
+								params.itemId = 596;
+						}
+
+						Scheduler::getScheduler().addEvent(createSchedulerTask(20 + params.magicIntervals * (100 - tileList.begin()->second),
+							boost::bind(&Combat::doCombatHealth, caster,
+							tileList.begin()->first->getPosition(),
+							areaCombat,
+							minChange, maxChange,
+							params)));
+
+						//restore fire item id
+						params.itemId = 595;
+					}
+				}
+				else
+				{						
+					AreaCombat * areaCombat = new AreaCombat();
+					areaCombat->setupArea(1);
+					Scheduler::getScheduler().addEvent(createSchedulerTask(20 + params.magicIntervals * tileList.begin()->second,
+						boost::bind(&Combat::doCombatHealth, caster,
+						tileList.begin()->first->getPosition(),
+						areaCombat,
+						minChange, maxChange,
+						params)));
+				}					
+				tileList.pop_front();
+			}
+		
+
 		}
 		
 	}
@@ -1221,7 +1309,7 @@ AreaCombat::AreaCombat(const AreaCombat& rhs)
     }
 }
 
-bool AreaCombat::getList(const Position& centerPos, const Position& targetPos, std::list<Tile*>& list) const
+bool AreaCombat::getList(const Position& centerPos, const Position& targetPos, std::list<std::pair<Tile*,uint8_t>>& list) const
 {
 	Tile* tile = g_game.getTile(targetPos.x, targetPos.y, targetPos.z);
 
@@ -1254,7 +1342,7 @@ bool AreaCombat::getList(const Position& centerPos, const Position& targetPos, s
 							tile = new Tile(tmpPos.x, tmpPos.y, tmpPos.z);
 							g_game.setTile(tile);
 						}
-						list.push_back(tile);
+						list.push_back(std::make_pair(tile, area->getValue(y, x)));
 					}
 				}
 			}
@@ -1374,14 +1462,13 @@ MatrixArea* AreaCombat::createArea(const std::list<uint32_t>& list, uint32_t row
 	uint32_t x = 0;
 	uint32_t y = 0;
 
-	for(std::list<uint32_t>::const_iterator it = list.begin(); it != list.end(); ++it){
-		if(*it == 1 || *it == 3){
-			area->setValue(y, x, true);
-		}
-
-		if(*it == 2 || *it == 3){
+	for(std::list<uint32_t>::const_iterator it = list.begin(); it != list.end(); ++it)
+	{
+		area->setValue(y, x, *it);
+		
+		if (*it == 1)		
 			area->setCenter(y, x);
-		}
+
 
 		++x;
 
@@ -1478,10 +1565,10 @@ void AreaCombat::setupArea(int32_t radius)
 	for(int32_t y = 0; y < 13; ++y){
 		for(int32_t x = 0; x < 13; ++x){
 			if(area[y][x] == 1){
-				list.push_back(3);
+				list.push_back(1);
 			}
 			else if(area[y][x] > 0 && area[y][x] <= radius){
-				list.push_back(1);
+				list.push_back(2);
 			}
 			else{
 				list.push_back(0);

@@ -65,6 +65,8 @@ enum CombatParam_t{
 	COMBATPARAM_COEFFICIENT_B           = 16,
 	COMBATPARAM_THETA                   = 17,
 	COMBATPARAM_DRAW_FUNCTION           = 18,
+	COMBATPARAM_RANDOMGROWTH            = 19,
+	COMBATPARAM_ONLYDISTANCE            = 20
 
 };
 
@@ -251,6 +253,7 @@ struct Outfit_t {
 		lookFeet   = 0;
 		lookType   = 0;
 		lookTypeEx = 0;
+		addons = 0;
 	}
 
 	uint32_t lookType;

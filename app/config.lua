@@ -36,8 +36,8 @@
     -- How long a field belongs to a player before it no longer causes PZ lock for the owner
     FieldOwnershipDuration = 5000
 
-    -- In mili seconds
-    TimeToDecreaseFrags = 24 * 60 * 60 * 1000
+    -- In miliseconds
+    TimeToDecreaseFrags = 1 * 24 * 60 * 60 * 1000 -- 1 day
 
     -- Time white skull will remain after killing a player, in minutes
     WhiteSkullTime = 3
@@ -96,7 +96,7 @@
     SQL_Type = "mysql"
 
     --- SQL connection part
-    SQL_DB   = "avesta74"
+    SQL_DB   = "gameserver"
 
     -- These settings are not used by SQLite
     SQL_Host = "127.0.0.1"
@@ -151,7 +151,7 @@
 ---- MAP ----
 
     -- Map location
-    Map = "data/world/mapOriginal.otbm"
+    Map = "/world/mapOriginal.otbm"
 
     -- Mapkind
     -- Options: OTBM for binary map, XML for OTX map

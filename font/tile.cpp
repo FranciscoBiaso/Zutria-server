@@ -397,12 +397,20 @@ void Tile::moveCreature(Creature* creature, Cylinder* toCylinder, bool teleport 
 	if(!teleport){
 		if(fromPos.y > toPos.y)
 			creature->setDirection(NORTH);
-		else if(fromPos.y < toPos.y)
+		if(fromPos.y < toPos.y)
 			creature->setDirection(SOUTH);
 		if(fromPos.x < toPos.x)
 			creature->setDirection(EAST);
-		else if(fromPos.x > toPos.x)
+		if (fromPos.x > toPos.x)
 			creature->setDirection(WEST);
+		if (fromPos.y > toPos.y && fromPos.x > toPos.x)
+			creature->setDirection(NORTHWEST);
+		if (fromPos.y > toPos.y && fromPos.x < toPos.x)
+			creature->setDirection(NORTHEAST);
+		if (fromPos.y < toPos.y && fromPos.x > toPos.x)
+			creature->setDirection(SOUTHWEST);
+		if (fromPos.y < toPos.y && fromPos.x < toPos.x)
+			creature->setDirection(SOUTHEAST);
 	}
 
 	SpectatorVec list;
@@ -412,14 +420,13 @@ void Tile::moveCreature(Creature* creature, Cylinder* toCylinder, bool teleport 
 
 	//send to client
 	Player* tmpPlayer = NULL;
-	for(it = list.begin(); it != list.end(); ++it) {
-		if((tmpPlayer = (*it)->getPlayer())){
+	for(it = list.begin(); it != list.end(); ++it) 
+	{
+		if((tmpPlayer = (*it)->getPlayer()))
+		{
 			tmpPlayer->sendCreatureMove(creature, toTile, toPos, this, fromPos, oldStackPos, teleport);
 		}
-	}
 
-	//event method
-	for(it = list.begin(); it != list.end(); ++it) {
 		(*it)->onCreatureMove(creature, toTile, toPos, this, fromPos, oldStackPos, teleport);
 	}
 

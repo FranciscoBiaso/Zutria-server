@@ -44,8 +44,8 @@ extern ConfigManager g_config;
 int getSpellPoints(std::string spellName, int level)
 {
 	//level 1,2,3
-	if (level >= 0 && level < 3)
-		return _player_::g_spellsTree[spellName].magicLevels[level];
+	if (level < _player_::g_spellsTree[spellName].maxLevel)
+		return _player_::g_spellsTree[spellName].magicPoints - level * std::floor(_player_::g_spellsTree[spellName].magicPoints / 7.0);
 	else
 		return 0;
 }
@@ -54,6 +54,8 @@ Spells::Spells():
 m_scriptInterface("Spell Interface")
 {
 	m_scriptInterface.initState();
+
+
 }
 
 Spells::~Spells()
@@ -61,7 +63,7 @@ Spells::~Spells()
 	clear();
 }
 
-TalkActionResult_t Spells::playerSaySpell(Player* player, SpeakClasses type, const std::string& words)
+TalkActionResult_t Spells::playerSaySpell(Player* player, MessageClasses type, const std::string& words)
 {
 	std::string str_words = words;
 
@@ -391,7 +393,46 @@ bool CombatSpell::castSpell(Creature* creature)
 
 bool CombatSpell::castSpell(Creature* creature, Creature* target)
 {
-	if(m_scripted)
+
+	if (m_scripted){
+		LuaVariant var;
+
+		if (combat->hasArea()){
+			var.type = VARIANT_POSITION;
+
+			if (needTarget){
+				var.pos = target->getPosition();
+			}
+			else if (needDirection){
+				var.pos = Spells::getCasterPosition(creature, creature->getDirection());
+			}
+			else{
+				var.pos = creature->getPosition();
+			}
+		}
+		else{
+			var.type = VARIANT_NUMBER;
+			var.number = target->getID();
+		}
+
+		return executeCastSpell(creature, var);
+	}
+
+	if (combat->hasArea()){
+		if (needTarget){
+			combat->doCombat(creature, target->getPosition());
+		}
+		else{
+			return castSpell(creature);
+		}
+	}
+	else{
+		combat->doCombat(creature, target);
+	}
+
+	return true;
+
+	/*if(m_scripted)
 	{
 		LuaVariant var;
 
@@ -415,7 +456,7 @@ bool CombatSpell::castSpell(Creature* creature, Creature* target)
 	else{
 		combat->doCombat(creature, target);
 	}
-	return true;
+	return true;*/
 }
 
 bool CombatSpell::executeCastSpell(Creature* creature, const LuaVariant& var)
@@ -1113,7 +1154,7 @@ bool InstantSpell::playerCastInstant(Player* player, const std::string& param)
 			{
 				if(!casterTargetOrDirection)
 				{
-					player->sendCancelMessage(ret);//RET_PLAYERWITHTHISNAMEISNOTONLINE);
+					player->sendCancelMessage(ret);//RET_PLAYERWITHTHISNAMEISNOTONLINE;
 					g_game.addMagicEffect(player->getPosition(), NM_ME_PUFF);
 					return false;
 				}
@@ -1574,7 +1615,7 @@ bool InstantSpell::SearchPlayer(const InstantSpell* spell, Creature* creature, c
 		}
 
 		ss << ".";
-		player->sendTextMessage(MSG_INFO_DESCR, ss.str().c_str());
+		//player->sendTextMessage(MSG_INFO_DESCR, ss.str().c_str());
 		g_game.addMagicEffect(player->getPosition(), NM_ME_MAGIC_ENERGY);
 		return true;
 	}

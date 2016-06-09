@@ -260,23 +260,23 @@ void Creature::onWalk()
 
 void Creature::onWalk(Direction& dir)
 {
-	if(hasCondition(CONDITION_DRUNK)){
-		uint32_t r = random_range(0, 16);
+	//if(hasCondition(CONDITION_DRUNK)){
+	//	uint32_t r = random_range(0, 16);
 
-		if(r <= 4){
-			switch(r){
-				case 0: dir = NORTH; break;
-				case 1: dir = WEST;  break;
-				case 3: dir = SOUTH; break;
-				case 4: dir = EAST;  break;
+	//	if(r <= 4){
+	//		switch(r){
+	//			case 0: dir = NORTH; break;
+	//			case 1: dir = WEST;  break;
+	//			case 3: dir = SOUTH; break;
+	//			case 4: dir = EAST;  break;
 
-				default:
-					break;
-			}
+	//			default:
+	//				break;
+	//		}
 
-			g_game.internalCreatureSay(this, SPEAK_SAY, "Hicks!");
-		}
-	}
+	//		//g_game.internalCreatureSay(this, SPEAK_SAY, "Hicks!");
+	//	}
+	//}
 }
 
 bool Creature::getNextStep(Direction& dir)
@@ -902,14 +902,14 @@ int Creature::blockHit(Creature* attacker, CombatType_t combatType, int32_t& dam
 		blockType |= BLOCK_IMMUNITY;
 	}
 	//try avoidance
-	else if (damage > 0 && getAvoindanceDefense() > 0.0)
+	/*else if (damage > 0 && getAvoindanceDefense() > 0.0)
 	{
 		float maxAvoidancePorcentage = getAvoindanceDefense() / 800.0 * 0.3 * 100;
 		float minAvoidancePorcentage = maxAvoidancePorcentage / 3.0;
 		(*missPorcentage) = minAvoidancePorcentage + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (maxAvoidancePorcentage - minAvoidancePorcentage)));
 		damage = damage * (*missPorcentage);
 		blockType |= BLOCK_AVOIDANCE;
-	}
+	}*/
 	else if(checkDefense || checkArmor)
 	{
 		bool hasDefense = false;
@@ -1471,9 +1471,9 @@ int32_t Creature::getStepDuration(Direction dir) const
 {
 	int32_t stepDuration = getStepDuration();
 
-	/*if(dir == NORTHWEST || dir == NORTHEAST || dir == SOUTHWEST || dir == SOUTHEAST){
+	if(dir == NORTHWEST || dir == NORTHEAST || dir == SOUTHWEST || dir == SOUTHEAST){
 		stepDuration *= 1;
-	}*/
+	}
 
 	return stepDuration;
 }

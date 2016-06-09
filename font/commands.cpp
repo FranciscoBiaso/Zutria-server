@@ -232,7 +232,7 @@ bool Commands::exeCommand(Creature* creature, const std::string& cmd)
 	//check access for this command
 	if(player && player->getAccessLevel() < it->second->accesslevel){
 		if(player->getAccessLevel() > 0){
-			player->sendTextMessage(MSG_STATUS_SMALL, "Você não pode executar esse comando.");
+			player->sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP, MSG_INFORMATION,MSG_COLOR_RED, "Você não pode executar esse comando.");
 		}
 
 		return false;
@@ -242,7 +242,7 @@ bool Commands::exeCommand(Creature* creature, const std::string& cmd)
 	CommandFunc cfunc = it->second->f;
 	(this->*cfunc)(creature, str_command, str_param);
 	if(player)
-		player->sendTextMessage(MSG_STATUS_CONSOLE_RED, cmd.c_str());
+		player->sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP | MSG_TARGET_CONSOLE, MSG_INFORMATION,MSG_COLOR_GREEN, cmd.c_str());
 
 	return true;
 }
@@ -432,7 +432,7 @@ bool Commands::createItemByName(Creature* creature, const std::string& cmd, cons
 
 	int32_t itemId = Item::items.getItemIdByName(itemName);
 	if(itemId == -1){
-		player->sendTextMessage(MSG_STATUS_CONSOLE_RED, "Item could not be summoned.");
+		player->sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP, MSG_INFORMATION, MSG_COLOR_ORGANE, "Item não pode ser sumonado.");
 		return false;
 	}
 
@@ -491,7 +491,7 @@ bool Commands::reloadInfo(Creature* creature, const std::string& cmd, const std:
 {
 	Player* player = creature->getPlayer();
 
-	if(param == "actions" || param == "action"){
+	/*if(param == "actions" || param == "action"){
 		g_actions->reload();
 		if(player) player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, "Reloaded actions.");
 	}
@@ -528,7 +528,7 @@ bool Commands::reloadInfo(Creature* creature, const std::string& cmd, const std:
 		Raids::getInstance()->reload();
 		Raids::getInstance()->startup();
 		if(player) player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, "Reloaded raids.");
-	}
+	}*/
 	/*
 	else if(param == "weapons"){
 		g_weapons->reload();
@@ -537,7 +537,7 @@ bool Commands::reloadInfo(Creature* creature, const std::string& cmd, const std:
 		Item::items.reload();
 	}
 	*/
-	else if(param == "creaturescripts" || param == "creature scripts" || param == "cs"){
+	/*else if(param == "creaturescripts" || param == "creature scripts" || param == "cs"){
 		g_creatureEvents->reload();
 		if(player) player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, "Reloaded creature scripts.");
 	}
@@ -547,7 +547,7 @@ bool Commands::reloadInfo(Creature* creature, const std::string& cmd, const std:
 	}
 	else{
 		if(player) player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, "Option not found.");
-	}
+	}*/
 
 	return true;
 }
@@ -608,7 +608,7 @@ bool Commands::teleportTo(Creature* creature, const std::string& cmd, const std:
 
 bool Commands::getInfo(Creature* creature, const std::string& cmd, const std::string& param)
 {
-	Player* player = creature->getPlayer();
+	/*Player* player = creature->getPlayer();
 	if(!player)
 		return true;
 
@@ -616,7 +616,7 @@ bool Commands::getInfo(Creature* creature, const std::string& cmd, const std::st
 	if(paramPlayer) {
 		std::stringstream info;
 		if(paramPlayer->getAccessLevel() >= player->getAccessLevel() && player != paramPlayer){
-			player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, "You can not get info about this player.");
+			player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, "Você não pode pegar informação sobre este jogador.");
 			return true;
 		}
 		
@@ -633,7 +633,7 @@ bool Commands::getInfo(Creature* creature, const std::string& cmd, const std::st
 	}
 	else{
 		player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, "Player not found.");
-	}
+	}*/
 
 	return true;
 }
@@ -661,7 +661,8 @@ bool Commands::closeServer(Creature* creature, const std::string& cmd, const std
 
 	Player* player = creature->getPlayer();
 	if(player){
-		player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, "Server is now closed.");
+		player->sendTextMessage(MSG_TARGET_CONSOLE | MSG_TARGET_TOP_CENTER_MAP,
+			MSG_INFORMATION, MSG_COLOR_DARK_RED, "Zutria será fechado!");
     }
     
     return true;
@@ -672,10 +673,10 @@ bool Commands::saveServer(Creature* creature, const std::string& cmd, const std:
     // Save most everything
 	g_game.saveServer(false);
 
-	// Notify player
-	if(Player* player = creature->getPlayer()){
-		player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, "Server has been saved.");
-	}
+	//// Notify player
+	//if(Player* player = creature->getPlayer()){
+	//	player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, "Todos os dados foram salvos no servidor!");
+	//}
 
 	return true;
 }
@@ -685,8 +686,10 @@ bool Commands::openServer(Creature* creature, const std::string& cmd, const std:
     g_game.setGameState(GAME_STATE_NORMAL);
     
     Player* player = creature->getPlayer();
-    if(player){
-        player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, "Server is now open.");
+    if(player)
+	{
+        player->sendTextMessage(MSG_TARGET_CONSOLE | MSG_TARGET_BOTTOM_CENTER_MAP, 
+			MSG_INFORMATION, MSG_COLOR_GREEN, "Server is now open.");
     }
     
     return true;
@@ -694,7 +697,7 @@ bool Commands::openServer(Creature* creature, const std::string& cmd, const std:
 
 bool Commands::onlineList(Creature* creature, const std::string& cmd, const std::string& param)
 {
-	Player* player = creature->getPlayer();
+	/*Player* player = creature->getPlayer();
 	if(!player)
 		return false;
 
@@ -733,7 +736,7 @@ bool Commands::onlineList(Creature* creature, const std::string& cmd, const std:
 
 	players.str("");
 	players << "Total: " << n << " player(s)" << std::endl;
-	player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, players.str().c_str());
+	player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, players.str().c_str());*/
 	return true;
 }
 
@@ -774,7 +777,7 @@ bool Commands::kickPlayer(Creature* creature, const std::string& cmd, const std:
 	if(playerKick){
 		Player* player = creature->getPlayer();
 		if(player && player->getAccessLevel() <= playerKick->getAccessLevel()){
-			player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, "You cannot kick this player.");
+//			player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, "You cannot kick this player.");
 			return true;
 		}
 
@@ -800,7 +803,7 @@ bool Commands::setHouseOwner(Creature* creature, const std::string& cmd, const s
 				houseTile->getHouse()->setHouseOwner(guid);
 			}
 			else{
-				player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, "Player not found.");
+				//player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, "Player not found.");
 			}
 
 			return true;
@@ -877,7 +880,7 @@ bool Commands::getHouse(Creature* creature, const std::string& cmd, const std::s
 			str << " does not own any house.";
 		}
 
-		player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, str.str().c_str());
+		//player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, str.str().c_str());
 	}
 	return false;
 }
@@ -895,7 +898,7 @@ bool Commands::serverInfo(Creature* creature, const std::string& cmd, const std:
 	text << "\nMagic Rate: " << g_config.getNumber(ConfigManager::RATE_MAGIC);
 	text << "\nLoot Rate: " << g_config.getNumber(ConfigManager::RATE_LOOT);
 
-	player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, text.str().c_str());
+	//player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, text.str().c_str());
 
 	return true;
 }
@@ -1021,7 +1024,7 @@ std::string parseParams(tokenizer::iterator &it, tokenizer::iterator end)
 
 bool Commands::forceRaid(Creature* creature, const std::string& cmd, const std::string& param)
 {
-	Player* player = creature->getPlayer();
+	/*Player* player = creature->getPlayer();
 	if(!player){
 		return false;
 	}
@@ -1057,7 +1060,7 @@ bool Commands::forceRaid(Creature* creature, const std::string& cmd, const std::
 
 	}
 
-	player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, "Raid started.");
+	player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, "Raid started.");*/
 	return true;
 }
 
@@ -1121,7 +1124,8 @@ bool Commands::whoIsOnline(Creature* creature, const std::string &cmd, const std
 
 bool Commands::playerKills(Creature* creature, const std::string& cmd, const std::string& param)
 {
-	if (Player* player = creature->getPlayer()) {
+	/*if (Player* player = creature->getPlayer()) 
+	{
 		int32_t fragTime = g_config.getNumber(ConfigManager::FRAG_TIME);
 		if (player->redSkullTicks && fragTime > 0) {
 			int32_t frags = (player->redSkullTicks / fragTime) + 1;
@@ -1136,7 +1140,7 @@ bool Commands::playerKills(Creature* creature, const std::string& cmd, const std
 		else {
 			player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, "You do not have any unjustified kill.");
 		}
-	}
+	}*/
 
 	return false;
 }
@@ -1168,7 +1172,7 @@ bool Commands::buyHouse(Creature* creature, const std::string& cmd, const std::s
 									uint32_t money = g_game.getMoney(player);
 									if (money >= price && g_game.removeMoney(player, price)) {
 										house->setHouseOwner(player->guid);
-										player->sendTextMessage(MSG_INFO_DESCR, "You have successfully bought this house, be sure to have the money for the rent in your depot of this city.");
+										//player->sendTextMessage(MSG_INFO_DESCR, "You have successfully bought this house, be sure to have the money for the rent in your depot of this city.");
 										return true;
 									}
 									else {
@@ -1214,6 +1218,6 @@ bool Commands::refreshMap(Creature* creature, const std::string& cmd, const std:
 
 	g_game.proceduralRefresh();
 
-	player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, "Refreshed map.");
+	//player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, "Refreshed map.");
 	return true;
 }

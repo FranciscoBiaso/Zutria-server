@@ -387,7 +387,7 @@ bool RaidEvent::configureRaidEvent(xmlNodePtr eventNode)
 
 bool AnnounceEvent::configureRaidEvent(xmlNodePtr eventNode)
 {
-	if(!RaidEvent::configureRaidEvent(eventNode)){
+	/*if(!RaidEvent::configureRaidEvent(eventNode)){
 		return false;
 	}
 
@@ -431,15 +431,15 @@ bool AnnounceEvent::configureRaidEvent(xmlNodePtr eventNode)
 	else{
 		m_messageType = MSG_EVENT_ADVANCE;
 		std::cout << "[Notice] Raid: type tag missing for announce event. Using default: " << (int32_t)m_messageType << std::endl;
-	}
+	}*/
 	return true;
 }
 
 bool AnnounceEvent::executeEvent()
 {
-	for(AutoList<Player>::listiterator it = Player::listPlayer.list.begin(); it != Player::listPlayer.list.end(); ++it){
+	/*for(AutoList<Player>::listiterator it = Player::listPlayer.list.begin(); it != Player::listPlayer.list.end(); ++it){
 		(*it).second->sendTextMessage(m_messageType, m_message);
-	}
+	}*/
 	return true;
 }
 

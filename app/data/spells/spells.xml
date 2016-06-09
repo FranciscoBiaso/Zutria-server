@@ -2,44 +2,72 @@
 
 <spells>
     <!-- Rune Spells -->
-		<rune name="extractus blum" id="516" maglv="0" blocktype="all" charges="0" script="support/fire/firewall rune.lua" />
-		<rune name="extractus umpus" id="518" maglv="0" needtarget="1" charges="0" script="attack/fire/fireball rune.lua" />
-		<rune name="extractus umplodums" id="598" maglv="0" seltarget="1" charges="0" script="attack/fire/fireball circle rune.lua" />
-		<rune name="extractus umplorodorums" id="597" maglv="0" seltarget="1" charges="0" script="attack/fire/fireball agressive circle rune.lua" />
-		<rune name="extractus blum" id="599" maglv="0" blocktype="all" charges="0" script="attack/fire/fire random explosion rune.lua" />
+		<!-- <rune name="extractus blum" id="516" maglv="0" blocktype="all" charges="0" script="support/wizard/firewall rune.lua" /> -->
+		<rune name="chuva de meteoros 0" id="516" maglv="0" needtarget="0" charges="10" script="attack/wizard/meteor shower 0.lua" />
+		<rune name="fogo vivo 0" id="518" maglv="0" needtarget="0" charges="2" script="attack/wizard/stoker 0.lua" />
+    <rune name="barreira de galhos 0" id="2876" maglv="0" needtarget="0" charges="2" script="support/druid/wall of branches 0.lua" />
 	
+  
 		<!-- instante spells -->
-		<instant name="bola de fogo" words="bola de fogo" maglv="0" mana="0" target="1" customexhaust="10" script="attack/fire/fireball.lua">
+		<instant name="bola de fogo 0" words="bola de fogo 0" maglv="0" mana="0" needtarget="1" customexhaust="10" script="attack/wizard/fireball 0.lua">
 			<vocation name="Mago de Fogo"/> <vocation name="Master Sorcerer"/>
 		</instant>
-		<instant name="espiral fogosa" words="espiral fogosa" maglv="0" mana="0" seltarget="1"  customexhaust="10" script="attack/fire/spiral fiery level 1.lua">
+		<instant name="língua de fogo 0" words="língua de fogo 0" maglv="0" mana="0" direction="1"  customexhaust="10" script="attack/wizard/tongue of fire 0.lua">
 			<vocation name="Mago de Fogo"/> <vocation name="Master Sorcerer"/>
     </instant>    
-    <instant name="espiral fogosa lvl 2" words="espiral fogosa lvl 2" maglv="0" mana="0" seltarget="1"  customexhaust="10" script="attack/fire/spiral fiery level 2.lua">
+    <instant name="língua de fogo 1" words="língua de fogo 1" maglv="0" mana="0" direction="1"  customexhaust="10" script="attack/wizard/tongue of fire 1.lua">
 			<vocation name="Mago de Fogo"/> <vocation name="Master Sorcerer"/>
     </instant> 
-		<instant name="espiral incendiária" words="espiral incendiária" maglv="0" mana="0" seltarget="1"  customexhaust="10" script="attack/fire/spiral incendiary.lua">
+    
+    <instant name="onda sísmica 0" words="onda sísmica 0" maglv="0" mana="0" seltarget="1"  customexhaust="10" script="attack/wizard/seismic wave 0.lua">
 			<vocation name="Mago de Fogo"/> <vocation name="Master Sorcerer"/>
-    </instant> 	
-		<instant name="Explosão de Bola de fogo elevada" words="extractum expludum" maglv="0" mana="0" seltarget="1"  customexhaust="1000" script="attack/fire/great explosion fireball.lua">
+    </instant>     
+    
+    <instant name="descarga elétrica 0" words="descarga elétrica 0" maglv="0" mana="0" needtarget="1"  customexhaust="10" script="attack/wizard/eletric discharge 0.lua">
+			<vocation name="Mago de Fogo"/> <vocation name="Master Sorcerer"/>
+    </instant>    
+    
+    <instant name="onda elétrica 0" words="onda elétrica 0" maglv="0" mana="0" direction="1"  customexhaust="10" script="attack/wizard/eletrician wave 0.lua">
 			<vocation name="Mago de Fogo"/> <vocation name="Master Sorcerer"/>
     </instant> 
-		<instant name="Explosão de Bola de fogo massiva" words="extractum explodorum" maglv="0" mana="0" seltarget="1"  customexhaust="1000" script="attack/fire/massive explosion fireball.lua">
+    
+ 		<instant name="choque fulminante 0" words="choque fulminante 0" maglv="0" mana="0" needtarget="1" customexhaust="10" script="attack/wizard/fulminant shock 0.lua">
 			<vocation name="Mago de Fogo"/> <vocation name="Master Sorcerer"/>
-    </instant> 	
-		<instant name="Escudo de fogo" words="extractum protos" maglv="0" mana="0" seltarget="1" aggressive="0" customexhaust="1000" script="support/fire/fire shield.lua">
+		</instant>
+    
+    <instant name="potência energética 0" words="potência energética 0" maglv="0" mana="0" seltarget="1" customexhaust="0" script="support/wizard/energy power 0.lua">
+			<vocation name="Mago de Fogo"/> <vocation name="Master Sorcerer"/>
+		</instant>
+    
+    <instant name="ciclone elétrico 0" words="ciclone elétrico 0" maglv="0" mana="0" direction="1"  customexhaust="10" script="attack/wizard/electric cyclone 0.lua">
+			<vocation name="Mago de Fogo"/> <vocation name="Master Sorcerer"/>
+    </instant> 
+    
+    
+    <instant name="ciclone elétrico 0" words="ciclone elétrico 0" maglv="0" mana="0" direction="1"  customexhaust="10" script="attack/wizard/electric cyclone 0.lua">
+			<vocation name="Mago de Fogo"/> <vocation name="Master Sorcerer"/>
+    </instant> 
+
+      	
+    
+		<!-- <instant name="Escudo de fogo" words="extractum protos" maglv="0" mana="0" seltarget="1" aggressive="0" customexhaust="1000" script="support/wizard/fire shield.lua">
 			<vocation name="Mago de Fogo"/> <vocation name="Master Sorcerer"/>
     </instant> 				
-		
+		 -->
 		
 		
 		<!-- conjure spells -->
-		<conjure name="Runa de barreira de fogo" words="extractus blum" maglv="0" mana="0" reagentId="0" conjureId="516" conjureCount="1" function="conjureItem">
+		<conjure name="chuva de meteoros 0" words="chuva de meteoros 0" maglv="0" mana="0" reagentId="0" conjureId="516" conjureCount="1" function="conjureItem">
             <vocation name="Mago de Fogo"/> <vocation name="Master Sorcerer"/>
     </conjure>
-		<conjure name="Runa de bola de fogo" words="extractus umpus" maglv="0" mana="0" reagentId="0" conjureId="518" conjureCount="4" function="conjureItem">
+		<conjure name="fogo vivo 0" words="fogo vivo 0" maglv="0" mana="0" reagentId="0" conjureId="518" conjureCount="4" function="conjureItem">
             <vocation name="Mago de Fogo"/> <vocation name="Master Sorcerer"/>
+    </conjure>    
+    <conjure name="barreira de galhos 0" words="barreira de galhos 0" maglv="0" mana="0" reagentId="0" conjureId="2876" conjureCount="3" function="conjureItem">
+            <vocation name="druid"/> <vocation name="Master Sorcerer"/>
     </conjure>
+    
+    
 		<conjure name="Runa circular de bola de fogo" words="extractus umplodums" maglv="0" mana="0" reagentId="0" conjureId="598" conjureCount="3" function="conjureItem">
             <vocation name="Mago de Fogo"/> <vocation name="Master Sorcerer"/>
     </conjure>

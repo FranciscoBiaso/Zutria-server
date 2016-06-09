@@ -48,7 +48,8 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 			 `lookhead`, `lookbody`, `looklegs`, `lookfeet`, `posx`, `posy`, \
 			 `posz`, `lastlogin`, `lastlogout`, `lastip`, `save`, `conditions`, `redskulltime`, \
 			 `redskull`, `guildnick`, `loss_experience`, `loss_mana`, `loss_skills`, \
-			 `loss_items`, `rank_id`, `town_id`, `balance`, `status`, `levelPoints`, `unusedMagicPoints` \
+			 `loss_items`, `rank_id`, `town_id`, `balance`, `status`, `levelPoints`, `unusedMagicPoints`, \
+			 `breath` \
 			 FROM `players` LEFT JOIN `accounts` ON `account_id` = `accounts`.`id` \
 			 WHERE `players`.`name` = " + db->escapeString(name);
 
@@ -97,6 +98,7 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 	player->currentOutfit = player->defaultOutfit;
 	player->setLevelPoints((uint16_t)result->getDataInt("levelPoints"));
 	player->setUnusedMagicPoints((uint16_t)result->getDataInt("unusedMagicPoints"));
+	player->setBreath(result->getDataInt("breath"));
 
 #ifdef __SKULLSYSTEM__
 	int32_t redSkullSeconds = result->getDataInt("redskulltime") - std::time(NULL);
@@ -321,6 +323,20 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 	player->updateInventoryWeigth();
 	player->updateItemsLight(true);
 
+	//table outfits
+	query.str("");
+	query << "SELECT `outfit_id`, `addons` FROM `player_outfits` WHERE `player_id` = " << player->getGUID();
+	if (result = db->storeQuery(query.str()))
+	{
+		do 
+		{
+			uint8_t outfit_id = result->getDataInt("outfit_id");
+			uint8_t addons = result->getDataInt("addons");
+			player->outfits.push_back(std::make_pair(outfit_id, addons));				
+
+		} while (result->next());
+		db->freeResult(result);
+	}
 
 	return true;
 }

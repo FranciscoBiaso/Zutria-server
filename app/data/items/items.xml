@@ -546,20 +546,43 @@
 	<!-- fire wall rune -->
 	<item id="516" name="runa de barreira de fogo">	
 		<attribute key="weight" value="35"/>
+		<attribute key="runeSpellName" value="Chuva de meteoros"/>		
+		<attribute key="charges" value="3"/>
 	</item>
 	
 	<!-- barreira de fogo-->
-	<item id="517" name="barreira de fogo">	
-		<attribute key="decayTo" value="595"/>
-		<attribute key="duration" value="15"/>
-	</item>
 	<item id="595" name="barreira de fogo">	
-		<attribute key="decayTo" value="596"/>
-		<attribute key="duration" value="7"/>
+		<attribute key="type" value="magicfield"/>
+		<attribute key="decayTo" value="517"/>
+		<attribute key="duration" value="20"/>
+		<attribute key="field" value="fire">
+			<attribute key="damage" value="20"/>
+			<attribute key="ticks" value="10000"/>
+			<attribute key="count" value="7"/>
+			<attribute key="damage" value="10"/>
+		</attribute>
 	</item>
+  <item id="517" name="barreira de fogo">	
+		<attribute key="type" value="magicfield"/>
+		<attribute key="decayTo" value="596"/>
+		<attribute key="duration" value="20"/>
+		<attribute key="field" value="fire">
+			<attribute key="damage" value="20"/>
+			<attribute key="ticks" value="10000"/>
+			<attribute key="count" value="7"/>
+			<attribute key="damage" value="10"/>
+		</attribute>
+	</item>	
 	<item id="596" name="barreira de fogo">	
+		<attribute key="type" value="magicfield"/>
 		<attribute key="decayTo" value="0"/>
-		<attribute key="duration" value="5"/>
+		<attribute key="duration" value="20"/>
+		<attribute key="field" value="fire">
+			<attribute key="damage" value="20"/>
+			<attribute key="ticks" value="10000"/>
+			<attribute key="count" value="7"/>
+			<attribute key="damage" value="10"/>
+		</attribute>
 	</item>
 	
 	<!-- fire ball rune -->
@@ -787,6 +810,17 @@
   <item id="2235" name="sangue">	
 		<attribute key="decayTo" value="0"/>
 		<attribute key="duration" value="12"/>
+	</item>
+  
+  <item id="2875" name="barreira de galhos">	
+		<attribute key="decayTo" value="0"/>
+		<attribute key="duration" value="35"/>
+	</item>
+  
+  <item id="2876" name="runa de barreira de galhos">	
+		<attribute key="weight" value="35"/>
+		<attribute key="runeSpellName" value=""/>		
+		<attribute key="charges" value="3"/>
 	</item>
     
 </items>

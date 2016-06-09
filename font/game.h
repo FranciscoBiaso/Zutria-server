@@ -369,7 +369,7 @@ public:
 	  * \param type Type of message
 	  * \param text The text to say
 	  */
-	bool internalCreatureSay(Creature* creature, SpeakClasses type, const std::string& text);
+	bool internalCreatureSay(Creature* creature, MessageClasses type, const std::string& text);
 
 	bool internalStartTrade(Player* player, Player* partner, Item* tradeItem);
 	bool internalCloseTrade(Player* player);
@@ -391,7 +391,8 @@ public:
 	bool playerRequestChannels(uint32_t playerId);
 	bool playerOpenChannel(uint32_t playerId, uint16_t channelId);
 	bool playerCloseChannel(uint32_t playerId, uint16_t channelId);
-	bool playerOpenPrivateChannel(uint32_t playerId, const std::string& receiver);bool playerProcessRuleViolation(uint32_t playerId, const std::string& name);
+	bool playerOpenPrivateChannel(uint32_t playerId, const std::string& receiver);
+	bool playerProcessRuleViolation(uint32_t playerId, const std::string& name);
 	bool playerCloseRuleViolation(uint32_t playerId, const std::string& name);
 	bool playerCancelRuleViolation(uint32_t playerId);
 	bool playerReceivePing(uint32_t playerId);
@@ -399,6 +400,10 @@ public:
 	bool playerStopAutoWalk(uint32_t playerId);
 	bool playerUseItemEx(uint32_t playerId, const Position& fromPos, uint8_t fromStackPos,
 		uint16_t fromSpriteId, const Position& toPos, uint8_t toStackPos, uint16_t toSpriteId);
+
+	bool playerUseTargetSpell(uint32_t playerId,
+		uint16_t fromSpriteId, const Position& toPos, uint8_t toStackPos, uint16_t toSpriteId);
+	bool npcLeftClick(uint32_t playerId, std::string npcName);
 	bool playerUseItem(uint32_t playerId, const Position& pos, uint8_t stackPos,
 		uint8_t index, uint16_t spriteId);
 	bool playerUseBattleWindow(uint32_t playerId, const Position& fromPos,
@@ -418,14 +423,14 @@ public:
 	bool playerSetAttackedCreature(uint32_t playerId, uint32_t creatureId);
 	bool playerFollowCreature(uint32_t playerId, uint32_t creatureId);
 	bool playerCancelAttackAndFollow(uint32_t playerId);
+	bool playerSaveBreath(uint32_t playerId, uint8_t breath);
 	bool playerSetFightModes(uint32_t playerId, fightMode_t fightMode, chaseMode_t chaseMode, bool safeMode);
 	bool playerLookAt(uint32_t playerId, const Position& pos, uint16_t spriteId, uint8_t stackPos);
 	bool playerRequestAddVip(uint32_t playerId, const std::string& name);
 	bool playerRequestRemoveVip(uint32_t playerId, uint32_t guid);
 	bool playerTurn(uint32_t playerId, Direction dir);
 	bool playerRequestOutfit(uint32_t playerId);
-	bool playerSay(uint32_t playerId, uint16_t channelId, SpeakClasses type,
-		const std::string& receiver, const std::string& text);
+	bool playerSay(uint32_t playerId, uint16_t channelId, MessageClasses type, const std::string& receiver, const std::string& text);
 	bool playerChangeOutfit(uint32_t playerId, Outfit_t outfit);
 	bool playerInviteToParty(uint32_t playerId, uint32_t invitedId);
 	bool playerJoinParty(uint32_t playerId, uint32_t leaderId);
@@ -436,6 +441,9 @@ public:
 	//interface
 	bool playerAddSkillPoint(uint32_t playerId, uint8_t skillId);
 	bool playerAddSpellLevel(uint32_t playerId, uint8_t spellId);
+
+	//player actions
+	bool playerUseSpell(uint32_t playerId, uint8_t spellId);
 
 	bool bugReport(uint32_t playerId, std::string report);
 	bool violationWindow(uint32_t playerId, std::string name, uint8_t reason, std::string comment, uint8_t action, bool IPBanishment);
@@ -524,12 +532,12 @@ public:
 	void reloadInfo(ReloadTypes_t info);
 
 protected:
-    bool playerSayCommand(Player* player, SpeakClasses type, const std::string& text);
-	bool playerSaySpell(Player* player, SpeakClasses type, const std::string& text);
+	bool playerSayCommand(Player* player, MessageClasses type, const std::string& text);
+	bool playerSaySpell(Player* player, MessageClasses type, const std::string& text);
 	bool playerWhisper(Player* player, const std::string& text);
 	bool playerYell(Player* player, const std::string& text);
-	bool playerSpeakTo(Player* player, SpeakClasses type, const std::string& receiver, const std::string& text);
-	bool playerTalkToChannel(Player* player, SpeakClasses type, const std::string& text, unsigned short channelId);
+	bool playerSpeakTo(Player* player, MessageClasses type, const std::string& receiver, const std::string& text);
+	bool playerTalkToChannel(Player* player, MessageClasses type, const std::string& text, unsigned short channelId);
 	bool playerSpeakToNpc(Player* player, const std::string& text);
 	bool playerReportRuleViolation(Player* player, const std::string& text);
 	bool playerContinueReport(Player* player, const std::string& text);

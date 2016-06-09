@@ -183,15 +183,14 @@ bool Game::saveServer(bool globalSave)
 {
 	saveGameState();
 
-	for(AutoList<Player>::listiterator it = Player::listPlayer.list.begin();
-		it != Player::listPlayer.list.end();
-		++it)
+	for(auto it = Player::listPlayer.list.begin(); it != Player::listPlayer.list.end();	it++)
 	{
 		it->second->loginPosition = it->second->getPosition();
 		IOPlayer::instance()->savePlayer(it->second);
 	}
 
-	if(globalSave){
+	if(globalSave)
+	{
 		Houses::getInstance().payHouses();
 		g_bans.clearTemporaryBans();
 	}
@@ -522,7 +521,8 @@ Player* Game::getPlayerByName(const std::string& s)
 {
 	std::string txt1 = asUpperCaseString(s);
 	for(AutoList<Player>::listiterator it = Player::listPlayer.list.begin(); it != Player::listPlayer.list.end(); ++it){
-		if(!(*it).second->isRemoved()){
+		if(!(*it).second->isRemoved())
+		{
 			std::string txt2 = asUpperCaseString((*it).second->getName());
 			if(txt1 == txt2)
 				return it->second;
@@ -614,15 +614,15 @@ PlayerVector Game::getPlayersByIP(uint32_t ipadress, uint32_t mask)
 
 bool Game::internalPlaceCreature(Creature* creature, const Position& pos, bool extendedPos /*=false*/, bool forced /*= false*/)
 {
-	if(creature->getParent() != NULL){
+	if(creature->getParent() != NULL)
+	{
 		return false;
 	}
 
-	if(!map->placeCreature(pos, creature, extendedPos, forced)){
+	if(!map->placeCreature(pos, creature, extendedPos, forced))
+	{
 		return false;
 	}
-
-	//std::cout << "internalPlaceCreature: " << creature << " " << creature->getID() << std::endl;
 
 	creature->useThing2();
 	creature->setID();
@@ -633,7 +633,8 @@ bool Game::internalPlaceCreature(Creature* creature, const Position& pos, bool e
 
 bool Game::placeCreature(Creature* creature, const Position& pos, bool extendedPos /*=false*/, bool forced /*= false*/)
 {
-	if(!internalPlaceCreature(creature, pos, extendedPos, forced)){
+	if(!internalPlaceCreature(creature, pos, extendedPos, forced))
+	{
 		return false;
 	}
 
@@ -643,23 +644,28 @@ bool Game::placeCreature(Creature* creature, const Position& pos, bool extendedP
 
 	//send to client
 	Player* tmpPlayer = NULL;
-	for(it = list.begin(); it != list.end(); ++it) {
-		if((tmpPlayer = (*it)->getPlayer())){
+	for(it = list.begin(); it != list.end(); ++it) 
+	{
+		if(tmpPlayer = (*it)->getPlayer())
+		{
 			tmpPlayer->sendCreatureAppear(creature, true);
 		}
-	}
 
-	//event method
-	for(it = list.begin(); it != list.end(); ++it) {
+		//event method
 		(*it)->onCreatureAppear(creature, true);
 	}
 
 	int32_t newStackPos = creature->getParent()->__getIndexOfThing(creature);
+
+	//add notifications
 	creature->getParent()->postAddNotification(creature, NULL, newStackPos);
 
 	addCreatureCheck(creature);
+
+	//record of players in server
 	checkPlayersRecord();
 
+	//event on place creature active script event
 	creature->onPlacedCreature();
 	return true;
 }
@@ -871,50 +877,42 @@ ReturnValue Game::internalMoveCreature(Creature* creature, Direction direction, 
 	switch (direction){
 	case NORTH:
 		destPos.y -= 1;
-		creature->setDirection(Direction::NORTH);
 		break;
 
 	case SOUTH:
 		destPos.y += 1;
-		creature->setDirection(Direction::SOUTH);
 		break;
 
 	case WEST:
 		destPos.x -= 1;
-		creature->setDirection(Direction::WEST);
 		break;
 
 	case EAST:
 		destPos.x += 1;
-		creature->setDirection(Direction::EAST);
 		break;
 
 	case SOUTHWEST:
 		destPos.x -= 1;
 		destPos.y += 1;
 		canChangeFloor = false;
-		creature->setDirection(SOUTHWEST);
 		break;
 
 	case NORTHWEST:
 		destPos.x -= 1;
 		destPos.y -= 1;
 		canChangeFloor = false;
-		creature->setDirection(Direction::NORTHWEST);
 		break;
 
 	case NORTHEAST:
 		destPos.x += 1;
 		destPos.y -= 1;
 		canChangeFloor = false;
-		creature->setDirection(Direction::NORTHEAST);
 		break;
 
 	case SOUTHEAST:
 		destPos.x += 1;
 		destPos.y += 1;
 		canChangeFloor = false;
-		creature->setDirection(Direction::SOUTHEAST);
 		break;
 	}
 
@@ -1932,7 +1930,7 @@ ReturnValue Game::internalTeleport(Thing* thing, const Position& newPos, uint32_
 bool Game::anonymousBroadcastMessage(MessageClasses type, const std::string& text)
 {
 	for(AutoList<Player>::listiterator it = Player::listPlayer.list.begin(); it != Player::listPlayer.list.end(); ++it){
-		(*it).second->sendTextMessage(type, text.c_str());
+		(*it).second->sendTextMessage(MSG_TARGET_TOP_CENTER_MAP, type, MSG_COLOR_ORGANE,text.c_str());
 	}
 
 	return true;
@@ -1947,14 +1945,16 @@ bool Game::playerMove(uint32_t playerId, Direction dir)
 
 	player->stopWalk();
 	//int32_t delay = player->getWalkDelay(dir);
+	int32_t delay = player->getWalkDelay();
 
-	/*if(delay > 0){
-		player->setNextAction(OTSYS_TIME() + player->getStepDuration(dir) - 1);
+	if(delay > 0){
+		//player->setNextAction(OTSYS_TIME() + player->getStepDuration(dir) - 1);
+		player->setNextAction(OTSYS_TIME() + player->getStepDuration() - 1);
 		SchedulerTask* task = createSchedulerTask( ((uint32_t)delay), boost::bind(&Game::playerMove, this,
 			playerId, dir));
 		player->setNextWalkTask(task);
 		return false;
-	}*/
+	}
 
 	player->onWalk(dir);
 	return (internalMoveCreature(player, dir) == RET_NOERROR);
@@ -1966,7 +1966,7 @@ bool Game::internalBroadcastMessage(Player* player, const std::string& text)
 		return false;
 
 	for(AutoList<Player>::listiterator it = Player::listPlayer.list.begin(); it != Player::listPlayer.list.end(); ++it){
-		(*it).second->sendCreatureSay(player, SPEAK_BROADCAST, text);
+		(*it).second->sendCreatureSay(player, MSG_BROADCAST, text);
 	}
 
 	return true;
@@ -2192,6 +2192,123 @@ bool Game::playerStopAutoWalk(uint32_t playerId)
 
 	player->stopWalk();
 	return true;
+}
+
+bool Game::playerUseTargetSpell(uint32_t playerId,
+	uint16_t fromSpriteId, const Position& toPos, uint8_t toStackPos, uint16_t toSpriteId)
+{
+	Player* player = getPlayerByID(playerId);
+	if (!player || player->isRemoved())
+		return false;
+
+
+	Item * item = Item::CreateItem(fromSpriteId, 1);
+	ReturnValue ret = internalAddItem(player, item);
+	if (ret != RET_NOERROR)
+	{	
+		SchedulerTask* task = createSchedulerTask(400, boost::bind(&Game::playerUseTargetSpell, this,
+			playerId, fromSpriteId, toPos, toStackPos, toSpriteId));
+		player->setNextWalkActionTask(task);
+
+		internalRemoveItem(item);
+		return true;
+	}
+
+	if (!item || !item->isUseable()){
+		player->sendCancelMessage(RET_CANNOTUSETHISOBJECT);
+		internalRemoveItem(item);
+		return false;
+	}
+	uint8_t fromStackPos = STACKPOS_NORMAL;
+	Position fromPos = player->getPosition();
+	Position walkToPos = fromPos;
+	ret = g_actions->canUse(player, fromPos);
+	if (ret == RET_NOERROR){
+		ret = g_actions->canUse(player, toPos, item);
+		if (ret == RET_TOOFARAWAY){
+			walkToPos = toPos;
+		}
+	}
+	if (ret != RET_NOERROR){
+		if (ret == RET_TOOFARAWAY){
+			Position itemPos = fromPos;
+			uint8_t itemStackPos = fromStackPos;
+
+			if (fromPos.x != 0xFFFF && toPos.x != 0xFFFF && Position::areInRange<1, 1, 0>(fromPos, player->getPosition()) &&
+				!Position::areInRange<1, 1, 0>(fromPos, toPos)){
+				//need to pickup the item first
+				Item* moveItem = NULL;
+				ReturnValue ret = internalMoveItem(item->getParent(), player, INDEX_WHEREEVER,
+					item, item->getItemCount(), &moveItem);
+				if (ret != RET_NOERROR){
+					player->sendCancelMessage(ret);
+					internalRemoveItem(item);
+					return false;
+				}
+
+				//changing the position since its now in the inventory of the player
+				internalGetPosition(moveItem, itemPos, itemStackPos);
+			}
+
+			std::list<Direction> listDir;
+			if (getPathToEx(player, walkToPos, listDir, 0, 1, true, true, 10)){
+				Dispatcher::getDispatcher().addTask(createTask(boost::bind(&Game::playerAutoWalk,
+					this, player->getID(), listDir)));
+
+				SchedulerTask* task = createSchedulerTask(400, boost::bind(&Game::playerUseTargetSpell, this,
+					playerId, fromSpriteId, toPos, toStackPos, toSpriteId));
+				player->setNextWalkActionTask(task);
+
+
+				internalRemoveItem(item);
+				return true;
+			}
+			else{
+				player->sendCancelMessage(RET_THEREISNOWAY);
+				internalRemoveItem(item);
+				return false;
+			}
+		}
+
+		player->sendCancelMessage(ret);
+		internalRemoveItem(item);
+		return false;
+	}
+
+	player->resetIdle();
+
+	if (!player->canDoAction()){
+		uint32_t delay = player->getNextActionTime();
+		SchedulerTask* task = createSchedulerTask(delay, boost::bind(&Game::playerUseTargetSpell, this,
+			playerId, fromSpriteId, toPos, toStackPos, toSpriteId));
+		player->setNextActionTask(task);
+		internalRemoveItem(item);
+		return false;
+	}
+
+	player->setNextActionTask(NULL);
+
+	bool returnValue =  g_actions->useItemEx(player, fromPos, toPos, toStackPos, item);
+	internalRemoveItem(item);
+	return returnValue;
+}
+
+bool Game::npcLeftClick(uint32_t playerId, std::string npcName)
+{
+	Player* player = getPlayerByID(playerId);
+	if (!player || player->isRemoved())
+		return false;
+
+	Npc * npc = g_npcs.findNpcByName(npcName);
+	if (npc)
+	{
+		npc->onCreatureLeftClick(player);
+		player->setCurrentNpc(npc);
+		return true;
+	}	
+
+	player->sendCancelMessage(RET_NPCISBUSY);
+	return false;
 }
 
 bool Game::playerUseItemEx(uint32_t playerId, const Position& fromPos, uint8_t fromStackPos, uint16_t fromSpriteId,
@@ -2586,14 +2703,14 @@ bool Game::playerRequestTrade(uint32_t playerId, const Position& pos, uint8_t st
 
 	Player* tradePartner = getPlayerByID(tradePlayerId);
 	if(!tradePartner || tradePartner == player) {
-		player->sendTextMessage(MSG_INFO_DESCR, "Sorry, not possible.");
+		//player->sendTextMessage(MSG_INFO_DESCR, "Sorry, not possible.");
 		return false;
 	}
 
 	if(!Position::areInRange<2,2,0>(tradePartner->getPosition(), player->getPosition())){
 		std::stringstream ss;
 		ss << tradePartner->getName() << " tells you to move closer.";
-		player->sendTextMessage(MSG_INFO_DESCR, ss.str());
+		//player->sendTextMessage(MSG_INFO_DESCR, ss.str());
 		return false;
 	}
 
@@ -2637,14 +2754,14 @@ bool Game::playerRequestTrade(uint32_t playerId, const Position& pos, uint8_t st
 			((container = dynamic_cast<const Container*>(tradeItem)) && container->isHoldingItem(it->first)) ||
 			((container = dynamic_cast<const Container*>(it->first)) && container->isHoldingItem(tradeItem)))
 		{
-			player->sendTextMessage(MSG_INFO_DESCR, "This item is already being traded.");
+			//player->sendTextMessage(MSG_INFO_DESCR, "This item is already being traded.");
 			return false;
 		}
 	}
 
 	Container* tradeContainer = tradeItem->getContainer();
 	if(tradeContainer && tradeContainer->getItemHoldingCount() + 1 > 100){
-		player->sendTextMessage(MSG_INFO_DESCR, "You can not trade more than 100 items.");
+		//player->sendTextMessage(MSG_INFO_DESCR, "You can not trade more than 100 items.");
 		return false;
 	}
 
@@ -2673,7 +2790,7 @@ bool Game::internalStartTrade(Player* player, Player* tradePartner, Item* tradeI
 	if(tradePartner->tradeState == TRADE_NONE){
 		std::stringstream trademsg;
 		trademsg << player->getName() <<" wants to trade with you.";
-		tradePartner->sendTextMessage(MSG_INFO_DESCR, trademsg.str());
+		//tradePartner->sendTextMessage(MSG_INFO_DESCR, trademsg.str());
 		tradePartner->tradeState = TRADE_ACKNOWLEDGE;
 		tradePartner->tradePartner = player;
 	}
@@ -2746,11 +2863,11 @@ bool Game::playerAcceptTrade(uint32_t playerId)
 
 		if(!isSuccess){
 			std::string errorDescription = getTradeErrorDescription(ret1, tradeItem1);
-			tradePartner->sendTextMessage(MSG_INFO_DESCR, errorDescription);
+			//tradePartner->sendTextMessage(MSG_INFO_DESCR, errorDescription);
 			tradePartner->tradeItem->onTradeEvent(ON_TRADE_CANCEL, tradePartner);
 
 			errorDescription = getTradeErrorDescription(ret2, tradeItem2);
-			player->sendTextMessage(MSG_INFO_DESCR, errorDescription);
+			//player->sendTextMessage(MSG_INFO_DESCR, errorDescription);
 			player->tradeItem->onTradeEvent(ON_TRADE_CANCEL, player);
 		}
 
@@ -2825,7 +2942,7 @@ bool Game::playerLookInTrade(uint32_t playerId, bool lookAtCounterOffer, int ind
 		if(player->onLookEvent(tradeItem, tradeItem->getID())){
 			std::stringstream ss;
 			ss << "You see " << tradeItem->getDescription(lookDistance);
-			player->sendTextMessage(MSG_INFO_DESCR, ss.str());
+			//player->sendTextMessage(MSG_INFO_DESCR, ss.str());
 		}
 		return false;
 	}
@@ -2863,7 +2980,7 @@ bool Game::playerLookInTrade(uint32_t playerId, bool lookAtCounterOffer, int ind
 		if(player->onLookEvent(tradeItem, tradeItem->getID())){
 			std::stringstream ss;
 			ss << "You see " << tradeItem->getDescription(lookDistance);
-			player->sendTextMessage(MSG_INFO_DESCR, ss.str());
+			//player->sendTextMessage(MSG_INFO_DESCR, ss.str());
 		}
 	}
 
@@ -2905,7 +3022,7 @@ bool Game::internalCloseTrade(Player* player)
 	player->setTradeState(TRADE_NONE);
 	player->tradePartner = NULL;
 
-	player->sendTextMessage(MSG_STATUS_SMALL, "Trade cancelled.");
+	//player->sendTextMessage(MSG_STATUS_SMALL, "Trade cancelled.");
 	player->sendTradeClose();
 
 	if(tradePartner){
@@ -2923,7 +3040,7 @@ bool Game::internalCloseTrade(Player* player)
 		tradePartner->setTradeState(TRADE_NONE);
 		tradePartner->tradePartner = NULL;
 
-		tradePartner->sendTextMessage(MSG_STATUS_SMALL, "Trade cancelled.");
+		//tradePartner->sendTextMessage(MSG_STATUS_SMALL, "Trade cancelled.");
 		tradePartner->sendTradeClose();
 	}
 
@@ -3002,7 +3119,7 @@ bool Game::playerLookAt(uint32_t playerId, const Position& pos, uint16_t spriteI
 		ss << thing->getXRayDescription();
 	}
 
-	player->sendTextMessage(MSG_INFO_DESCR, ss.str());
+	player->sendTextMessage(MSG_TARGET_CONSOLE,MSG_LOOK, MSG_COLOR_LIGHT_GREEN, ss.str());
 	return true;
 }
 
@@ -3016,6 +3133,15 @@ bool Game::playerCancelAttackAndFollow(uint32_t playerId)
 	playerFollowCreature(playerId, 0);
 	player->stopWalk();
 	player->lastStepCost = 2;
+	return true;
+}
+
+bool Game::playerSaveBreath(uint32_t playerId, uint8_t breath)
+{
+	Player* player = getPlayerByID(playerId);
+	if (!player || player->isRemoved())
+		return false;
+	player->setBreath(breath);
 	return true;
 }
 
@@ -3069,29 +3195,26 @@ bool Game::playerFollowCreature(uint32_t playerId, uint32_t creatureId)
 bool Game::playerInviteToParty(uint32_t playerId, uint32_t invitedId)
 {
 	Player* player = getPlayerByID(playerId);
-	if(!player || player->isRemoved()){
-		return false;
-	}
+	if(!player || player->isRemoved())
+		return false;	
 
 	Player* invitedPlayer = getPlayerByID(invitedId);
-	if(!invitedPlayer || invitedPlayer->isRemoved() || invitedPlayer->isInviting(player)){
+	if(!invitedPlayer || invitedPlayer->isRemoved() || invitedPlayer->isInviting(player))
 		return false;
-	}
 
-	if(invitedPlayer->getParty()){
+	if(invitedPlayer->getParty())
+	{
 		std::stringstream ss;
-		ss << invitedPlayer->getName() << " is already in a party.";
-		player->sendTextMessage(MSG_INFO_DESCR, ss.str());
+		ss << invitedPlayer->getName() << " Você já está em time.";
+		player->sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP, MSG_INFORMATION, MSG_COLOR_ORGANE, ss.str());
 		return false;
 	}
 
 	Party* party = player->getParty();
-	if(!party){
-		party = new Party(player);
-	}
-	else if(party->getLeader() != player){
+	if(!party)
+		party = new Party(player);	
+	else if(party->getLeader() != player)
 		return false;
-	}
 
 	return party->invitePlayer(invitedPlayer);
 }
@@ -3113,7 +3236,7 @@ bool Game::playerJoinParty(uint32_t playerId, uint32_t leaderId)
 	}
 
 	if(player->getParty()){
-		player->sendTextMessage(MSG_INFO_DESCR, "You are already in a party.");
+		player->sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP, MSG_INFORMATION, MSG_COLOR_ORGANE,"Você já está em time.");
 		return false;
 	}
 
@@ -3191,9 +3314,6 @@ bool Game::playerAddSkillPoint(uint32_t playerId, uint8_t skillId)
 		{
 			player->sendCreatureHealth(player);
 		}
-			
-		player->updateOutfitColor();
-		player->sendCreatureChangeOutfit(player, player->getCurrentOutfit());
 	}
 	return true;
 }
@@ -3202,6 +3322,7 @@ bool Game::playerAddSpellLevel(uint32_t playerId, uint8_t spellId)
 {
 	uint16_t unusedPoints;
 	int spellPoints;
+	std::string msg;
 
 	//get player by id
 	Player* player = getPlayerByID(playerId);
@@ -3212,7 +3333,8 @@ bool Game::playerAddSpellLevel(uint32_t playerId, uint8_t spellId)
 	unusedPoints = player->getUnusedMagicPoints();
 
 	//this player dont has the spell, so lets try to add
-	if (!player->hasSpell(spellId))
+	auto spellIterator = player->hasSpell(spellId);
+	if (spellIterator == player->m_spells.end())
 	{
 		//get count points of first spell
 		spellPoints = getSpellPoints(_player_::g_map_table[spellId].first, 0);
@@ -3222,27 +3344,100 @@ bool Game::playerAddSpellLevel(uint32_t playerId, uint8_t spellId)
 			//update unused magic points
 			player->setUnusedMagicPoints(player->getUnusedMagicPoints() - spellPoints);
 			//update player spell list with the new spell			
-			player->addSpell(spellId, 0 /* first spell */); 
+			player->addSpell(spellId, 0 /* first level */); 
 			//update client
 			//update unused magic points
 			player->sendSkills();
 			//update new spell
 			player->sendSpellLearned(spellId, player->getSpellLevel(spellId));
-			player->sendTextMessage(MSG_GAMEWINDOW_GREEN, "Você adquiriu a magia: " + _player_::g_map_table[spellId].first + ".");
+			player->sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP, MSG_INFORMATION,MSG_COLOR_LIGHT_GREEN,
+				"Você adquiriu a magia: " + _player_::g_map_table[spellId].first + ".");
 		}
 		//can't has this spell, don't have enough points
 		else
 		{
-			player->sendTextMessage(MSG_STATUS_SMALL, "Você não tem pontos suficientes para adquirir a magia: " + _player_::g_map_table[spellId].first + ".");
+			msg.clear();
+			msg += "Você não tem pontos suficientes para adquirir a magia: ";
+			msg += _player_::g_map_table[spellId].first;
+			msg += " (";
+			msg += std::to_string(spellPoints);
+			msg += " pontos).";
+
+			player->sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP, MSG_INFORMATION, MSG_COLOR_ORGANE, msg);
 		}		
 		return true;		
 	}
+	//this player already has this spell 
 	else
 	{	
+		//the spell level can be upgrade?
+		if ((*spellIterator).second + 1 < _player_::g_map_table[spellId].second.maxLevel)
+		{
+			//lets check if this player has enought points
+			spellPoints = getSpellPoints(_player_::g_map_table[spellId].first, (*spellIterator).second + 1);			
+			if (player->getUnusedMagicPoints() >= spellPoints)
+			{
+				//update unused magic points
+				player->setUnusedMagicPoints(player->getUnusedMagicPoints() - spellPoints);
+				//upagrade spell level
+				player->upgradeSpell(spellId);
+				//update client
+				//update unused magic points
+				player->sendSkills();	
+				player->sendSpellLearned(spellId, (*spellIterator).second);				
+				msg += "Você evoluiu sua magia ";
+				msg += _player_::g_map_table[spellId].first;
+				msg += " para o nível: ";
+				msg += std::to_string((*spellIterator).second + 1);
+				msg += "!";
+				player->sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP, MSG_INFORMATION, MSG_COLOR_LIGHT_GREEN, msg);
+			}
+			//this player don't has enought magic points to upgrade this spell
+			else
+			{
+				msg.clear();
+				msg += "Você não tem pontos suficientes para evoluir sua magia ";
+				msg += _player_::g_map_table[spellId].first;
+				msg += " (";
+				msg += std::to_string(spellPoints);
+				msg += " pontos).";
+				player->sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP, MSG_INFORMATION, MSG_COLOR_ORGANE, msg);			
+
+			}
+		}
+		else
+		{
+			msg += "Sua magia ";
+			msg += _player_::g_map_table[spellId].first;
+			msg += " já está no nível máximo.";
+			msg += (*spellIterator).second + 1;
+			player->sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP, MSG_INFORMATION, MSG_COLOR_ORGANE, msg);
+		}
+
 	}
 	
 	return false;
 }
+
+bool Game::playerUseSpell(uint32_t playerId, uint8_t spellId)
+{
+	//get player by id
+	Player* player = getPlayerByID(playerId);
+	//this player exists?
+	if (!player || player->isRemoved())
+		return false;
+
+	std::string spellName = _player_::g_map_table[spellId - 1].first;
+	spellName += " " + std::to_string(player->getSpellLevel(spellId - 1));
+	
+	InstantSpell* instantSpell = g_spells->getInstantSpell(spellName);
+
+	if (instantSpell->playerCastInstant(player, ""))
+		return true;	
+
+	return false;
+}
+
 
 bool Game::playerSetFightModes(uint32_t playerId, fightMode_t fightMode, chaseMode_t chaseMode, bool safeMode)
 {
@@ -3251,7 +3446,7 @@ bool Game::playerSetFightModes(uint32_t playerId, fightMode_t fightMode, chaseMo
 		return false;
 
 	player->setFightMode(fightMode);
-	player->setChaseMode(chaseMode);
+	player->setChaseMode(chaseMode); 
 	player->setSafeMode(safeMode);
 	return true;
 }
@@ -3267,12 +3462,15 @@ bool Game::playerRequestAddVip(uint32_t playerId, const std::string& vip_name)
 	uint32_t guid;
 	bool specialVip;
 
-	if(!IOPlayer::instance()->getGuidByNameEx(guid, specialVip, real_name)){
-		player->sendTextMessage(MSG_STATUS_SMALL, "A player with that name does not exist.");
+	if(!IOPlayer::instance()->getGuidByNameEx(guid, specialVip, real_name))
+	{
+		player->sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP, MSG_INFORMATION, MSG_COLOR_ORGANE, "Não existe um jogador com esse nome.");
 		return false;
 	}
-	if(specialVip && !player->hasFlag(PlayerFlag_SpecialVIP)){
-		player->sendTextMessage(MSG_STATUS_SMALL, "You can not add this player.");
+
+	if(specialVip && !player->hasFlag(PlayerFlag_SpecialVIP))
+	{
+		player->sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP, MSG_INFORMATION, MSG_COLOR_ORGANE, "Você não pode adicinar este jogador.");
 		return false;
 	}
 
@@ -3326,23 +3524,24 @@ bool Game::playerChangeOutfit(uint32_t playerId, Outfit_t outfit)
 	return true;
 }
 
-bool Game::playerSay(uint32_t playerId, uint16_t channelId, SpeakClasses type,
+bool Game::playerSay(uint32_t playerId, uint16_t channelId, MessageClasses type,
 	const std::string& receiver, const std::string& text)
 {
 	Player* player = getPlayerByID(playerId);
 	if(!player || player->isRemoved())
 		return false;
 
-	bool isMuteableChannel = g_chat.isMuteableChannel(channelId, type);
-	uint32_t muteTime = player->isMuted();
+	//bool isMuteableChannel = g_chat.isMuteableChannel(channelId, type);
+	//uint32_t muteTime = player->isMuted();
 	player->resetIdle();
 
-	if(isMuteableChannel && muteTime > 0){
+	/*if(isMuteableChannel && muteTime > 0)
+	{
 		std::stringstream ss;
-		ss << "Você ainda está mutado por " << muteTime << " segundos.";
-		player->sendTextMessage(MSG_STATUS_SMALL, ss.str());
+		ss << "Você está mutado por " << muteTime << " segundos.";
+		player->sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP, MSG_INFORMATION, MSG_COLOR_YELLOW, ss.str());
 		return false;
-	}
+	}*/
 
 	TalkActionResult_t result;
 	result = g_talkactions->onPlayerSpeak(player, type, text);
@@ -3354,45 +3553,30 @@ bool Game::playerSay(uint32_t playerId, uint16_t channelId, SpeakClasses type,
 		return true;
 	}
 
-	if(isMuteableChannel || muteTime == 0){
-		if(playerSaySpell(player, type, text)){
-			return true;
-		}
-	}
-
-	if(isMuteableChannel){
+	/*if(isMuteableChannel){
 		player->removeMessageBuffer();
-	}
+	}*/
 
 	switch(type){
-		case SPEAK_SAY:
-			return internalCreatureSay(player, SPEAK_SAY, text);
-		case SPEAK_WHISPER:
+		case MSG_PLAYER_TALK:
+			return internalCreatureSay(player, MSG_PLAYER_TALK, text);
+		case MSG_PLAYER_WHISPER:
 			return playerWhisper(player, text);
-		case SPEAK_YELL:
+		case MSG_PLAYER_YELL:
 			return playerYell(player, text);
-		case SPEAK_PRIVATE:
-		case SPEAK_PRIVATE_RED:
-		case SPEAK_RVR_ANSWER:
+		case MSG_PLAYER_PRIVATE_FROM:
 			return playerSpeakTo(player, type, receiver, text);
-		case SPEAK_CHANNEL_Y:
-		case SPEAK_CHANNEL_R1:
-		case SPEAK_CHANNEL_R2:
+		case MSG_PLAYER_PRIVATE_TO:
 			return playerTalkToChannel(player, type, text, channelId);
-		case SPEAK_BROADCAST:
-			return internalBroadcastMessage(player, text);
-		case SPEAK_RVR_CHANNEL:
-			return playerReportRuleViolation(player, text);
-		case SPEAK_RVR_CONTINUE:
-			return playerContinueReport(player, text);
-
+		case MSG_BROADCAST:
+			return internalBroadcastMessage(player, text);		
 		default: break;
 	}
 
 	return false;
 }
 
-bool Game::playerSayCommand(Player* player, SpeakClasses type, const std::string& text)
+bool Game::playerSayCommand(Player* player, MessageClasses type, const std::string& text)
 {
 	//First, check if this was a command
 	for(uint32_t i = 0; i < commandTags.size(); i++){
@@ -3406,13 +3590,13 @@ bool Game::playerSayCommand(Player* player, SpeakClasses type, const std::string
 	return false;
 }
 
-bool Game::playerSaySpell(Player* player, SpeakClasses type, const std::string& text)
+bool Game::playerSaySpell(Player* player, MessageClasses type, const std::string& text)
 {
 	TalkActionResult_t result;
 	result = g_spells->playerSaySpell(player, type, text);
 	if(result == TALKACTION_BREAK){
 		return true;
-		//return internalCreatureSay(player, SPEAK_SAY, text);
+		//return internalCreatureSay(player, playerSpeakTo, text);
 	}
 	else if(result == TALKACTION_FAILED){
 		return true;
@@ -3433,18 +3617,14 @@ bool Game::playerWhisper(Player* player, const std::string& text)
 	Player* tmpPlayer = NULL;
 	for(it = list.begin(); it != list.end(); ++it){
 		if((tmpPlayer = (*it)->getPlayer())){
-			if(!Position::areInRange<1,1,0>(player->getPosition(), (*it)->getPosition())){
-				tmpPlayer->sendCreatureSay(player, SPEAK_WHISPER, "pspsps");
-			}
-			else{
-				tmpPlayer->sendCreatureSay(player, SPEAK_WHISPER, text);
-			}
+			tmpPlayer->sendCreatureSay(player, MSG_PLAYER_WHISPER, text);
+			
 		}
 	}
 
 	//event method
 	for(it = list.begin(); it != list.end(); ++it) {
-		(*it)->onCreatureSay(player, SPEAK_WHISPER, text);
+		(*it)->onCreatureSay(player, MSG_PLAYER_WHISPER, text);
 	}
 
 	return true;
@@ -3461,7 +3641,7 @@ bool Game::playerYell(Player* player, const std::string& text)
 	bool isExhausted = false;
 	if(!player->hasCondition(CONDITION_YELL)){
 		addExhaustion = g_config.getNumber(ConfigManager::EXHAUSTED);
-		internalCreatureSay(player, SPEAK_YELL, asUpperCaseString(text));
+		internalCreatureSay(player, MSG_PLAYER_YELL, asUpperCaseString(text));
 	}
 	else{
 		isExhausted = true;
@@ -3477,37 +3657,34 @@ bool Game::playerYell(Player* player, const std::string& text)
 	return !isExhausted;
 }
 
-bool Game::playerSpeakTo(Player* player, SpeakClasses type, const std::string& receiver,
+bool Game::playerSpeakTo(Player* player, MessageClasses type, const std::string& receiver,
 	const std::string& text)
 {
-	Player* toPlayer = getPlayerByName(receiver);
-	if(!toPlayer || player->isRemoved()) {
-		player->sendTextMessage(MSG_STATUS_SMALL, "O jogador com esse nome não está online.");
+	Player* _receiver = getPlayerByName(receiver);
+	if (!_receiver || player->isRemoved())
+	{
+		player->sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP, MSG_INFORMATION, MSG_COLOR_BLUE, "O jogador com esse nome não está online.");
 		return false;
 	}
 
-	if(type == SPEAK_PRIVATE_RED && !player->hasFlag(PlayerFlag_CanTalkRedPrivate)){
-		type = SPEAK_PRIVATE;
-	}
-
-	toPlayer->sendCreatureSay(player, type, text);
-	toPlayer->onCreatureSay(player, type, text);
+	_receiver->sendCreatureSay(player, type, text);
+	_receiver->onCreatureSay(player, type, text);
 
 	std::stringstream ss;
-	ss << "Menssagem enviada para " << toPlayer->getName() << ".";
-	player->sendTextMessage(MSG_STATUS_SMALL, ss.str());
+	ss << "Menssagem enviada para " << _receiver->getName() << ".";
+	player->sendTextMessage(MSG_TARGET_CONSOLE | MSG_TARGET_BOTTOM_CENTER_MAP, MSG_INFORMATION, MSG_COLOR_LIGHT_GREEN, ss.str());
 	return true;
 }
 
-bool Game::playerTalkToChannel(Player* player, SpeakClasses type,
+bool Game::playerTalkToChannel(Player* player, MessageClasses type,
 	const std::string& text, unsigned short channelId)
 {
-	if(type == SPEAK_CHANNEL_R1 && !player->hasFlag(PlayerFlag_CanTalkRedChannel)){
-		type = SPEAK_CHANNEL_Y;
-	}
-	else if(type == SPEAK_CHANNEL_R2 && !player->hasFlag(PlayerFlag_CanTalkRedChannelAnonymous)){
-		type = SPEAK_CHANNEL_Y;
-	}
+	//if(type == SPEAK_CHANNEL_R1 && !player->hasFlag(PlayerFlag_CanTalkRedChannel)){
+	//	type = SPEAK_CHANNEL_Y;
+	//}
+	//else if(type == SPEAK_CHANNEL_R2 && !player->hasFlag(PlayerFlag_CanTalkRedChannelAnonymous)){
+	//	type = SPEAK_CHANNEL_Y;
+	//}
 
 	return g_chat.talkToChannel(player, type, text, channelId);
 }
@@ -3516,7 +3693,7 @@ bool Game::playerReportRuleViolation(Player* player, const std::string& text)
 {
 	// Do not allow reports on multiclones worlds
 	// Since reports are name-based
-	if(g_config.getBoolean(ConfigManager::ALLOW_CLONES)){
+	/*if(g_config.getBoolean(ConfigManager::ALLOW_CLONES)){
 		player->sendTextMessage(MSG_INFO_DESCR, "Rule violations reports are disabled.");
 		return false;
 	}
@@ -3541,26 +3718,26 @@ bool Game::playerReportRuleViolation(Player* player, const std::string& text)
 			}
 		}
 		return true;
-	}
+	}*/
 	return false;
 }
 
 bool Game::playerContinueReport(Player* player, const std::string& text)
 {
-	RuleViolationsMap::iterator it = ruleViolations.find(player->getID());
-	if(it == ruleViolations.end()){
-		return false;
-	}
+	//RuleViolationsMap::iterator it = ruleViolations.find(player->getID());
+	//if(it == ruleViolations.end()){
+	//	return false;
+	//}
 
-	RuleViolation& rvr = *it->second;
-	Player* toPlayer = rvr.gamemaster;
-	if(!toPlayer){
-		return false;
-	}
+	//RuleViolation& rvr = *it->second;
+	//Player* toPlayer = rvr.gamemaster;
+	//if(!toPlayer){
+	//	return false;
+	//}
 
-	toPlayer->sendCreatureSay(player, SPEAK_RVR_CONTINUE, text);
+	//toPlayer->sendCreatureSay(player, SPEAK_RVR_CONTINUE, text);
 
-	player->sendTextMessage(MSG_STATUS_SMALL, "Message sent to Gamemaster.");
+	//player->sendTextMessage(MSG_STATUS_SMALL, "Message sent to Gamemaster.");
 	return true;
 }
 
@@ -3615,7 +3792,7 @@ bool Game::internalCreatureTurn(Creature* creature, Direction dir)
 	return false;
 }
 
-bool Game::internalCreatureSay(Creature* creature, SpeakClasses type, const std::string& text)
+bool Game::internalCreatureSay(Creature* creature, MessageClasses type, const std::string& text)
 {
 	// This somewhat complex construct ensures that the cached SpectatorVec
 	// is used if available and if it can be used, else a local vector is
@@ -3624,7 +3801,7 @@ bool Game::internalCreatureSay(Creature* creature, SpeakClasses type, const std:
 	SpectatorVec list;
 	SpectatorVec::const_iterator it;
 
-	if(type == SPEAK_YELL || type == SPEAK_MONSTER_YELL){
+	if(type == MSG_PLAYER_YELL || type == MSG_MONSTER_YELL){
 		getSpectators(list, creature->getPosition(), false, true, 18, 18, 14, 14);
 	}
 	else{
@@ -3952,30 +4129,31 @@ bool Game::combatChangeHealth(CombatType_t combatType, MagicEffectClasses custom
 			}
 */
 			//fire shileld on
-			if (target->hasCondition(CONDITION_FIRESHIELD) && combatType != COMBAT_UNDEFINEDDAMAGE)
-			{
-				//% damage blocked by fire shield
-				float porcentage = (std::rand() % 5 + 1) /100.0 ;
+			//if (target->hasCondition(CONDITION_FIRESHIELD) && combatType != COMBAT_UNDEFINEDDAMAGE)
+			//{
+			//	//% damage blocked by fire shield
+			//	float porcentage = (std::rand() % 5 + 1) /100.0 ;
 
-				//damage = damage - porcentage * damage;
-				if (porcentage > 0)
-				{
-					std::stringstream ss;
-					ss << porcentage * 100 << " % miss";
-					addMagicEffect(list, targetPos, NM_ME_FIRESHIELD);
-					addAnimatedText(list, targetPos, 5, ss.str());
-				}
+			//	//damage = damage - porcentage * damage;
+			//	if (porcentage > 0)
+			//	{
+			//		std::stringstream ss;
+			//		ss << porcentage * 100 << " % miss";
+			//		addMagicEffect(list, targetPos, NM_ME_FIRESHIELD);
+			//		addAnimatedText(list, targetPos, 5, ss.str());
+			//	}
 
-			}
+			//}
 
 
 			damage = std::min(target->getHealth(), damage);
 			if(damage > 0){
 				target->drainHealth(attacker, combatType, damage);
 				addCreatureHealth(list, target);
-				if(Player* player = target->getPlayer()) {
+				if(Player* player = target->getPlayer()) 
+				{
 					if(player->getHealth() <= 0)
-						player->sendTextMessage(MSG_EVENT_ADVANCE, "Você está morto.");
+						player->sendTextMessage(MSG_TARGET_TOP_CENTER_MAP,MSG_INFORMATION,MSG_COLOR_DARK_RED, "Você está morto.");
 				}
 
 				TextColor_t textColor = TEXTCOLOR_NONE;
@@ -4540,10 +4718,10 @@ void Game::checkPlayersRecord()
 		query.str("");
 
 		char buffer[50];
-		sprintf(buffer, "New record of players online is: %d", lastPlayersRecord);
+		sprintf(buffer, "Novo recorde de jogadores online: %d", lastPlayersRecord);
 		AutoList<Player>::listiterator it = Player::listPlayer.list.begin();
         while(it != Player::listPlayer.list.end()){
-            (*it).second->sendTextMessage(MSG_EVENT_ADVANCE, buffer);
+            (*it).second->sendTextMessage(MSG_TARGET_TOP_CENTER_MAP, MSG_INFORMATION, MSG_COLOR_DARK_GREEN, buffer);
             ++it;
         }
 	}
@@ -4575,7 +4753,7 @@ void Game::doDeathDelay(Creature* creature)
 
 bool Game::bugReport(uint32_t playerId, std::string report)
 {
-   Player* player = getPlayerByID(playerId);
+  /* Player* player = getPlayerByID(playerId);
     if(!player || player->isRemoved())
         return false;
 
@@ -4594,7 +4772,7 @@ bool Game::bugReport(uint32_t playerId, std::string report)
     reportFile << "------------------------------------------------------\n";
     reportFile.close();
     
-    player->sendTextMessage(MSG_STATUS_CONSOLE_RED, "Your report has been sent.");
+    player->sendTextMessage(MSG_STATUS_CONSOLE_RED, "Your report has been sent.");*/
     return true;
 }
 

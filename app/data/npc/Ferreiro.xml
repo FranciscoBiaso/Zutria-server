@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<npc name="Ferreiro" script="ferreiro.lua" walkinterval="4000" floorchange="0" idleinterval="30">
+	<health now="100" max="100"/>
+	<look type="6" head="96" body="63" legs="71" feet="97"/>
+</npc>

@@ -1693,7 +1693,7 @@ void LuaScriptInterface::registerFunctions()
 	//setCombatCondition(combat, condition)
 	lua_register(m_luaState, "setCombatCondition", LuaScriptInterface::luaSetCombatCondition);
 
-	//setCombatParam(combat, key, value)
+	//](combat, key, value)
 	lua_register(m_luaState, "setCombatParam", LuaScriptInterface::luaSetCombatParam);
 
 	//setConditionParam(condition, key, value)
@@ -2037,6 +2037,10 @@ void LuaScriptInterface::registerFunctions()
 	
 	//doSavePlayer(cid)
 	lua_register(m_luaState, "doSavePlayer", LuaScriptInterface::luaDoSavePlayer);
+	
+	
+	//doPlayerSendNpcWindow(cid,windowid)
+	lua_register(m_luaState, "doPlayerSendNpcWindow", LuaScriptInterface::luaDoPlayerSendNpcWindow);
 }
 
 int LuaScriptInterface::internalGetPlayerInfo(lua_State *L, PlayerInfo_t info)
@@ -2920,7 +2924,7 @@ int LuaScriptInterface::luaDoCreatureSay(lua_State *L)
 
 	Creature* creature = env->getCreatureByUID(cid);
 	if(creature){
-		g_game.internalCreatureSay(creature, (SpeakClasses)type, text);
+		g_game.internalCreatureSay(creature, (MessageClasses)type, text);
 		lua_pushboolean(L, true);
 	}
 	else{
@@ -3421,7 +3425,7 @@ int LuaScriptInterface::luaDoPlayerSendTextMessage(lua_State *L)
 		return 1;
 	}
 
-	player->sendTextMessage((MessageClasses)messageClass, text);
+	player->sendTextMessage(MSG_TARGET_CONSOLE,(MessageClasses) messageClass, MSG_COLOR_WHITE,text);
 	lua_pushboolean(L, true);
 	return 1;
 }
@@ -3595,6 +3599,27 @@ int LuaScriptInterface::luaDoPlayerSendOutfitWindow(lua_State *L)
 
 	if(player){
 		player->sendOutfitWindow(player);
+		lua_pushboolean(L, true);
+	}
+	else{
+		reportErrorFunc(getErrorDesc(LUA_ERROR_PLAYER_NOT_FOUND));
+		lua_pushboolean(L, false);
+	}
+
+	return 1;
+}
+
+int LuaScriptInterface::luaDoPlayerSendNpcWindow(lua_State *L)
+{
+	//doPlayerSendNpcWindow(cid, windowId)
+	uint16_t windowId = popNumber(L);
+	uint32_t cid = popNumber(L);
+
+	ScriptEnviroment* env = getScriptEnv();
+	Player* player = env->getPlayerByUID(cid);
+
+	if (player){
+		player->sendNpcWindow(windowId);
 		lua_pushboolean(L, true);
 	}
 	else{
@@ -5777,7 +5802,6 @@ int LuaScriptInterface::luaSetCombatCallBack(lua_State *L)
 
 int LuaScriptInterface::luaSetCombatLuaState(lua_State *L)
 {
-	//setCombatFormula(combat, type, mina, minb, maxa, maxb)
 	ScriptEnviroment* env = getScriptEnv();
 
 	if (env->getScriptId() != EVENT_ID_LOADING){

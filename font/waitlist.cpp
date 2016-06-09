@@ -78,11 +78,13 @@ int32_t WaitingList::getTimeOut(int32_t slot)
 
 bool WaitingList::clientLogin(const Player* player)
 {		
-	if(player->hasFlag(PlayerFlag_CanAlwaysLogin)){
+	if(player->hasFlag(PlayerFlag_CanAlwaysLogin))
+	{
 		return true;
 	}
 
-	if(waitList.empty() && Status::instance()->getPlayersOnline() < Status::instance()->getMaxPlayersOnline()){
+	if(waitList.empty() && Status::instance()->getPlayersOnline() < Status::instance()->getMaxPlayersOnline())
+	{
 		//no waiting list and enough room
 		return true;
 	}
@@ -91,17 +93,17 @@ bool WaitingList::clientLogin(const Player* player)
 
 	uint32_t slot;
 	WaitListIterator it = findClient(player, slot);
-	if(it != waitList.end()){
-		if((Status::instance()->getPlayersOnline() + slot) <= Status::instance()->getMaxPlayersOnline()){ 
+	if(it != waitList.end())
+	{
+		if((Status::instance()->getPlayersOnline() + slot) <= Status::instance()->getMaxPlayersOnline())
+		{ 
 			//should be able to login now
-#ifdef __DEBUG__WATINGLIST__
-			std::cout << "Name: " << (*it)->name << " can now login" << std::endl;
-#endif
 			delete *it;
 			waitList.erase(it);
 			return true;
 		}
-		else{
+		else
+		{
 			//let them wait a bit longer
 			(*it)->timeout = OTSYS_TIME() + getTimeOut(slot) * 1000;
 			return false;
@@ -110,7 +112,8 @@ bool WaitingList::clientLogin(const Player* player)
 
 	Wait* wait = new Wait();
 
-	if(player->isPremium()){
+	if(player->isPremium())
+	{
 		slot = 1;
 		for(WaitListIterator it = waitList.begin(); it != waitList.end(); ++it){
 			if(!(*it)->premium){
@@ -121,7 +124,8 @@ bool WaitingList::clientLogin(const Player* player)
 			++slot;
 		}
 	}
-	else{
+	else
+	{
 		waitList.push_back(wait);
 		slot = (uint32_t)waitList.size();
 	}
@@ -131,10 +135,6 @@ bool WaitingList::clientLogin(const Player* player)
 	wait->ip = player->getIP();
 	wait->premium = player->isPremium();
 	wait->timeout = OTSYS_TIME() + getTimeOut(slot) * 1000;
-	
-#ifdef __DEBUG__WATINGLIST__
-	std::cout << "Name: " << player->getName() << "(" << waitList.size() + 1 << ")" << " has been added to the waiting list" << std::endl;
-#endif
 
 	return false;
 }

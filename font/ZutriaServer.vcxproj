@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -182,13 +182,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -210,9 +210,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\Users\Francisco\Documents\server libs\libraries\inc\sqlite3;C:\Users\Francisco\Documents\server libs\libraries\inc\mysql;C:\Users\Francisco\Documents\server libs\libraries\inc\mpir;C:\Users\Francisco\Documents\server libs\libraries\inc\lua;C:\Users\Francisco\Documents\server libs\libraries\inc\libxml;C:\Users\Francisco\Documents\server libs\libraries\inc\libiconv;C:\Users\Francisco\Documents\server libs\libraries\inc\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\local\boost_1_60_0\lib32-msvc-14.0;C:\Users\Francisco\Documents\server libs\libraries\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libmysql.lib;libxml2.lib;lua5.1.lib;mpir.lib;sqlite3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -222,14 +225,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\sqlite3;C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\mysql;C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\mpir;C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\lua;C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\libxml;C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\inc\libiconv;C:\local\boost_1_58_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Francisco\Documents\github\Zutria-server\app;C:\Users\Francisco\Documents\server libs\libraries\inc\sqlite3;C:\Users\Francisco\Documents\server libs\libraries\inc\mysql;C:\Users\Francisco\Documents\server libs\libraries\inc\mpir;C:\Users\Francisco\Documents\server libs\libraries\inc\lua;C:\Users\Francisco\Documents\server libs\libraries\inc\libxml;C:\Users\Francisco\Documents\server libs\libraries\inc\libiconv;C:\local\boost_1_60_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>__USE_OTPCH__;__USE_MYSQL__;_WINSOCK_DEPRECATED_NO_WARNINGS;__PROTOCOL_76__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>C:\local\boost_1_58_0\lib32-msvc-12.0;C:\Users\francisco\Documents\GitHub\2D-MMORPG-GAME-SERVER LIBS\libraries\libraries\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\local\boost_1_60_0\lib32-msvc-14.0;C:\Users\Francisco\Documents\server libs\libraries\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libmysql.lib;libxml2.lib;lua5.1.lib;mpir.lib;sqlite3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

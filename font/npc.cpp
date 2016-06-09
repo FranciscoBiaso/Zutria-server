@@ -60,6 +60,16 @@ void Npcs::reload()
 	}
 }
 
+Npc * Npcs::findNpcByName(std::string npcName) const
+{
+	for (auto it = Npc::listNpc.list.begin(); it != Npc::listNpc.list.end(); it++)
+	{
+		if (it->second->getName() == npcName)
+			return it->second;
+	}
+	return nullptr;
+}
+
 Npc* Npc::createNpc(const std::string& name)
 {
 	Npc* npc = new Npc(name);
@@ -370,7 +380,7 @@ void Npc::onCreatureTurn(const Creature* creature, uint32_t stackpos)
 	Creature::onCreatureTurn(creature, stackpos);
 }
 
-void Npc::onCreatureSay(const Creature* creature, SpeakClasses type, const std::string& text)
+void Npc::onCreatureSay(const Creature* creature, MessageClasses type, const std::string& text)
 {
 	if(creature->getID() == this->getID())
 		return;
@@ -406,10 +416,17 @@ void Npc::onThink(uint32_t interval)
 	}
 }
 
+
+void Npc::onCreatureLeftClick(const Creature* creature)
+{
+	if (m_npcEventHandler)
+		m_npcEventHandler->onCreatureLeftClick(creature);
+}
+
 void Npc::doSay(std::string msg, uint32_t delay)
 {
 	Scheduler::getScheduler().addEvent(createSchedulerTask(
-				delay, boost::bind(&Game::internalCreatureSay, &g_game, this, SPEAK_SAY, msg)));
+				delay, boost::bind(&Game::internalCreatureSay, &g_game, this, MSG_PLAYER_TALK, msg)));
 }
 
 void Npc::doMove(Direction dir)
@@ -436,9 +453,9 @@ bool Npc::getNextStep(Direction& dir)
 		return false;
 	}
 
-	if(!isIdle() || focusCreature != 0){
+	/*if(!isIdle() || focusCreature != 0){
 		return false;
-	}
+	}*/
 
 	if(getTimeSinceLastMove() < walkTicks){
 		return false;
@@ -1065,6 +1082,7 @@ NpcEventsHandler(npc)
 	m_onCreatureAppear = m_scriptInterface->getEvent("onCreatureAppear");
 	m_onCreatureMove = m_scriptInterface->getEvent("onCreatureMove");
 	m_onThink = m_scriptInterface->getEvent("onThink");
+	m_onCreatureLeftClick = m_scriptInterface->getEvent("onCreatureLeftClick");
 	m_loaded = true;
 }
 
@@ -1174,7 +1192,7 @@ void NpcScript::onCreatureMove(const Creature* creature, const Position& oldPos,
 	}
 }
 
-void NpcScript::onCreatureSay(const Creature* creature, SpeakClasses type, const std::string& text)
+void NpcScript::onCreatureSay(const Creature* creature, MessageClasses type, const std::string& text)
 {
 	if(m_onCreatureSay == -1){
 		return;
@@ -1233,5 +1251,39 @@ void NpcScript::onThink()
 	}
 	else{
 		std::cout << "[Error] Call stack overflow. NpcScript::onThink" << std::endl;
+	}
+}
+
+void NpcScript::onCreatureLeftClick(const Creature* creature)
+{
+	if (m_onCreatureLeftClick == -1){
+		return;
+	}
+
+	//onCreatureLeftClick(cid)
+	if (m_scriptInterface->reserveScriptEnv()){
+		ScriptEnviroment* env = m_scriptInterface->getScriptEnv();
+
+#ifdef __DEBUG_LUASCRIPTS__
+		std::stringstream desc;
+		desc << "npc " << m_npc->getName();
+		env->setEventDesc(desc.str());
+#endif
+
+		env->setScriptId(m_onThink, m_scriptInterface);
+		env->setRealPos(m_npc->getPosition());
+		env->setNpc(m_npc);
+
+
+		uint32_t cid = env->addThing(const_cast<Creature*>(creature));
+
+		lua_State* L = m_scriptInterface->getLuaState();
+		m_scriptInterface->pushFunction(m_onCreatureLeftClick);
+		lua_pushnumber(L, cid);
+		m_scriptInterface->callFunction(1);
+		m_scriptInterface->releaseScriptEnv();
+	}
+	else{
+		std::cout << "[Error] Call stack overflow. NpcScript::onCreatureLeftClick" << std::endl;
 	}
 }

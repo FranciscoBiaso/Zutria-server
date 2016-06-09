@@ -38,7 +38,8 @@ public:
 		list.clear();
 	}
 	
-	void addList(T* t){
+	void addList(T* t)
+	{
 		list[t->getID()] = t;
 	}
 	

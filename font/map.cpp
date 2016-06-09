@@ -210,11 +210,13 @@ bool Map::placeCreature(const Position& centerPos, Creature* creature, bool exte
 	bool foundTile = false;
 	bool placeInPZ = false;
 
-	if(tile){
+	if(tile)
+	{
 		placeInPZ = tile->hasFlag(TILESTATE_PROTECTIONZONE);
 
 		ReturnValue ret = tile->__queryAdd(0, creature, 1, FLAG_IGNOREBLOCKITEM);
-		if(forceLogin || ret == RET_NOERROR || ret == RET_PLAYERISNOTINVITED){
+		if(forceLogin || ret == RET_NOERROR || ret == RET_PLAYERISNOTINVITED)
+		{
 			foundTile = true;
 		}
 	}
@@ -228,13 +230,15 @@ bool Map::placeCreature(const Position& centerPos, Creature* creature, bool exte
 	// 12X21
 	// -222-
 	// --1--
-	if(extendedPos) {
+	if(extendedPos) 
+	{
 		relList.push_back(relPair(0, -2));
 		relList.push_back(relPair(-2, 0));
 		relList.push_back(relPair(0, 2));
 		relList.push_back(relPair(2, 0));
 		std::random_shuffle(relList.begin(), relList.end());
 	}
+
 	relList.push_back(relPair(-1, -1));
 	relList.push_back(relPair(-1, 0));
 	relList.push_back(relPair(-1, 1));
@@ -248,7 +252,8 @@ bool Map::placeCreature(const Position& centerPos, Creature* creature, bool exte
 	uint32_t radius = 1;
 
 	Position tryPos;
-	for(uint32_t n = 1; n <= radius && !foundTile; ++n){
+	for(uint32_t n = 1; n <= radius && !foundTile; ++n)
+	{
 		for(std::vector<relPair>::iterator it = relList.begin(); it != relList.end() && !foundTile; ++it){
 			int32_t dx = it->first * n;
 			int32_t dy = it->second * n;
@@ -261,7 +266,8 @@ bool Map::placeCreature(const Position& centerPos, Creature* creature, bool exte
 			if(!tile || (placeInPZ && !tile->hasFlag(TILESTATE_PROTECTIONZONE)) || tile->hasProperty(BLOCKSOLID))
 				continue;
 
-			if(tile->__queryAdd(0, creature, 1, 0) == RET_NOERROR){
+			if(tile->__queryAdd(0, creature, 1, 0) == RET_NOERROR)
+			{
 				if(extendedPos) {
 					if(isSightClear(centerPos, tryPos, false)) {
 						foundTile = true;
@@ -285,11 +291,6 @@ bool Map::placeCreature(const Position& centerPos, Creature* creature, bool exte
 		toTile->qt_node->addCreature(creature);
 		return true;
 	}
-
-#ifdef __DEBUG__
-	std::cout << "Failed to place creature onto map!" << std::endl;
-#endif
-
 	return false;
 }
 

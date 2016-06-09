@@ -45,17 +45,29 @@ class Container;
 class Tile;
 class Connection;
 
+enum SEND_PROTOCOL : std::uint8_t
+{
+	protocol_login = 0,
+	protocol_character_list = 1,
+	protocol_map_description = 2,
+
+};
+
+enum RECV_PROTOCOL : std::uint8_t
+{
+	protocol_first_packet = 0,
+	protocol_entergame = 1,
+
+};
+
 class ProtocolGame : public Protocol
 {
 public:
-#ifdef __ENABLE_SERVER_DIAGNOSTIC__
-	static uint32_t ProtocolGameCount;
-#endif
 
 	ProtocolGame(Connection* connection);
 	virtual ~ProtocolGame();
 
-	bool login(const std::string& name, bool isSetGM);
+	bool login(const std::string& name);
 	bool logout(bool forced);
 
 	void setPlayer(Player* p);
@@ -116,6 +128,9 @@ private:
 	void parseAddSkillButtonClick(NetworkMessage& msg);
 	void parseAddSpellLevelButtonClick(NetworkMessage& msg);
 
+	//parse player action
+	void parseSpell(NetworkMessage& msg);
+
 	//party methods
 	void parseInviteToParty(NetworkMessage& msg);
 	void parseJoinParty(NetworkMessage& msg);
@@ -154,6 +169,10 @@ private:
 
 	void parseDebug(NetworkMessage& msg);
 
+	void parseBreath(NetworkMessage& msg);
+	void parseTargetSpell(NetworkMessage& msg);
+	void parseNpcLeftClick(NetworkMessage& msg);
+
 	//Send functions
 	void sendClosePrivate(uint16_t channelId);
 	void sendCreatePrivateChannel(uint16_t channelId, const std::string& channelName);
@@ -162,7 +181,7 @@ private:
 	void sendChannel(uint16_t channelId, const std::string& channelName);
 	void sendRuleViolationsChannel(uint16_t channelId);
 	void sendOpenPrivateChannel(const std::string& receiver);
-	void sendToChannel(const Creature* creature, SpeakClasses type, const std::string& text, uint16_t channelId, uint32_t time = 0);
+	void sendToChannel(const Creature* creature, MessageClasses type, const std::string& text, uint16_t channelId, uint32_t time = 0);
 	void sendRemoveReport(const std::string& name);
 	void sendLockRuleViolation();
 	void sendRuleViolationCancel(const std::string& name);
@@ -176,7 +195,7 @@ private:
 	void sendSpellLearned(unsigned char spellId, unsigned char spellLevel);
 	void sendPing();
 	void sendCreatureTurn(const Creature* creature, uint32_t stackpos);
-	void sendCreatureSay(const Creature* creature, SpeakClasses type, const std::string& text);
+	void sendCreatureSay(const Creature* creature, MessageClasses type, const std::string& text);
 
 	void sendCancel(const std::string& message);
 	void sendCancelWalk();
@@ -186,7 +205,7 @@ private:
 	void sendCreatureOutfit(const Creature* creature, const Outfit_t& outfit);
 	void sendCreatureInvisible(const Creature* creature);
 	void sendStats();
-	void sendTextMessage(MessageClasses mclass, const std::string& message);
+	void ProtocolGame::sendTextMessage(uint8_t targetsGUI, MessageClasses mclass, MessageColors color, const std::string& message);
 
 	void sendTradeItemRequest(const Player* player, const Item* item, bool ack);
 	void sendCloseTrade();
@@ -226,6 +245,7 @@ private:
 
 	void sendContainer(uint32_t cid, const Container* container, bool hasParent);
 	void sendCloseContainer(uint32_t cid);
+	void sendNpcWindow(uint16_t windowId);
 
 	//inventory
 	void sendAddInventoryItem(slots_t slot, const Item* item);
@@ -246,7 +266,7 @@ private:
 		unsigned short width, unsigned short height, NetworkMessage_ptr msg);
 
 	void AddMapDescription(NetworkMessage_ptr msg, const Position& pos);
-	void AddTextMessage(NetworkMessage_ptr msg,MessageClasses mclass, const std::string& message);
+	void AddTextMessage(NetworkMessage_ptr msg,uint8_t, MessageClasses mclass,MessageColors, const std::string& message);
 	void AddAnimatedText(NetworkMessage_ptr msg,const Position& pos, unsigned char color, const std::string& text);
 	void AddMagicEffect(NetworkMessage_ptr msg,const Position& pos, unsigned char type);
 	void AddDistanceShoot(NetworkMessage_ptr msg,const Position& from, const Position& to, uint8_t type);
@@ -254,7 +274,7 @@ private:
 	void AddPlayerStats(NetworkMessage_ptr msg);
 	void AddPlayerFirstStats(NetworkMessage_ptr msg);
 	void AddPlayerTreeSpells(NetworkMessage_ptr msg);
-	void AddCreatureSpeak(NetworkMessage_ptr msg, const Creature* creature, SpeakClasses type, std::string text, uint16_t channelId, uint32_t time = 0);
+	void AddCreatureSpeak(NetworkMessage_ptr msg, const Creature* creature, MessageClasses type, std::string text, uint16_t channelId, uint32_t time = 0);
 	void AddCreatureHealth(NetworkMessage_ptr msg,const Creature* creature);
 	void AddCreatureOutfit(NetworkMessage_ptr msg, const Creature* creature, const Outfit_t& outfit);
 	void AddCreatureInvisible(NetworkMessage_ptr msg, const Creature* creature);
@@ -262,6 +282,7 @@ private:
 	void AddSpellLearned(NetworkMessage_ptr msg, unsigned char spellId, unsigned char spellLevel);
 	void AddWorldLight(NetworkMessage_ptr msg, const LightInfo& lightInfo);
 	void AddCreatureLight(NetworkMessage_ptr msg, const Creature* creature);
+	void AddPlayerBreath(NetworkMessage_ptr msg, uint8_t breath);
 
 	//tiles
 	void AddTileItem(NetworkMessage_ptr msg, const Position& pos, const Item* item);

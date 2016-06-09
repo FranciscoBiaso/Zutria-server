@@ -408,6 +408,7 @@ protected:
 	static int luaGetTownTemplePosition(lua_State *L);
 	static int luaDoPlayerSendOutfitWindow(lua_State *L);
 	static int luaGetWaypointPositionByName(lua_State *L);
+	static int luaDoPlayerSendNpcWindow(lua_State * L);
 
 	//queries
 	static int luaGetPlayerGUIDByName(lua_State *L);

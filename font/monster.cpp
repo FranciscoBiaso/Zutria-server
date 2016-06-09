@@ -837,10 +837,10 @@ void Monster::onThinkYell(uint32_t interval)
 				const voiceBlock_t& vb = mType->voiceVector[index];
 
 				if(vb.yellText){
-					g_game.internalCreatureSay(this, SPEAK_MONSTER_YELL, vb.text);
+					g_game.internalCreatureSay(this, MSG_MONSTER_YELL, vb.text);
 				}
 				else{
-					g_game.internalCreatureSay(this, SPEAK_MONSTER_SAY, vb.text);
+					g_game.internalCreatureSay(this, MSG_MONSTER_TALK, vb.text);
 				}
 			}
 		}

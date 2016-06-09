@@ -70,51 +70,47 @@ void ProtocolLogin::disconnectClient(uint8_t error, const char* message)
 
 bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 {	
-	if(g_game.getGameState() == GAME_STATE_SHUTDOWN){
+	if(g_game.getGameState() == GAME_STATE_SHUTDOWN)
+	{
 		getConnection()->closeConnection();
 		return false;
 	}
-
 	uint32_t clientip = getConnection()->getIP();
 
-	/*uint16_t clientos =*/ msg.GetU16();
-	uint16_t version  = msg.GetU16();
-	msg.SkipBytes(12);
+	/*uint16_t client operating system =*/
+	msg.GetU16();
+	//protocol version
+	uint16_t protocolVersion  = msg.GetU16();
 
-	if(version < CLIENT_VERSION_MIN || version > CLIENT_VERSION_MAX){
+	if(protocolVersion < CLIENT_VERSION_MIN || protocolVersion > CLIENT_VERSION_MAX)
+	{
 		disconnectClient(0x0A, STRING_CLIENT_VERSION);
 		return false;
 	}
 
-#ifdef __PROTOCOL_77__
-	if(!RSA_decrypt(g_otservRSA, msg)){
-		getConnection()->closeConnection();
-		return false;
-	}
+	/*
+	uint32_t datSignature = msg.GetU32();
+	uint32_t sprSignature = msg.GetU32();
+	uint32_t picSignature = msg.GetU32();
+	*/
 
-	uint32_t key[4];
-	key[0] = msg.GetU32();
-	key[1] = msg.GetU32();
-	key[2] = msg.GetU32();
-	key[3] = msg.GetU32();
-	enableXTEAEncryption();
-	setXTEAKey(key);
-#endif // __PROTOCOL_77__
-
-	uint32_t accnumber = msg.GetU32();
+	int32_t accnumber = msg.GetU32();
 	std::string password = msg.GetString();
 	
-	if(!accnumber){
+	if(!accnumber)
+	{
         disconnectClient(0x0A, "Você deve inserir o número de sua conta.");
         return false;
     }
 
-	if(g_game.getGameState() == GAME_STATE_STARTUP){
+	if(g_game.getGameState() == GAME_STATE_STARTUP)
+	{
 		disconnectClient(0x0A, "O serivdor está carregando. Por favor espere.");
 		return false;
 	}
 	
-	if(g_bans.isDeleted(accnumber)){
+	if(g_bans.isDeleted(accnumber))
+	{
         disconnectClient(0x0A, "Sua conta foi deletada!");
         return false;
     }
@@ -124,13 +120,15 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 		return false;
 	}
 	
-	if(g_bans.isIpBanished(clientip)){
+	if(g_bans.isIpBanished(clientip))
+	{
 		disconnectClient(0x0A, "Seu ip está banido");
 		return false;
 	}
 
 	uint32_t serverip = serverIPs[0].first;
-	for(uint32_t i = 0; i < serverIPs.size(); i++){
+	for(uint32_t i = 0; i < serverIPs.size(); i++)
+	{
 		if((serverIPs[i].first & serverIPs[i].second) == (clientip & serverIPs[i].second)){
 			serverip = serverIPs[i].first;
 			break;
@@ -138,8 +136,7 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 	}
 	
 	Account account = IOAccount::instance()->loadAccount(accnumber);
-	if(!(accnumber != 0 && account.accnumber == accnumber &&
-			passwordTest(password, account.password))){
+	if(!(accnumber != 0 && account.accnumber == accnumber && passwordTest(password, account.password))){
 
 		g_bans.addLoginAttempt(clientip, false);
 		disconnectClient(0x0A, "Por favor entre com uma conta e senha válidas.");
@@ -149,16 +146,17 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 	g_bans.addLoginAttempt(clientip, true);
 	
 	OutputMessage_ptr output = OutputMessagePool::getInstance()->getOutputMessage(this, false);
-	if(output){
+	if(output)
+	{
 		TRACK_MESSAGE(output);
 		//Add MOTD
-		std::stringstream motd;
+		/*std::stringstream motd;
 		output->AddByte(0x14);
 		motd << g_config.getNumber(ConfigManager::MOTD_NUM) << "\n";
 		motd << g_config.getString(ConfigManager::MOTD);
-		output->AddString(motd.str());
+		output->AddString(motd.str());*/
 		//Add char list
-		output->AddByte(0x64);
+		output->AddByte(SEND_PROTOCOL::protocol_character_list);
 		output->AddByte((uint8_t)account.charList.size());
 		std::list<std::string>::iterator it;
 		for(it = account.charList.begin(); it != account.charList.end(); it++){
