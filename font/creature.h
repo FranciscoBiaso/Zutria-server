@@ -34,6 +34,8 @@
 
 #include <list>
 
+#define NUMBER_OF_SKILLS  11
+
 typedef std::list<Condition*> ConditionList;
 typedef std::list<CreatureEvent*> CreatureEventList;
 
@@ -248,9 +250,13 @@ public:
 	//combat functions
 	Creature* getAttackedCreature() { return attackedCreature; }
 	virtual bool setAttackedCreature(Creature* creature);
-	virtual int blockHit(Creature* attacker, CombatType_t combatType, int32_t& damage,
-	bool checkDefense = false, bool checkArmor = false, float * missPorcentage = nullptr);
+	virtual int blockHit(Creature* attacker, CombatType_t combatType, int * blockType, void * data = nullptr);
 	virtual int getAvoindanceDefense() { return 0; }
+
+
+	virtual double getSkillValue(uint8_t id) const { return this->m_skills[id]; }
+	virtual uint8_t getAttackSkillType(WeaponType_t) const;
+
 
 	void setMaster(Creature* creature) {master = creature;}
 	Creature* getMaster() {return master;}
@@ -263,10 +269,12 @@ public:
 
 	virtual int32_t getShieldDefense() const { return 0; }
 	virtual int32_t getWeaponDefense() const { return 0; }
-	virtual int32_t getArmor() const {return 0;}
+	virtual int32_t getDefenseFactors() const {return 0;}
 	virtual int32_t getDefense() const {return 0;}
 	virtual float getAttackFactor() const {return 1.0f;}
 	virtual float getDefenseFactor() const {return 1.0f;}
+
+	void addCombatBleeding(double hpToBleend);
 
 	bool addCondition(Condition* condition);
 	bool addCombatCondition(Condition* condition);
@@ -354,7 +362,7 @@ public:
 	virtual void onPlacedCreature() {};
 	virtual void onRemovedCreature() {};
 
-	virtual WeaponType_t getWeaponType() {return WEAPON_NONE;}
+	virtual WeaponType_t getWeaponType() {return WEAPON_TYPE_NONE;}
 	virtual bool getCombatValues(int32_t& min, int32_t& max) {return false;}
 
 	size_t getSummonCount() const {return summons.size();}
@@ -410,6 +418,9 @@ protected:
 	int32_t varSpeed;
 	bool skillLoss;
 	bool lootDrop;
+
+
+	double m_skills[NUMBER_OF_SKILLS];
 
 	Direction direction;
 	ConditionList conditions;

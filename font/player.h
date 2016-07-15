@@ -43,8 +43,6 @@ class Npc;
 class Party;
 class SchedulerTask;
 
-
-#define NUMBER_OF_SKILLS  12
 #define PLAYER_MAX_SPEED 1500
 #define PLAYER_MIN_SPEED 10
 
@@ -63,6 +61,24 @@ enum skillsID
 	PLAYER_SKILL_ATTACK_SPEED,
 	PLAYER_SKILL_COOLDOWN,
 	PLAYER_SKILL_AVOIDANCE
+};
+
+enum AttributesID_t
+{
+	//dynamic attributes
+	ATTR_VITALITY = 0,
+	ATTR_FORCE = 1,
+	ATTR_AGILITY = 2,
+	ATTR_INTELLIGENCE = 3,
+	ATTR_CONCENTRATION = 4,
+	ATTR_STAMINA,
+
+	//passive attr
+	ATTR_DISTANCE,
+	ATTR_MELEE,
+	ATTR_MENTALITY,
+	ATTR_TRAINER,
+	ATTR_DEFENSE
 };
 
 enum skillsid_t {
@@ -137,11 +153,11 @@ public:
 	virtual const std::string& getNameDescription() const { return name; }
 	virtual std::string getDescription(int32_t lookDistance) const;
 	virtual int getThrowRange() const { return 1; }
-	virtual int32_t getMaxHealth() const { return m_skills[PLAYER_SKILL_HEALTH_POINTS]; }
-	virtual int32_t getMaxMana() const { return m_skills[PLAYER_SKILL_MANA_POINTS]; }
+	virtual int32_t getMaxHealth() const { return healthMax; }
+	virtual int32_t getMaxMana() const { return manaMax; }
 	virtual int32_t getShieldDefense() const;
 	virtual int32_t getWeaponDefense() const;
-	virtual int32_t getArmor() const;
+	virtual int32_t getDefenseFactors() const;
 	virtual int32_t getDefense() const;
 	virtual float getAttackFactor() const;
 	virtual float getDefenseFactor() const;
@@ -150,7 +166,7 @@ public:
 	virtual RaceType_t getRace() const { return RACE_BLOOD; }
 	virtual WeaponType_t getWeaponType();
 	virtual uint32_t getAttackSpeed() const;
-	uint32_t getGUID() const { return guid; }
+	uint32_t getGUID() const { return identificator; }
 	static uint64_t getExpForLevel(int32_t level){return 10ULL * level * level * level;}
 	uint32_t getGuildId() const { return guildId; }
 	const std::string& getGuildName() const { return guildName; }
@@ -161,7 +177,12 @@ public:
 	int32_t getContainerID(const Container* container) const;
 	Container* getContainer(uint32_t cid);
 	bool getStorageValue(const uint32_t key, int32_t& value) const;
-	double getSkillValue(uint8_t id) const { return this->m_skills[id]; }
+
+
+	virtual double getSkillValue(uint8_t id) const { return this->m_skills[id]; }
+	virtual uint8_t getAttackSkillType(WeaponType_t) const;
+
+
 	uint16_t getLevelPoints(){ return m_levelPoints; }
 	uint16_t getUnusedMagicPoints(){ return m_unusedMagicPoints; }
 	inline StorageMap::const_iterator getStorageIteratorBegin() const { return storageMap.begin(); }
@@ -233,7 +254,7 @@ public:
 	static int32_t maxMessageBuffer;
 
 	
-	void setGUID(uint32_t _guid) {guid = _guid;}
+	void setGUID(uint32_t _guid) { identificator = _guid;}
 	virtual uint32_t idRange(){ return 0x10000000;}
 	static AutoList<Player> listPlayer;
 	void removeList();
@@ -346,13 +367,13 @@ public:
 
 
 	bool isPzLocked() const { return pzLocked; }
-	virtual int blockHit(Creature* attacker, CombatType_t combatType, int32_t& damage,
-		bool checkDefense = false, bool checkArmor = false, float * missPorcentage = nullptr);
+	virtual int blockHit(Creature* attacker, CombatType_t combatType, int * blockType, void * data = nullptr);
 	virtual void doAttacking(uint32_t interval);
 	virtual bool hasExtraSwing() {return lastAttack > 0 && ((OTSYS_TIME() - lastAttack) >= getAttackSpeed());}
 	virtual void drainHealth(Creature* attacker, CombatType_t combatType, int32_t damage);
 	virtual void drainMana(Creature* attacker, int32_t manaLoss);
 	void addManaSpent(uint32_t amount, bool useMultiplier = true);
+	bool canExecuteAttack(Creature * defedingCreature, int * blockType);
 
 
 	
@@ -509,6 +530,12 @@ public:
 	//other send messages
 	void sendAnimatedText(const Position& pos, unsigned char color, std::string text) const
 		{if(client) client->sendAnimatedText(pos,color,text);}
+	void sendAnimatedTexts(const Position& pos, unsigned char colorOne,
+		unsigned char colorTwo, std::string textOne, std::string textTwo ) const
+	{
+		if (client) client->sendAnimatedTexts(pos, colorOne, colorTwo, textOne, textTwo);
+	}
+
 	void sendCancel(const std::string& msg) const
 		{if(client) client->sendCancel(msg);}
 	void sendCancelMessage(ReturnValue message) const;
@@ -786,7 +813,7 @@ protected:
 
 	std::string name;
 	std::string nameDescription;
-	uint32_t guid;
+	uint32_t identificator;
 
 	uint32_t town;
 	uint8_t breath;
@@ -809,6 +836,7 @@ protected:
 	std::string guildRank;
 	std::string guildNick;
 	uint32_t guildLevel;
+
 
 	StorageMap storageMap;
 	LightInfo itemsLight;
@@ -873,7 +901,6 @@ protected:
 	uint16_t m_levelPoints;
 	//count of magic points to use in the spell tree
 	uint16_t m_unusedMagicPoints;
-	double m_skills[NUMBER_OF_SKILLS];
 	std::list<std::pair<unsigned char, unsigned char>> m_spells;
 };
 

@@ -28,7 +28,6 @@
 #include "baseevents.h"
 #include "otsystem.h"
 #include <typeinfo>
-
 #include <vector>
 
 class Condition;
@@ -280,6 +279,11 @@ public:
 
 	static void doCombatHealth(Creature* caster, Creature* target,
 		int32_t minChange, int32_t maxChange, const CombatParams& params);
+
+	//health by trauma/slash/stab
+	static void doCombatHealth(Creature* caster, Creature* target,
+		struct _weaponDamage_ *, const CombatParams& params);
+
 	static void doCombatHealth(Creature* caster, const Position& pos,
 		const AreaCombat* area, int32_t minChange, int32_t maxChange, const CombatParams& params);
 
@@ -339,6 +343,9 @@ protected:
 
 	static void CombatFunc(Creature* caster, const Position& pos,
 		const AreaCombat* area, const CombatParams& params, COMBATFUNC func, void* data);
+
+
+	static bool CombatPhysicalHealthFunc(Creature* caster, Creature* target, const CombatParams& params, void* data);
 
 	static bool CombatHealthFunc(Creature* caster, Creature* target, const CombatParams& params, void* data);
 	static bool CombatManaFunc(Creature* caster, Creature* target, const CombatParams& params, void* data);

@@ -21,7 +21,7 @@
 	<monster name="vespa" file="insects/vespa.xml"/>
 	<monster name="besouro" file="insects/besouro.xml"/>
 	<monster name="centopéia" file="insects/centopéia.xml"/>
-	<monster name="abelhona" file="insects/abelhona.xml"/>
+	<monster name="abelhão" file="insects/abelhão.xml"/>
 	
 	<!-- goblins -->
 	<monster name="goblim bolseiro" file="goblins/goblim bolseiro.xml"/>
@@ -50,7 +50,7 @@
 	
 	<!-- monkeys -->
 	<monster name="macaquinho" file="monkeys/macaquinho.xml"/>
-	<monster name="macaco negro" file="monkeys/macaco negro.xml"/>
+	<monster name="chipamzé" file="monkeys/chipamzé.xml"/>
 	<monster name="gorila" file="monkeys/gorila.xml"/>
 	
 	<!-- elfs -->

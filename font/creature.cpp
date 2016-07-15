@@ -91,6 +91,9 @@ Creature::Creature() :
 	scriptEventsBitField = 0;
 	onIdleStatus();
 	isDying = false;
+
+	/*for (int i = 0; i < NUMBER_OF_SKILLS; i++)
+		m_skills[i] = 0;*/
 }
 
 Creature::~Creature()
@@ -206,7 +209,9 @@ void Creature::onThink(uint32_t interval)
 	blockTicks += interval;
 
 	if(blockTicks >= 1000){
-		blockCount = std::min((uint32_t)blockCount + 1, (uint32_t)2);
+		//blockCount = std::min((uint32_t)blockCount + 1, (uint32_t)2);
+		//reset
+		blockCount = 0;
 		blockTicks = 0;
 	}
 
@@ -290,6 +295,22 @@ bool Creature::getNextStep(Direction& dir)
 	}
 
 	return false;
+}
+
+
+uint8_t Creature::getAttackSkillType(WeaponType_t weaponType) const
+{
+	switch (weaponType)
+	{
+		case WEAPON_TYPE_NONE:
+		case WEAPON_TYPE_MELEE:
+			return ATTR_MELEE;
+			break;
+
+		case WEAPON_TYPE_DISTANCE:
+			return ATTR_DISTANCE;
+			break;
+	}
 }
 
 bool Creature::startAutoWalk(std::list<Direction>& listDir)
@@ -889,18 +910,37 @@ void Creature::drainMana(Creature* attacker, int32_t manaLoss)
 	changeMana(-manaLoss);
 }
 
-int Creature::blockHit(Creature* attacker, CombatType_t combatType, int32_t& damage,
-	bool checkDefense /* = false */, bool checkArmor /* = false */, float * missPorcentage)
-{
-	int blockType = BLOCK_NONE;
-	bool checkWeapon = true;
-	*missPorcentage = 0.0f;
-
+int Creature::blockHit(Creature* attacker, CombatType_t combatType, int * blockType, void * data)
+{	
 	if(isImmune(combatType))
 	{
-		damage = 0;
-		blockType |= BLOCK_IMMUNITY;
+		//damage = 0;
+		*blockType = BLOCK_IMMUNITY;
 	}
+
+	//count of hits in a interval time
+	blockCount++;
+
+	//legs + elm + armor - factors
+	//		int32_t defenseFactors = getDefenseFactors();
+	//		//shield factor
+	//		int32_t shieldFactor = getShieldDefense();
+
+	//		//increment factors with shield + 0% until 20%
+	//		defenseFactors += shieldFactor * random_range(100, 120)/100;
+
+	//		double attackerPhyAtt = 0;
+	//		double defenserPhyDef = 0;
+	//	
+	//		//is defenser a player or a enym?
+	//		if (defenserPlayer)
+	//		{
+	//			defenserPhyDef =  getPlayer()->getSkillValue(SKILL_PHYSICAL_DEFFENSE);
+	//		}
+
+	//		damage -= defenseFactors * defenserPlayer->getSkillValue(skillsID::PLAYER_SKILL_PHYSICAL_DEFENSE);
+
+
 	//try avoidance
 	/*else if (damage > 0 && getAvoindanceDefense() > 0.0)
 	{
@@ -910,78 +950,100 @@ int Creature::blockHit(Creature* attacker, CombatType_t combatType, int32_t& dam
 		damage = damage * (*missPorcentage);
 		blockType |= BLOCK_AVOIDANCE;
 	}*/
-	else if(checkDefense || checkArmor)
-	{
-		bool hasDefense = false;
-		//count of def in a interval time
-		if(blockCount > 0)
-		{
-			--blockCount;
-			//can def
-			hasDefense = true;
+	//else if(checkDefense || checkArmor)
+	//{
+	//	bool hasDefense = false;
 
-		}
+	//	//count of def in a interval time
+	//	if(blockCount > 0)
+	//	{
+	//		--blockCount;
+	//		//can def
+	//		hasDefense = true;
+	//	}
 
-		//block by shield and weapon
-		if(checkDefense && hasDefense)
-		{
-			//shield defense
-			int32_t maxShieldDefense = getShieldDefense();
-			int32_t minShieldDefense = maxShieldDefense / 3.0f;
-			damage -= random_range(minShieldDefense, maxShieldDefense);
-			if(damage <= 0)
-			{
-				damage = 0;
-				blockType |= BLOCK_SHIELD;
-				checkArmor = false;
-				checkWeapon = false;
-			}
-		}
+	//	//get sum of factors defense
+	//	if (hasDefense)
+	//	{
+	//		//legs + elm + armor - factors
+	//		int32_t defenseFactors = getDefenseFactors();
+	//		//shield factor
+	//		int32_t shieldFactor = getShieldDefense();
 
-		//weapon defense
-		if (checkWeapon)
-		{
-			int32_t maxWeaponDefense = getWeaponDefense();
-			int32_t minWeaponDefense = maxWeaponDefense / 2;
-			if (maxWeaponDefense > 0)
-			{
-				damage -= random_range(minWeaponDefense, maxWeaponDefense);
-				if (damage <= 0)
-				{
-					damage = 0;
-					blockType |= BLOCK_WEAPON;
-					checkArmor = false;
-				}
-			}		
-		}
-	
-		if(checkArmor)
-		{
-			int32_t armorDefense = getArmor();
-			int32_t maxArmorDefense = ceil(armorDefense * 0.75);
-			int32_t minArmorDefense = maxArmorDefense / 3.0f;
-			damage -= random_range(minArmorDefense, maxArmorDefense);
-			if(damage <= 0)
-			{
-				damage = 0;
-				blockType |= BLOCK_ARMOR;
-			}
-		}
+	//		//increment factors with shield + 0% until 20%
+	//		defenseFactors += shieldFactor * random_range(100, 120)/100;
 
-		if(hasDefense && blockType != BLOCK_NONE)
-			onBlockHit(blockType);		
-	}
+	//		double attackerPhyAtt = 0;
+	//		double defenserPhyDef = 0;
+	//	
+	//		//is defenser a player or a enym?
+	//		if (defenserPlayer)
+	//		{
+	//			defenserPhyDef =  getPlayer()->getSkillValue(SKILL_PHYSICAL_DEFFENSE);
+	//		}
+
+	//		damage -= defenseFactors * defenserPlayer->getSkillValue(skillsID::PLAYER_SKILL_PHYSICAL_DEFENSE);
+	//	}
+
+	//	if(checkDefense && hasDefense)
+	//	{
+	//		//shield defense
+	//		int32_t maxShieldDefense = getShieldDefense();
+	//		int32_t minShieldDefense = maxShieldDefense / 3.0f;
+	//		damage -= random_range(minShieldDefense, maxShieldDefense);
+	//		if(damage <= 0)
+	//		{
+	//			damage = 0;
+	//			blockType |= BLOCK_SHIELD;
+	//			checkArmor = false;
+	//			checkWeapon = false;
+	//		}
+	//	}
+
+	//	//weapon defense
+	//	if (checkWeapon)
+	//	{
+	//		int32_t maxWeaponDefense = getWeaponDefense();
+	//		int32_t minWeaponDefense = maxWeaponDefense / 2;
+	//		if (maxWeaponDefense > 0)
+	//		{
+	//			damage -= random_range(minWeaponDefense, maxWeaponDefense);
+	//			if (damage <= 0)
+	//			{
+	//				damage = 0;
+	//				blockType |= BLOCK_WEAPON;
+	//				checkArmor = false;
+	//			}
+	//		}		
+	//	}
+	//
+	//	if(checkArmor)
+	//	{
+	//		int32_t armorDefense = getDefenseFactors();
+	//		int32_t maxArmorDefense = ceil(armorDefense * 0.75);
+	//		int32_t minArmorDefense = maxArmorDefense / 3.0f;
+	//		damage -= random_range(minArmorDefense, maxArmorDefense);
+	//		if(damage <= 0)
+	//		{
+	//			damage = 0;
+	//			blockType |= BLOCK_ARMOR;
+	//		}
+	//	}
+
+	//	if(hasDefense && blockType != BLOCK_NONE)
+	//		onBlockHit(blockType);		
+	//}
 
 
 	if(attacker)
 	{
 		attacker->onAttackedCreature(this);
-		attacker->onAttackedCreatureBlockHit(this, blockType);
+		attacker->onAttackedCreatureBlockHit(this, *blockType);
 	}
 
 	onAttacked();
 
-	return blockType;
+	return true;
 }
 
 bool Creature::setAttackedCreature(Creature* creature)
@@ -1277,6 +1339,21 @@ void Creature::removeSummon(const Creature* creature)
 		(*cit)->releaseThing2();
 		summons.erase(cit);
 	}
+}
+
+
+void Creature::addCombatBleeding(double hpToBlend)
+{
+	if (hasCondition(CONDITION_BLEEDING))
+		removeCondition(CONDITION_BLEEDING);
+	Condition* condition = Condition::createCondition(CONDITIONID_COMBAT, CONDITION_BLEEDING, 2000, 0);
+	condition->setParam(CONDITIONPARAM_OWNER, getID());
+	condition->setParam(CONDITIONPARAM_TOTAL_DMG, hpToBlend);
+	condition->setParam(CONDITIONPARAM_DELAYED, true);
+	
+	//intervals
+	condition->setParam(CONDITIONPARAM_INTERVAL_MAX, std::ceil(10.0 * (1 - std::pow(0.5,-hpToBlend/40.0))));
+	addCondition(condition);
 }
 
 bool Creature::addCondition(Condition* condition)

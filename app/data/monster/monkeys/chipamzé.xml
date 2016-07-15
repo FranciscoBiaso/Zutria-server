@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<monster name="macaco negro" namedescription="" race="blood" experience="2883" speed="250" manacost="300">
+<monster name="chipamzé" namedescription="" race="blood" experience="2883" speed="250" manacost="300">
   <health now="405" max="405"/>
   <look type="19" corpse="2915"/>
   <targetchange interval="2000" chance="0"/>

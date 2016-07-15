@@ -546,43 +546,20 @@
 	<!-- fire wall rune -->
 	<item id="516" name="runa de barreira de fogo">	
 		<attribute key="weight" value="35"/>
-		<attribute key="runeSpellName" value="Chuva de meteoros"/>		
-		<attribute key="charges" value="3"/>
 	</item>
 	
 	<!-- barreira de fogo-->
-	<item id="595" name="barreira de fogo">	
-		<attribute key="type" value="magicfield"/>
-		<attribute key="decayTo" value="517"/>
-		<attribute key="duration" value="20"/>
-		<attribute key="field" value="fire">
-			<attribute key="damage" value="20"/>
-			<attribute key="ticks" value="10000"/>
-			<attribute key="count" value="7"/>
-			<attribute key="damage" value="10"/>
-		</attribute>
+	<item id="517" name="barreira de fogo">	
+		<attribute key="decayTo" value="595"/>
+		<attribute key="duration" value="15"/>
 	</item>
-  <item id="517" name="barreira de fogo">	
-		<attribute key="type" value="magicfield"/>
+	<item id="595" name="barreira de fogo">	
 		<attribute key="decayTo" value="596"/>
-		<attribute key="duration" value="20"/>
-		<attribute key="field" value="fire">
-			<attribute key="damage" value="20"/>
-			<attribute key="ticks" value="10000"/>
-			<attribute key="count" value="7"/>
-			<attribute key="damage" value="10"/>
-		</attribute>
-	</item>	
+		<attribute key="duration" value="7"/>
+	</item>
 	<item id="596" name="barreira de fogo">	
-		<attribute key="type" value="magicfield"/>
 		<attribute key="decayTo" value="0"/>
-		<attribute key="duration" value="20"/>
-		<attribute key="field" value="fire">
-			<attribute key="damage" value="20"/>
-			<attribute key="ticks" value="10000"/>
-			<attribute key="count" value="7"/>
-			<attribute key="damage" value="10"/>
-		</attribute>
+		<attribute key="duration" value="5"/>
 	</item>
 	
 	<!-- fire ball rune -->
@@ -710,7 +687,6 @@
 			<attribute key="description" value="machadsssinha"/>
 			<attribute key="weight" value="23"/>
 			<attribute key="slottype" value="hand"/>
-			<attribute key="weapontype" value="axe"/>
 	</item>
 	
   <item id="2217" name="corrente bestial">    
@@ -727,10 +703,11 @@
 	</item>
   
   <item id="2220" name="clava valorosa bestial">    
-		<attribute key="weight" value="3800" />
-		<attribute key="defense" value="11" />
-		<attribute key="attack" value="16" />
-		<attribute key="weaponType" value="club" />
+    <attribute key="weight" value="3800" />
+		<attribute key="slottype" value="hand"/>
+		<attribute key="perforation_attack" value="7" />
+		<attribute key="slash_attack" value="7" />
+		<attribute key="weapontype" value="melee" />
 	</item>
   
   <item id="2221" name="colar bestial">    
@@ -752,7 +729,6 @@
   
   <item id="2224" name="bota bestial">    
 		<attribute key="armor" value="4" />
-		<attribute key="slotType" value="feet" />
 	</item>
   
   <item id="2225" name="couro de besta"> 
@@ -812,15 +788,37 @@
 		<attribute key="duration" value="12"/>
 	</item>
   
-  <item id="2875" name="barreira de galhos">	
-		<attribute key="decayTo" value="0"/>
-		<attribute key="duration" value="35"/>
-	</item>
-  
-  <item id="2876" name="runa de barreira de galhos">	
-		<attribute key="weight" value="35"/>
-		<attribute key="runeSpellName" value=""/>		
-		<attribute key="charges" value="3"/>
+   <item id="2645" name="escudo de tor">	
+		<attribute key="weaponType" value="shield"/>
+		<attribute key="trauma_defense" value="36"/>
+		<attribute key="defense" value="36"/>
+		<attribute key="weight" value="9" />
+    <attribute key="slotType" value="hand" />
+		<attribute key="weaponType" value="shield"/>
 	</item>
     
+   <item id="2642" name="">    
+    <attribute key="weight" value="3800" />		
+    <attribute key="slotType" value="head" />
+		<attribute key="defense" value="9"/>
+	</item>
+  
+   <item id="2656" name="">    
+    <attribute key="weight" value="3800" />		
+    <attribute key="slotType" value="body" />
+		<attribute key="defense" value="9"/>
+	</item>
+  
+   <item id="2647" name="">    
+    <attribute key="weight" value="3800" />		
+    <attribute key="slotType" value="legs" />
+		<attribute key="defense" value="9"/>
+	</item>
+
+   <item id="2643" name="clava  bestial">    
+    <attribute key="weight" value="3800" />
+		<attribute key="slottype" value="hand"/>
+		<attribute key="slash_attack" value="36" />
+		<attribute key="weapontype" value="melee" />
+	</item>
 </items>

@@ -168,7 +168,15 @@ public:
 	ShootType_t    shootType;
 	MagicEffectClasses magicEffect;
 	int32_t        attack;
+
 	int32_t        defense;
+
+	//atack factors
+	int32_t		   slashAttackFactor;
+	int32_t		   traumaAttackFactor;
+	int32_t		   perforationAttackFactor;
+
+
 	int32_t        armor;
 	uint16_t       slot_position;
 	uint16_t       wield_position;

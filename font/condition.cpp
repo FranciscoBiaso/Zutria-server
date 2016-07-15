@@ -150,6 +150,11 @@ bool Condition::executeCondition(Creature* creature, int32_t interval)
 Condition* Condition::createCondition(ConditionId_t _id, ConditionType_t _type, int32_t _ticks, int32_t param)
 {
 	switch((int32_t)_type){
+		case CONDITION_BLEEDING:
+		{
+			return new ConditionDamage(_id, _type);
+		}
+
 		case CONDITION_POISON:
 		case CONDITION_FIRE:
 		case CONDITION_ENERGY:
@@ -932,15 +937,18 @@ bool ConditionSoul::setParam(ConditionParam_t param, int32_t value)
 ConditionDamage::ConditionDamage(ConditionId_t _id, ConditionType_t _type) :
 Condition(_id, _type, 0)
 {
- 	delayed = false;
-	forceUpdate = false;
+	//deafult values
 	owner = 0;
-	minDamage = 0;
-	maxDamage = 0;
+	intervalsMin = 1;
+	intervalsMax = 2;
+	tickInterval = 2000;
+	totalDamage = 100;
+
+	delayed = false;
+	forceUpdate = false;
 	startDamage = 0;
 	periodDamage = 0;
-	periodDamageTick = 0;
-	tickInterval = 2000;
+	periodDamageTick = 0;	
 }
 
 bool ConditionDamage::setParam(ConditionParam_t param, int32_t value)
@@ -948,6 +956,12 @@ bool ConditionDamage::setParam(ConditionParam_t param, int32_t value)
 	bool ret = Condition::setParam(param, value);
 
 	switch(param){
+		case CONDITIONPARAM_TOTAL_DMG:
+		{
+			totalDamage = std::abs(value);
+			return true;
+		}
+
 		case CONDITIONPARAM_OWNER:
 		{
 			owner = value;
@@ -966,15 +980,9 @@ bool ConditionDamage::setParam(ConditionParam_t param, int32_t value)
 			return true;
 		}
 
-		case CONDITIONPARAM_MAXVALUE:
+		case CONDITIONPARAM_INTERVAL_MAX:
 		{
-			maxDamage = std::abs(value);
-			break;
-		}
-
-		case CONDITIONPARAM_MINVALUE:
-		{
-			minDamage = std::abs(value);
+			intervalsMax = value;
 			break;
 		}
 
@@ -995,6 +1003,11 @@ bool ConditionDamage::setParam(ConditionParam_t param, int32_t value)
 			periodDamage = value;
 			break;
 		}
+
+		case CONDITIONPARAM_PERIODICDAMAGE_TICKS:
+		{
+			periodDamageTick = value;			
+		}break;
 
 		default:
 		{
@@ -1080,7 +1093,8 @@ bool ConditionDamage::serialize(PropWriteStream& propWriteStream)
 
 bool ConditionDamage::addDamage(int32_t rounds, int32_t time, int32_t value)
 {
-	if(rounds == -1){
+	if(rounds == -1)
+	{
 		//periodic damage
 		periodDamage = value;
 		setParam(CONDITIONPARAM_TICKINTERVAL, time);
@@ -1088,7 +1102,8 @@ bool ConditionDamage::addDamage(int32_t rounds, int32_t time, int32_t value)
 		return true;
 	}
 
-	if(periodDamage > 0){
+	if(periodDamage > 0)
+	{
 		return false;
 	}
 
@@ -1110,30 +1125,26 @@ bool ConditionDamage::addDamage(int32_t rounds, int32_t time, int32_t value)
 
 bool ConditionDamage::init()
 {
-	if(periodDamage != 0){
+	if(periodDamage != 0)
 		return true;
-	}
-
-	if(damageList.empty()){
+	
+	if(damageList.empty())
+	{
+		//we will execute the first condition with tickInterval time
 		setTicks(0);
 
-		int32_t amount = random_range(minDamage, maxDamage);
+		int32_t intervals = random_range(std::ceil(intervalsMax/2.0), intervalsMax);
+		
+		
+		double dmgPerInterval = totalDamage / intervals;
+		double mod = totalDamage % intervals;
+		for (int32_t i = 0; i < intervals; i++)
+		{
+			addDamage(1, tickInterval, -dmgPerInterval);
+		}		
+		if(mod != 0 )
+			addDamage(1, tickInterval, -mod);
 
-		if(amount != 0){
-			if(startDamage > maxDamage){
-				startDamage = maxDamage;
-			}
-			else if(startDamage == 0){
-				startDamage = std::max((int32_t)1, (int32_t)std::ceil(((float)amount / 20.0)));
-			}
-
-			std::list<int32_t> list;
-			ConditionDamage::generateDamageList(amount, startDamage, list);
-
-			for(std::list<int32_t>::iterator it = list.begin(); it != list.end(); ++it){
-				addDamage(1, tickInterval, -*it);
-			}
-		}
 	}
 
 	return (!damageList.empty());
@@ -1141,6 +1152,7 @@ bool ConditionDamage::init()
 
 bool ConditionDamage::startCondition(Creature* creature)
 {
+
 	if(!Condition::startCondition(creature)){
 		return false;
 	}
@@ -1155,13 +1167,13 @@ bool ConditionDamage::startCondition(Creature* creature)
 			return doDamage(creature, damage);
 		}
 	}
-
 	return true;
 }
 
 bool ConditionDamage::executeCondition(Creature* creature, int32_t interval)
 {
-	if(periodDamage != 0){
+	if(periodDamage != 0)
+	{
 		periodDamageTick += interval;
 		if(periodDamageTick >= tickInterval){
 			periodDamageTick = 0;
@@ -1175,13 +1187,14 @@ bool ConditionDamage::executeCondition(Creature* creature, int32_t interval)
 		creature->onTickCondition(getType(), bRemove);
 		damageInfo.timeLeft -= interval;
 
-		if(damageInfo.timeLeft <= 0){
+		if(damageInfo.timeLeft <= 0)
+		{
 			int32_t damage = damageInfo.value;
 
-			if(bRemove){
-				damageList.pop_front();
-			}
-			else{
+			if(bRemove)
+				damageList.pop_front();			
+			else
+			{
 				//restore timeLeft
 				damageInfo.timeLeft = damageInfo.interval;
 			}
@@ -1189,11 +1202,10 @@ bool ConditionDamage::executeCondition(Creature* creature, int32_t interval)
 			doDamage(creature, damage);
 		}
 
-		if(!bRemove){
-			if(getTicks() > 0){
-				endTime = endTime + interval;
-			}
-
+		if(!bRemove)
+		{
+			if(getTicks() > 0)
+				endTime = endTime + interval;			
 			interval = 0;
 		}
 	}
@@ -1224,6 +1236,7 @@ bool ConditionDamage::getNextDamage(int32_t& damage)
 
 bool ConditionDamage::doDamage(Creature* creature, int32_t damage)
 {
+	//damage *= -1;
 	if(creature->isSuppress(getType())){
 		return true;
 	}
@@ -1231,42 +1244,49 @@ bool ConditionDamage::doDamage(Creature* creature, int32_t damage)
 	CombatType_t combatType = Combat::ConditionToDamageType(conditionType);
 	Creature* attacker = g_game.getCreatureByID(owner);
 
-	const Player * playerAttacker = attacker->getPlayer();
-	const Player * defender = creature->getPlayer();
-	//attacker is a player
-	if (playerAttacker)
+	Player * attackerPlayer = attacker->getPlayer();
+	//player
+	
+	switch (combatType)
 	{
-		switch (combatType)
-		{
-			case COMBAT_ENERGYDAMAGE:
-			break;
+		case COMBAT_BLEEDING:
+		break;
+
+		case COMBAT_ENERGYDAMAGE:
+		break;
 		
-			case COMBAT_POISONDAMAGE:
-			break;
+		case COMBAT_POISONDAMAGE:
+		break;
 			
-			//spells of fire wizard that burn others
-			case COMBAT_FIREDAMAGE:
-			{
-				if (defender) // player attacking another player
-				{
-					damage -= 3 * playerAttacker->getSkillValue(skillsID::PLAYER_SKILL_MAGIC_ATTACK);
-					//damage += 2 * defender->getSkillValue(skillsID::PLAYER_SKILL_MAGIC_DEFENSE);
-				}
-				else // player attacking a creature
-				{
-					damage -= 3 * playerAttacker->getSkillValue(skillsID::PLAYER_SKILL_MAGIC_ATTACK);
-				}
-			}
-			break;
-			
-			default:
-			break;
+		//spells of fire wizard that burn others
+		case COMBAT_FIREDAMAGE:
+		{
+			//if (defender) // player attacking another player
+			//{
+			//	damage -= 3 * playerAttacker->getSkillValue(skillsID::PLAYER_SKILL_MAGIC_ATTACK);
+			//	//damage += 2 * defender->getSkillValue(skillsID::PLAYER_SKILL_MAGIC_DEFENSE);
+			//}
+			//else // player attacking a creature
+			//{
+			//	damage -= 3 * playerAttacker->getSkillValue(skillsID::PLAYER_SKILL_MAGIC_ATTACK);
+			//}
 		}
+		break;
+			
+		/*case COMBAT_PHYSICALDAMAGE:
+		{
+			std::cout << "condition";
+			damage -= attackerPlayer->getSkillValue(skillsID::PLAYER_SKILL_PHYSICAL_ATTACK) * attackerPlayer->getWeapon()->getAttack();
+		}
+		break;*/
+			
+		default:
+		break;
 	}
 
-	if(g_game.combatBlockHit(combatType, attacker, creature, damage, false, false)){
-		return false;
-	}
+	//if(g_game.combatBlock(combatType, attacker, creature, damage, false, false)){
+	//	return false;
+	//}
 
 	return g_game.combatChangeHealth(combatType, attacker, creature, damage);
 }

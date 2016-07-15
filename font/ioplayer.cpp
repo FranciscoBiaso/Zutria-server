@@ -44,7 +44,7 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 
 	query << "SELECT `players`.`id` AS `id`, `players`.`name` AS `name`, `account_id`, \
 			 `players`.`group_id` as `group_id`, `sex`, `vocation`, `experience`, `level`, \
-			 `health`, `mana`, `manaspent`, `direction`,`looktype`, \
+			 `health`,`healthMax`, `mana`, `manaMax`, `manaspent`, `direction`,`looktype`, \
 			 `lookhead`, `lookbody`, `looklegs`, `lookfeet`, `posx`, `posy`, \
 			 `posz`, `lastlogin`, `lastlogout`, `lastip`, `save`, `conditions`, `redskulltime`, \
 			 `redskull`, `guildnick`, `loss_experience`, `loss_mana`, `loss_skills`, \
@@ -58,6 +58,7 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 	
 	query.str("");
 	player->setGUID(result->getDataInt("id"));
+
 	player->accountNumber = result->getDataInt("account_id");
 	const PlayerGroup* group = getPlayerGroup(result->getDataInt("group_id"));
 	if(group)
@@ -90,6 +91,7 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 	player->lastLoginSaved = result->getDataInt("lastlogin");
 	player->lastLogout = result->getDataInt("lastlogout");
 	player->health = result->getDataInt("health");
+	player->healthMax = result->getDataInt("healthMax");
 	player->defaultOutfit.lookType = result->getDataInt("looktype");
 	player->defaultOutfit.lookHead = result->getDataInt("lookhead");
 	player->defaultOutfit.lookBody = result->getDataInt("lookbody");
@@ -129,6 +131,7 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 	player->setVocation(result->getDataInt("vocation"));
 	// this stuff has to go after the vocation is set
 	player->mana = result->getDataInt("mana");
+	player->manaMax = result->getDataInt("manaMax");
 
 	uint32_t nextManaCount = (uint32_t)player->vocation->getReqMana(player->magLevel + 1);
 	uint32_t manaSpent = (uint32_t)result->getDataInt("manaspent");
@@ -193,26 +196,33 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 	player->premiumDays = Account::getPremiumDaysLeft(result->getDataInt("premend"));
 	//std::cout << player->premiumDays << std::endl;
 	db->freeResult(result);
-
+	
 	//LOADING SKILLS
 	query.str("");
+
 	query << "SELECT `attribute`, `value` FROM `player_skills` WHERE `player_id` = " << player->getGUID();
+
 	if((result = db->storeQuery(query.str())))
 	{
 		//now iterate over the skills
 		do{
+			
 			uint8_t attribute = result->getDataInt("attribute");
 			uint32_t value = result->getDataInt("value");
-	
+		
+			//player->getFreeCapacity = 40000;
+			
 			player->setSkillValue(attribute, value);
-			if (attribute == skillsID::PLAYER_SKILL_MAGIC_POINTS)
-				player->magLevel = value;
-			if (attribute == skillsID::PLAYER_SKILL_CAPACITY)
-				player->capacity = value;
+			if (attribute == ATTR_INTELLIGENCE)
+				player->magLevel = 200000;
+			/*if (attribute == ATTR_FORCE)
+				player->capacity = value;*/
 			
 		}while(result->next());
+
 		db->freeResult(result);
 	}
+
 	query.str("");
 	query << "SELECT `spell_id`, `level` FROM `player_spells` WHERE `player_id` = " << player->getGUID();
 	if((result = db->storeQuery(query.str()))){

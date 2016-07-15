@@ -27,7 +27,6 @@
 #include "player.h"
 #include "const.h"
 #include "tools.h"
-#include "weapons.h"
 #include "spells.h"
 #include "graphicsmath.h"
 
@@ -168,6 +167,10 @@ CombatType_t Combat::ConditionToDamageType(ConditionType_t type)
 			return COMBAT_POISONDAMAGE;
 			break;
 
+		case CONDITION_BLEEDING:
+			return COMBAT_BLEEDING;
+			break;
+
 		default:
 			break;
 	}
@@ -181,6 +184,7 @@ ConditionType_t Combat::DamageToConditionType(CombatType_t type)
 		case COMBAT_FIREDAMAGE: return CONDITION_FIRE;
 		case COMBAT_ENERGYDAMAGE: return CONDITION_ENERGY;
 		case COMBAT_POISONDAMAGE: return CONDITION_POISON;
+		case COMBAT_BLEEDING: return CONDITION_BLEEDING;
 		default: break;
 	}
 
@@ -483,6 +487,99 @@ bool Combat::CombatHealthFunc(Creature* caster, Creature* target, const CombatPa
 	bool result = g_game.combatChangeHealth(params.combatType, params.hitEffect, params.hitTextColor, caster, target, healthChange);
 
 	if(result)
+	{
+		CombatConditionFunc(caster, target, params, NULL);
+		CombatDispelFunc(caster, target, params, NULL);
+	}
+
+	return result;
+}
+
+
+bool Combat::CombatPhysicalHealthFunc(Creature* caster, Creature* target, const CombatParams& params, void* data)
+{
+	struct _weaponDamage_* wDamage = (struct _weaponDamage_*)data;
+	//the attack was failed or blocked?
+	if (g_game.combatBlockPhysicalHit(params.combatType, caster, target, wDamage))
+		return false;
+
+	bool result = false;
+
+	switch (wDamage->damageType)
+	{
+		//blood only
+		case DAMAGE_MIN:
+			result = g_game.combatChangeHealth(params.combatType, NM_ME_DRAW_BLOOD_MIN, params.hitTextColor, caster, target, wDamage);
+			break;
+		case DAMAGE_MEDIUM:
+			result = g_game.combatChangeHealth(params.combatType, NM_ME_DRAW_BLOOD_MEDIUM, params.hitTextColor, caster, target,wDamage);
+			break;
+		case DAMAGE_MAX:
+			result = g_game.combatChangeHealth(params.combatType, NM_ME_DRAW_BLOOD_MAX, params.hitTextColor, caster, target,wDamage);
+			break;
+		//blood + perforation min
+		case (DAMAGE_MIN | DAMAGE_PERFORATION_MIN):
+			result = g_game.combatChangeHealth(params.combatType, NM_ME_DRAW_BLOOD_PLUS_PERFORATION, params.hitTextColor, caster, target,wDamage);
+			break;
+		case (DAMAGE_MEDIUM | DAMAGE_PERFORATION_MIN):
+			result = g_game.combatChangeHealth(params.combatType, NM_ME_DRAW_BLOOD_MEDIUM_PLUS_PERFORATION, params.hitTextColor, caster, target,wDamage);
+			break;
+		case (DAMAGE_MAX | DAMAGE_PERFORATION_MIN):
+			result = g_game.combatChangeHealth(params.combatType, NM_ME_DRAW_BLOOD_MAX_PLUS_PERFORATION, params.hitTextColor, caster, target,wDamage);
+			break;
+		//blood + perforation medium
+		case (DAMAGE_MIN | DAMAGE_PERFORATION_MED):
+			result = g_game.combatChangeHealth(params.combatType, NM_ME_DRAW_BLOOD_MIN_PLUS_PERFORATION_MED, params.hitTextColor, caster, target,wDamage);
+			break;
+		case (DAMAGE_MEDIUM | DAMAGE_PERFORATION_MED):
+			result = g_game.combatChangeHealth(params.combatType, NM_ME_DRAW_BLOOD_MED_PLUS_PERFORATION_MED, params.hitTextColor, caster, target,wDamage);
+			break;
+		case (DAMAGE_MAX | DAMAGE_PERFORATION_MED):
+			result = g_game.combatChangeHealth(params.combatType, NM_ME_DRAW_BLOOD_MAX_PLUS_PERFORATION_MED, params.hitTextColor, caster, target,wDamage);
+			break;
+		//blood + perforation MAX
+		case (DAMAGE_MIN | DAMAGE_PERFORATION_MAX):
+			result = g_game.combatChangeHealth(params.combatType, NM_ME_DRAW_BLOOD_MIN_PLUS_PERFORATION_MAX, params.hitTextColor, caster, target,wDamage);			
+			break;
+		case (DAMAGE_MEDIUM | DAMAGE_PERFORATION_MAX):
+			result = g_game.combatChangeHealth(params.combatType, NM_ME_DRAW_BLOOD_MED_PLUS_PERFORATION_MAX, params.hitTextColor, caster, target,wDamage);
+			break;
+		case (DAMAGE_MAX | DAMAGE_PERFORATION_MAX):
+			result = g_game.combatChangeHealth(params.combatType, NM_ME_DRAW_BLOOD_MAX_PLUS_PERFORATION_MAX, params.hitTextColor, caster, target,wDamage);
+			break;
+		//blood + slash
+		case (DAMAGE_MIN | DAMAGE_SLASH_MIN):
+			result = g_game.combatChangeHealth(params.combatType, NM_ME_DRAW_BLOOD_PLUS_SLASH, params.hitTextColor, caster, target,wDamage);
+			break;
+		case (DAMAGE_MEDIUM | DAMAGE_SLASH_MIN):
+			result = g_game.combatChangeHealth(params.combatType, NM_ME_DRAW_BLOOD_MEDIUM_PLUS_SLASH, params.hitTextColor, caster, target,wDamage);
+			break;
+		case (DAMAGE_MAX | DAMAGE_SLASH_MIN):
+			result = g_game.combatChangeHealth(params.combatType, NM_ME_DRAW_BLOOD_MAX_PLUS_SLASH, params.hitTextColor, caster, target,wDamage);
+			break;
+		//blood + slash MED
+		case (DAMAGE_MIN | DAMAGE_SLASH_MED):
+			result = g_game.combatChangeHealth(params.combatType, NM_ME_DRAW_BLOOD_PLUS_SLASH_MED, params.hitTextColor, caster, target,wDamage);
+			break;
+		case (DAMAGE_MEDIUM | DAMAGE_SLASH_MED):
+			result = g_game.combatChangeHealth(params.combatType, NM_ME_DRAW_BLOOD_MEDIUM_PLUS_SLASH_MED, params.hitTextColor, caster, target,wDamage);
+			break;
+		case (DAMAGE_MAX | DAMAGE_SLASH_MED):
+			result = g_game.combatChangeHealth(params.combatType, NM_ME_DRAW_BLOOD_PLUS_SLASH_MED, params.hitTextColor, caster, target,wDamage);
+			break;
+		//blood + slash MAX
+		case (DAMAGE_MIN | DAMAGE_SLASH_MAX):
+			result = g_game.combatChangeHealth(params.combatType, NM_ME_DRAW_BLOOD_PLUS_SLASH_MAX, params.hitTextColor, caster, target,wDamage);
+			break;
+		case (DAMAGE_MEDIUM | DAMAGE_SLASH_MAX):
+			result = g_game.combatChangeHealth(params.combatType, NM_ME_DRAW_BLOOD_MEDIUM_PLUS_SLASH_MAX, params.hitTextColor, caster, target,wDamage);
+			break;
+		case (DAMAGE_MAX | DAMAGE_SLASH_MAX):
+			result = g_game.combatChangeHealth(params.combatType, NM_ME_DRAW_BLOOD_PLUS_SLASH_MAX, params.hitTextColor, caster, target,wDamage);
+			break;
+	}
+
+	if (result)
 	{
 		CombatConditionFunc(caster, target, params, NULL);
 		CombatDispelFunc(caster, target, params, NULL);
@@ -1016,6 +1113,20 @@ void Combat::doCombatHealth(Creature* caster, Creature* target,
 			g_game.addMagicEffect(target->getPosition(), params.impactEffect);
 
 		if(caster && params.distanceEffect != NM_ME_NONE)
+			addDistanceEffect(caster, caster->getPosition(), target->getPosition(), params.distanceEffect);
+	}
+}
+
+void Combat::doCombatHealth(Creature* caster, Creature* target, struct _weaponDamage_ *wd, const CombatParams& params)
+{
+	if (!params.isAggressive || (caster != target && Combat::canDoCombat(caster, target) == RET_NOERROR))
+	{
+		CombatPhysicalHealthFunc(caster, target, params, (struct _weaponDamage_*)wd);
+
+		if (params.impactEffect != NM_ME_NONE)
+			g_game.addMagicEffect(target->getPosition(), params.impactEffect);
+
+		if (caster && params.distanceEffect != NM_ME_NONE)
 			addDistanceEffect(caster, caster->getPosition(), target->getPosition(), params.distanceEffect);
 	}
 }

@@ -46,6 +46,7 @@
 #include "movement.h"
 #include "globalevent.h"
 #include "const.h"
+#include "weapons.h"
 
 #if defined __EXCEPTION_TRACER__
 #include "exception.h"
@@ -918,7 +919,7 @@ ReturnValue Game::internalMoveCreature(Creature* creature, Direction direction, 
 
 	if (creature->getPlayer() && canChangeFloor){
 		//try go up
-		if (currentPos.z != 8 && creature->getTile()->hasHeight(3)){
+		if (currentPos.z != 8 && creature->getTile()->hasHeight(9)){
 			Tile* tmpTile = map->getTile(currentPos.x, currentPos.y, currentPos.z - 1);
 			if (tmpTile == NULL || (tmpTile->ground == NULL && !tmpTile->hasProperty(BLOCKSOLID))){
 				tmpTile = map->getTile(destPos.x, destPos.y, destPos.z - 1);
@@ -934,7 +935,7 @@ ReturnValue Game::internalMoveCreature(Creature* creature, Direction direction, 
 			if (currentPos.z != 7 && (tmpTile == NULL || (tmpTile->ground == NULL && !tmpTile->hasProperty(BLOCKSOLID)))){
 				tmpTile = map->getTile(destPos.x, destPos.y, destPos.z + 1);
 
-				if (tmpTile && tmpTile->hasHeight(3)){
+				if (tmpTile && tmpTile->hasHeight(9)){
 					flags = flags | FLAG_IGNOREBLOCKITEM | FLAG_IGNOREBLOCKCREATURE;
 					destPos.z += 1;
 				}
@@ -3303,14 +3304,14 @@ bool Game::playerAddSkillPoint(uint32_t playerId, uint8_t skillId)
 
 		if (skillId == PLAYER_SKILL_CAPACITY)
 			player->sendStats();
-		if (skillId == PLAYER_SKILL_MAGIC_POINTS)
-			player->setUnusedMagicPoints(player->getUnusedMagicPoints() + 1);		
-		if (skillId == skillsID::PLAYER_SKILL_SPEED)
+	/*	if (skillId == PLAYER_SKILL_MAGIC_POINTS)
+			player->setUnusedMagicPoints(player->getUnusedMagicPoints() + 1);		*/
+		/*if (skillId == skillsID::PLAYER_SKILL_SPEED)
 		{
 			player->setBaseSpeed(player->getBaseSpeed() + 1);
 			changeSpeed(player, 0);
-		}
-		if (skillId == skillsID::PLAYER_SKILL_HEALTH_POINTS)
+		}*/
+		if (skillId == ATTR_VITALITY)
 		{
 			player->sendCreatureHealth(player);
 		}
@@ -4015,7 +4016,7 @@ void Game::changeLight(const Creature* creature)
 bool Game::combatBlockHit(CombatType_t combatType, Creature* attacker, Creature* target,
 	int32_t& healthChange, bool checkDefense, bool checkArmor)
 {
-	if(healthChange > 0)
+	/*if(healthChange > 0)
 	{
 		return false;
 	}
@@ -4082,7 +4083,174 @@ bool Game::combatBlockHit(CombatType_t combatType, Creature* attacker, Creature*
 		addMagicEffect(list, targetPos, hitEffect);
 
 		return true;
+	}*/
+
+	return false;
+}
+
+
+bool Game::combatBlockPhysicalHit(CombatType_t combatType, Creature* attacker, Creature* target, struct _weaponDamage_ * wd)
+{
+	Player * attackerPlayer = attacker->getPlayer();
+	Player * denfenderPlayer = target->getPlayer();
+	if (!target->isAttackable() || Combat::canDoCombat(attacker, target) != RET_NOERROR)
+	{
+		const Position& targetPos = target->getPosition();
+		const SpectatorVec& defenderSpectors = getSpectators(targetPos);
+		addMagicEffect(defenderSpectors, targetPos, NM_ME_PUFF);
+		return true;
 	}
+	
+	int attackType = ATTACK_FAIL_NONE;
+	//if attacker can hit, defender will defend
+	
+	if (attackerPlayer->canExecuteAttack(target, &attackType))
+	{
+		int blockType = BLOCK_NONE;
+		const Position& targetPos = target->getPosition();		
+		const SpectatorVec& defenderSpectors = getSpectators(targetPos);
+		//can denfender player denfed?
+		std::cout << "attacker:"<<attacker->getName() << std::endl;
+		if (target->blockHit(attacker, combatType, &blockType,(struct _weaponDamage_ *) wd))
+		{
+			switch (blockType)
+			{
+				case BLOCK_DODGE:
+				{
+					addMagicEffect(defenderSpectors, targetPos, NM_ME_PUFF);
+					std::stringstream ss;
+					ss << "miss";
+					addAnimatedText(defenderSpectors, targetPos, TEXTCOLOR_ORANGE, ss.str());
+					return true;
+				}break;
+
+				case BLOCK_DEFENSE_MIN:
+					addMagicEffect(defenderSpectors, targetPos, NM_ME_MIN_DEF);
+					break;
+
+				case BLOCK_DEFENSE_MEDIUM:
+					addMagicEffect(defenderSpectors, targetPos, NM_ME_MEDIUM_DEF);
+					break;
+
+				case BLOCK_DEFENSE_MAX:
+					addMagicEffect(defenderSpectors, targetPos, NM_ME_MAX_DEF);
+					break;
+
+				//defense min but armor perfured
+				case (BLOCK_DEFENSE_MIN | BLOCK_PERFORATION_MIN):
+					addMagicEffect(defenderSpectors, targetPos, NM_ME_MIN_DEF_PLUS_PERFORATION_MIN);
+					break;
+
+				
+				case (BLOCK_DEFENSE_MIN | BLOCK_PERFORATION_MEDIUM):
+					addMagicEffect(defenderSpectors, targetPos, NM_ME_MEDIUM_DEF_PLUS_PERFORATION_MEDIUM);
+					break;
+
+				case (BLOCK_DEFENSE_MIN | BLOCK_PERFORATION_MAX):
+					addMagicEffect(defenderSpectors, targetPos, NM_ME_MIN_DEF_PLUS_PERFORATION_MAX);
+					break;				
+
+				//defense medium but armor perfured
+				case (BLOCK_DEFENSE_MEDIUM | BLOCK_PERFORATION_MIN):
+					addMagicEffect(defenderSpectors, targetPos, NM_ME_MEDIUM_DEF_PLUS_PERFORATION_MIN);
+					break;
+
+				case (BLOCK_DEFENSE_MEDIUM | BLOCK_PERFORATION_MEDIUM):
+					addMagicEffect(defenderSpectors, targetPos, NM_ME_MEDIUM_DEF_PLUS_PERFORATION_MEDIUM);
+					break;
+
+				case (BLOCK_DEFENSE_MEDIUM | BLOCK_PERFORATION_MAX):
+					addMagicEffect(defenderSpectors, targetPos, NM_ME_MEDIUM_DEF_PLUS_PERFORATION_MAX);
+					break;
+
+				//defense max but armor perfured medium
+				case (BLOCK_DEFENSE_MAX | BLOCK_PERFORATION_MIN):
+					addMagicEffect(defenderSpectors, targetPos, NM_ME_MAX_DEF_PLUS_PERFORATION_MIN);
+					break;
+
+				case (BLOCK_DEFENSE_MAX | BLOCK_PERFORATION_MEDIUM):
+					addMagicEffect(defenderSpectors, targetPos, NM_ME_MAX_DEF_PLUS_PERFORATION_MEDIUM);
+					break;
+
+				case (BLOCK_DEFENSE_MAX | BLOCK_PERFORATION_MAX):
+					addMagicEffect(defenderSpectors, targetPos, NM_ME_MAX_DEF_PLUS_PERFORATION_MAX);
+					break;
+
+				default:
+					addMagicEffect(defenderSpectors, targetPos, 3);
+					break;
+			}
+		}
+		//defender player can not denfed
+		else
+		{
+			//damage taked
+			return false;
+		}
+
+		if (wd->perforationFactor > 0)
+		{
+			std::stringstream ss;
+			ss << std::setprecision(2) << 100.0 -  wd->perforationFactor << "% blocked";
+			addAnimatedText(defenderSpectors, targetPos, TEXTCOLOR_ORANGE, ss.str());
+		}
+		return true;
+	}
+	//attack fail
+	else
+	{
+
+		if (denfenderPlayer)
+			denfenderPlayer->sendCreatureSquare(attacker, SQ_COLOR_BLACK);
+
+		const Position& attackerPos = attacker->getPosition();
+		const SpectatorVec& attackerSpectors = getSpectators(attackerPos);
+		switch (attackType)
+		{
+			case ATTACK_FAIL_CONCENTRATION:
+
+				addMagicEffect(attackerSpectors, attackerPos, NM_ME_MAX_PUFF);
+				//addMagicEffect(attackerSpectors, attackerPos, NM_ME_PUFF);
+				return true;									
+
+			case ATTACK_FAIL_NONE:
+				return false;
+		}
+	}
+
+	
+	/*else if (blockType & BLOCK_IMMUNITY)
+	{
+		uint8_t hitEffect = 0;
+
+		switch (combatType) {
+		case COMBAT_UNDEFINEDDAMAGE:
+			break;
+
+		case COMBAT_ENERGYDAMAGE:
+		case COMBAT_FIREDAMAGE:
+		case COMBAT_PHYSICALDAMAGE:
+		{
+			hitEffect = NM_ME_BLOCKHIT;
+			break;
+		}
+
+		case COMBAT_POISONDAMAGE:
+		{
+			hitEffect = NM_ME_POISON_RINGS;
+			break;
+		}
+
+
+		default:
+			hitEffect = NM_ME_PUFF;
+			break;
+		}
+
+		addMagicEffect(list, targetPos, hitEffect);
+
+		return true;
+	}*/
 
 	return false;
 }
@@ -4092,28 +4260,260 @@ bool Game::combatChangeHealth(CombatType_t combatType, Creature* attacker, Creat
 	return combatChangeHealth(combatType, NM_ME_UNK, TEXTCOLOR_UNK, attacker, target, healthChange);
 }
 
+bool Game::combatChangeHealth(CombatType_t combatType, MagicEffectClasses customHitEffect,
+	TextColor_t customTextColor, Creature* attacker, Creature* target, struct _weaponDamage_ * wDamage)
+{
+	int32_t healthChange = wDamage->totalDamage;
+	const Position& targetPos = target->getPosition();
+
+	//+ life
+	if (healthChange > 0)
+	{
+		//it's not possible healh a dead creature
+		if (target->getHealth() <= 0)
+		{
+			return false;
+		}
+		else
+		{
+			target->gainHealth(attacker, healthChange);
+		}
+	}
+	//- life
+	else
+	{
+		const SpectatorVec& list = getSpectators(targetPos);
+
+		if (!target->isAttackable() || Combat::canDoCombat(attacker, target) != RET_NOERROR)
+		{
+			addMagicEffect(list, targetPos, NM_ME_PUFF);
+			return true;
+		}
+
+		healthChange *= -1.0f;
+
+		if (healthChange != 0) {
+			/*if(target->hasCondition(CONDITION_MANASHIELD) && combatType != COMBAT_UNDEFINEDDAMAGE){
+			int32_t manaDamage = std::min(target->getMana(), damage);
+			damage = std::max((int32_t)0, damage - manaDamage);
+
+			if(manaDamage != 0){
+			target->drainMana(attacker, manaDamage);
+
+			std::stringstream ss;
+			ss << manaDamage;
+			addMagicEffect(list, targetPos, NM_ME_LOSE_ENERGY);
+			addAnimatedText(list, targetPos, TEXTCOLOR_BLUE, ss.str());
+			}
+			}
+			*/
+			//fire shileld on
+			//if (target->hasCondition(CONDITION_FIRESHIELD) && combatType != COMBAT_UNDEFINEDDAMAGE)
+			//{
+			//	//% damage blocked by fire shield
+			//	float porcentage = (std::rand() % 5 + 1) /100.0 ;
+
+			//	//damage = damage - porcentage * damage;
+			//	if (porcentage > 0)
+			//	{
+			//		std::stringstream ss;
+			//		ss << porcentage * 100 << " % miss";
+			//		addMagicEffect(list, targetPos, NM_ME_FIRESHIELD);
+			//		addAnimatedText(list, targetPos, 5, ss.str());
+			//	}
+
+			//}
+
+			healthChange = std::min(target->getHealth(), healthChange);
+
+			//the damage
+			if (healthChange > 0)
+			{
+				target->drainHealth(attacker, combatType, healthChange);
+				addCreatureHealth(list, target);
+
+				if (Player* player = target->getPlayer())
+				{
+					if (player->getHealth() <= 0)
+						player->sendTextMessage(MSG_TARGET_TOP_CENTER_MAP, MSG_INFORMATION, MSG_COLOR_RED, "Você está morto.");
+				}
+
+				TextColor_t textColor = TEXTCOLOR_NONE;
+				uint8_t hitEffect = 0;
+				switch (combatType)
+				{
+				case COMBAT_BLEEDING:
+				{
+					Item* splash = NULL;
+					textColor = TEXTCOLOR_RED;
+					hitEffect = NM_ME_DRAW_BLEEDING_MIN;
+					splash = Item::CreateItem(ITEM_SMALLSPLASH, FLUID_BLOOD);
+					if (splash) {
+						internalAddItem(target->getTile(), splash, INDEX_WHEREEVER, FLAG_NOLIMIT);
+						startDecay(splash);
+					}
+				}break;
+
+				case COMBAT_PHYSICALDAMAGE:
+				{
+					Item* splash = NULL;
+					switch (target->getRace()) {
+					case RACE_VENOM:
+						textColor = TEXTCOLOR_LIGHTGREEN;
+						hitEffect = NM_ME_POISON;
+						splash = Item::CreateItem(ITEM_SMALLSPLASH, FLUID_GREEN);
+						break;
+
+					case RACE_BLOOD:
+						textColor = TEXTCOLOR_RED;
+						hitEffect = NM_ME_DRAW_BLOOD_MIN;
+						splash = Item::CreateItem(ITEM_SMALLSPLASH, FLUID_BLOOD);
+						break;
+
+					case RACE_UNDEAD:
+						textColor = TEXTCOLOR_LIGHTGREY;
+						hitEffect = NM_ME_HIT_AREA;
+						break;
+
+					case RACE_FIRE:
+						textColor = TEXTCOLOR_ORANGE;
+						hitEffect = NM_ME_DRAW_BLOOD_MIN;
+						splash = Item::CreateItem(ITEM_SMALLSPLASH, FLUID_BLOOD);
+						break;
+
+					default:
+						break;
+					}
+
+					if (splash) {
+						internalAddItem(target->getTile(), splash, INDEX_WHEREEVER, FLAG_NOLIMIT);
+						startDecay(splash);
+					}
+
+					break;
+				}
+
+				case COMBAT_ENERGYDAMAGE:
+				{
+					textColor = TEXTCOLOR_LIGHTBLUE;
+					hitEffect = NM_ME_ENERGY_DAMAGE;
+					break;
+				}
+
+				case COMBAT_POISONDAMAGE:
+				{
+					textColor = TEXTCOLOR_LIGHTGREEN;
+					hitEffect = NM_ME_POISON_RINGS;
+					break;
+				}
+
+				case COMBAT_FIREDAMAGE:
+				{
+					textColor = TEXTCOLOR_ORANGE;
+					hitEffect = NM_ME_HITBY_FIRE;
+					break;
+				}
+
+				case COMBAT_LIFEDRAIN:
+				{
+					textColor = TEXTCOLOR_RED;
+					hitEffect = NM_ME_MAGIC_BLOOD;
+					break;
+				}
+
+				default:
+					break;
+				}
+
+				if (customHitEffect != NM_ME_UNK)
+					hitEffect = customHitEffect;
+
+				if (customTextColor != TEXTCOLOR_UNK)
+					textColor = customTextColor;
+
+				if (textColor != TEXTCOLOR_NONE) {
+
+					addMagicEffect(list, targetPos, hitEffect);
+
+					std::stringstream ss;
+					std::stringstream ss2;
+					if (wDamage->critic)
+						healthChange = healthChange - std::abs(wDamage->criticDmg);
+
+					if (wDamage->perforationFactor > 0)
+					{						
+						int32_t hitPerfuration = std::ceil(healthChange * wDamage->perforationFactor / 100.0);
+						healthChange = healthChange - hitPerfuration;
+						ss << healthChange <<std::endl;
+						if (wDamage->critic)													
+							ss2 << "+ " << hitPerfuration - wDamage->criticDmg << "perf (crít)" << std::endl;
+						else
+							ss2 << "+ " << hitPerfuration << " perf" << std::endl;
+
+						addAnimatedTexts(list, targetPos, TEXTCOLOR_GRAY, TEXTCOLOR_LIGHT_YELLOW, ss.str(), ss2.str());
+					}
+					else if (wDamage->slashFactor > 0)
+					{
+						ss << healthChange << std::endl;
+						if (wDamage->critic)
+							ss2 << "slashing " << wDamage->slashFactor - wDamage->criticDmg << " hp (crít)"<< std::endl;
+						else
+							ss2 << "slashing " << wDamage->slashFactor << " hp" << std::endl;
+						addAnimatedTexts(list, targetPos, TEXTCOLOR_GRAY, TEXTCOLOR_LIGHT_YELLOW, ss.str(), ss2.str());
+					}
+					else
+					{
+						ss << healthChange;
+
+						if (wDamage->critic)					
+							ss2 << "+ " << -wDamage->criticDmg << " crítico"<< std::endl;						
+						
+						
+						if (wDamage->critic)
+							addAnimatedTexts(list, targetPos, TEXTCOLOR_GRAY, TEXTCOLOR_LIGHT_YELLOW, ss.str(), ss2.str());
+						else
+							addAnimatedText(list, targetPos, TEXTCOLOR_GRAY, ss.str());
+					}
+				}
+			}
+		}
+	}
+
+	return true;
+}
+
 bool Game::combatChangeHealth(CombatType_t combatType, MagicEffectClasses customHitEffect, 
         TextColor_t customTextColor, Creature* attacker, Creature* target, int32_t healthChange)
 {
 	const Position& targetPos = target->getPosition();
 
-	if(healthChange > 0){
-		if(target->getHealth() <= 0){
+	//+ life
+	if(healthChange > 0)
+	{
+		//it's not possible healh a dead creature
+		if(target->getHealth() <= 0)
+		{
 			return false;
 		}
-
-		target->gainHealth(attacker, healthChange);
+		else
+		{
+			target->gainHealth(attacker, healthChange);
+		}
 	}
-	else{
+	//- life
+	else
+	{
 		const SpectatorVec& list = getSpectators(targetPos);
 
-		if(!target->isAttackable() || Combat::canDoCombat(attacker, target) != RET_NOERROR){
+		if(!target->isAttackable() || Combat::canDoCombat(attacker, target) != RET_NOERROR)
+		{
 			addMagicEffect(list, targetPos, NM_ME_PUFF);
 			return true;
 		}
 
-		int32_t damage = -healthChange;
-		if(damage != 0){
+		healthChange *= -1.0f;
+
+		if(healthChange != 0){
 			/*if(target->hasCondition(CONDITION_MANASHIELD) && combatType != COMBAT_UNDEFINEDDAMAGE){
 				int32_t manaDamage = std::min(target->getMana(), damage);
 				damage = std::max((int32_t)0, damage - manaDamage);
@@ -4145,21 +4545,36 @@ bool Game::combatChangeHealth(CombatType_t combatType, MagicEffectClasses custom
 
 			//}
 
-
-			damage = std::min(target->getHealth(), damage);
-			if(damage > 0){
-				target->drainHealth(attacker, combatType, damage);
+			healthChange = std::min(target->getHealth(), healthChange);
+			
+			//the damage
+			if(healthChange > 0)
+			{
+				target->drainHealth(attacker, combatType, healthChange);
 				addCreatureHealth(list, target);
+
 				if(Player* player = target->getPlayer()) 
 				{
 					if(player->getHealth() <= 0)
-						player->sendTextMessage(MSG_TARGET_TOP_CENTER_MAP,MSG_INFORMATION,MSG_COLOR_DARK_RED, "Você está morto.");
+						player->sendTextMessage(MSG_TARGET_TOP_CENTER_MAP,MSG_INFORMATION,MSG_COLOR_RED, "Você está morto.");
 				}
 
 				TextColor_t textColor = TEXTCOLOR_NONE;
 				uint8_t hitEffect = 0;
+				switch(combatType)
+				{
+					case COMBAT_BLEEDING:
+					{
+						Item* splash = NULL;
+						textColor = TEXTCOLOR_RED;
+						hitEffect = NM_ME_DRAW_BLEEDING_MIN;
+						splash = Item::CreateItem(ITEM_SMALLSPLASH, FLUID_BLOOD);
+						if (splash) {
+							internalAddItem(target->getTile(), splash, INDEX_WHEREEVER, FLAG_NOLIMIT);
+							startDecay(splash);
+						}						
+					}break;
 
-				switch(combatType){
 					case COMBAT_PHYSICALDAMAGE:
 					{
 						Item* splash = NULL;
@@ -4172,7 +4587,7 @@ bool Game::combatChangeHealth(CombatType_t combatType, MagicEffectClasses custom
 
 							case RACE_BLOOD:
 								textColor = TEXTCOLOR_RED;
-								hitEffect = NM_ME_DRAW_BLOOD;
+								hitEffect = NM_ME_DRAW_BLOOD_MIN;
 								splash = Item::CreateItem(ITEM_SMALLSPLASH, FLUID_BLOOD);
 								break;
 
@@ -4183,7 +4598,7 @@ bool Game::combatChangeHealth(CombatType_t combatType, MagicEffectClasses custom
 
 							case RACE_FIRE:
 								textColor = TEXTCOLOR_ORANGE;
-								hitEffect = NM_ME_DRAW_BLOOD;
+								hitEffect = NM_ME_DRAW_BLOOD_MIN;
 								splash = Item::CreateItem(ITEM_SMALLSPLASH, FLUID_BLOOD);
 								break;
 
@@ -4239,7 +4654,7 @@ bool Game::combatChangeHealth(CombatType_t combatType, MagicEffectClasses custom
 
 				if(textColor != TEXTCOLOR_NONE){
 					std::stringstream ss;
-					ss << damage;
+					ss << healthChange;
 					addMagicEffect(list, targetPos, hitEffect);
 					addAnimatedText(list, targetPos, textColor, ss.str());
 				}
@@ -4266,7 +4681,7 @@ bool Game::combatChangeMana(Creature* attacker, Creature* target, int32_t manaCh
 		}
 
 		int32_t manaLoss = std::min(target->getMana(), -manaChange);
-		BlockType_t blockType = (BlockType_t)target->blockHit(attacker, COMBAT_MANADRAIN, manaLoss);
+		BlockType_t blockType = BLOCK_NONE;// = (BlockType_t)target->blockHit(attacker, COMBAT_MANADRAIN, manaLoss);
 
 		if(blockType != BLOCK_NONE){
 			addMagicEffect(list, targetPos, NM_ME_PUFF);
@@ -4316,6 +4731,18 @@ void Game::addAnimatedText(const SpectatorVec& list, const Position& pos, uint8_
 	for(SpectatorVec::const_iterator it = list.begin(); it != list.end(); ++it){
 		if((player = (*it)->getPlayer())){
 			player->sendAnimatedText(pos, textColor, text);
+		}
+	}
+}
+
+
+void Game::addAnimatedTexts(const SpectatorVec& list, const Position& pos, uint8_t textColorOne, uint8_t textColorTwo,
+	const std::string& textOne, const std::string& textTwo)
+{
+	Player* player = NULL;
+	for (SpectatorVec::const_iterator it = list.begin(); it != list.end(); ++it) {
+		if ((player = (*it)->getPlayer())) {
+			player->sendAnimatedTexts(pos, textColorOne, textColorTwo, textOne, textTwo);
 		}
 	}
 }
@@ -4417,13 +4844,13 @@ void Game::internalDecayItem(Item* item)
 			{
 				//do damage
 				combatChangeHealth(COMBAT_FIREDAMAGE, attacker, targetPlayer, -100000);
-				addMagicEffect(targetCreaturePosition, NM_ME_DRAW_BLOOD);
+				addMagicEffect(targetCreaturePosition, NM_ME_DRAW_BLOOD_MIN);
 			}
 			//so they are monsters
 			else
 			{
 				combatChangeHealth(COMBAT_FIREDAMAGE, attacker, *cit, -1000000);
-				addMagicEffect(targetCreaturePosition, NM_ME_DRAW_BLOOD);
+				addMagicEffect(targetCreaturePosition, NM_ME_DRAW_BLOOD_MIN);
 			}
 
 		}

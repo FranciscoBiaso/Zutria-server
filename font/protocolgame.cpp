@@ -2011,6 +2011,18 @@ void ProtocolGame::sendAnimatedText(const Position& pos, uint8_t color, std::str
 	}
 }
 
+void ProtocolGame::sendAnimatedTexts(const Position& pos, uint8_t colorOne, uint8_t colorTwo, std::string textOne, std::string textTwo)
+{
+	if (canSee(pos)) {
+		NetworkMessage_ptr msg = getOutputBuffer();
+		if (msg) {
+			TRACK_MESSAGE(msg);
+			AddAnimatedTexts(msg, pos, colorOne, colorTwo, textOne, textTwo);
+		}
+	}
+}
+
+
 void ProtocolGame::sendCreatureHealth(const Creature* creature)
 {
 	NetworkMessage_ptr msg = getOutputBuffer();
@@ -2486,6 +2498,17 @@ void ProtocolGame::AddAnimatedText(NetworkMessage_ptr msg, const Position& pos,
 	msg->AddString(text);
 }
 
+void ProtocolGame::AddAnimatedTexts(NetworkMessage_ptr msg, const Position& pos,
+	uint8_t colorOne, uint8_t colorTwo, const std::string& textOne, const std::string& textTwo)
+{
+	msg->AddByte(152);
+	msg->AddPosition(pos);
+	msg->AddByte(colorOne);
+	msg->AddByte(colorTwo);
+	msg->AddString(textOne);
+	msg->AddString(textTwo);
+}
+
 void ProtocolGame::AddMagicEffect(NetworkMessage_ptr msg,const Position& pos, uint8_t type)
 {
 	msg->AddByte(0x83);
@@ -2603,18 +2626,19 @@ void ProtocolGame::AddPlayerSkills(NetworkMessage_ptr msg)
 	// conection protocol 0xA1
 	msg->AddByte(0xA1);
 	// all player skills
-	msg->AddU16(player->getSkillValue(PLAYER_SKILL_HEALTH_POINTS));
-	msg->AddU16(player->getSkillValue(PLAYER_SKILL_PHYSICAL_ATTACK));
-	msg->AddU16(player->getSkillValue(PLAYER_SKILL_PHYSICAL_DEFENSE));
-	msg->AddU32(player->getSkillValue(PLAYER_SKILL_CAPACITY));
-	msg->AddU16(player->getSkillValue(PLAYER_SKILL_MANA_POINTS));
-	msg->AddU16(player->getSkillValue(PLAYER_SKILL_MAGIC_ATTACK));
-	msg->AddU16(player->getSkillValue(PLAYER_SKILL_MAGIC_DEFENSE));
-	msg->AddU16(player->getSkillValue(PLAYER_SKILL_MAGIC_POINTS));
-	msg->AddU16(player->getSkillValue(PLAYER_SKILL_SPEED));
-	msg->AddU16(player->getSkillValue(PLAYER_SKILL_ATTACK_SPEED));
-	msg->AddU16(player->getSkillValue(PLAYER_SKILL_COOLDOWN));
-	msg->AddU16(player->getSkillValue(PLAYER_SKILL_AVOIDANCE));
+	msg->AddU16(player->getSkillValue(ATTR_VITALITY));
+	msg->AddU16(player->getSkillValue(ATTR_FORCE));
+	msg->AddU16(player->getSkillValue(ATTR_AGILITY));
+	msg->AddU16(player->getSkillValue(ATTR_INTELLIGENCE));
+	msg->AddU16(player->getSkillValue(ATTR_CONCENTRATION));
+	msg->AddU16(player->getSkillValue(ATTR_STAMINA));
+
+	msg->AddU16(player->getSkillValue(ATTR_DISTANCE));
+	msg->AddU16(player->getSkillValue(ATTR_MELEE));
+	msg->AddU16(player->getSkillValue(ATTR_MENTALITY));
+	msg->AddU16(player->getSkillValue(ATTR_TRAINER));
+	msg->AddU16(player->getSkillValue(ATTR_DEFENSE));
+
 	msg->AddU16(player->getLevelPoints());
 	msg->AddByte(player->getUnusedMagicPoints());
 }
@@ -2763,34 +2787,33 @@ void ProtocolGame::RemoveTileItem(NetworkMessage_ptr msg, const Position& pos, u
 void ProtocolGame::MoveUpCreature(NetworkMessage_ptr msg, const Creature* creature,
 	const Position& newPos, const Position& oldPos, uint32_t oldStackPos)
 {
-	if(creature == player)
+	if (creature == player)
 	{
 		//floor change up
 		msg->AddByte(0xBE);
 
 		//going to surface
-		if(newPos.z == 7){
+		if (newPos.z == 7) 
+		{
 			int skip = -1;
-			GetFloorDescription(msg, oldPos.x - cMaxViewW, oldPos.y - cMaxViewH, 5, cMaxViewH * 2 - 1 - 1 + 2, cMaxViewH * 2 - 1 + 2, 3, skip); //(floor 7 and 6 already set)
-			GetFloorDescription(msg, oldPos.x - cMaxViewW, oldPos.y - cMaxViewH, 4, cMaxViewH * 2 - 1 - 1 + 2, cMaxViewH * 2 - 1 + 2, 4, skip);
-			GetFloorDescription(msg, oldPos.x - cMaxViewW, oldPos.y - cMaxViewH, 3, cMaxViewH * 2 - 1 - 1 + 2, cMaxViewH * 2 - 1 + 2, 5, skip);
-			GetFloorDescription(msg, oldPos.x - cMaxViewW, oldPos.y - cMaxViewH, 2, cMaxViewH * 2 - 1 - 1 + 2, cMaxViewH * 2 - 1 + 2, 6, skip);
-			GetFloorDescription(msg, oldPos.x - cMaxViewW, oldPos.y - cMaxViewH, 1, cMaxViewH * 2 - 1 - 1 + 2, cMaxViewH * 2 - 1 + 2, 7, skip);
-			GetFloorDescription(msg, oldPos.x - cMaxViewW, oldPos.y - cMaxViewH, 0, cMaxViewH * 2 - 1 - 1 + 2, cMaxViewH * 2 - 1 + 2, 8, skip);
+			GetFloorDescription(msg, oldPos.x - 8, oldPos.y - 6, 5, 18, 14, 3, skip); //(floor 7 and 6 already set)
+			GetFloorDescription(msg, oldPos.x - 8, oldPos.y - 6, 4, 18, 14, 4, skip);
+			GetFloorDescription(msg, oldPos.x - 8, oldPos.y - 6, 3, 18, 14, 5, skip);
+			GetFloorDescription(msg, oldPos.x - 8, oldPos.y - 6, 2, 18, 14, 6, skip);
+			GetFloorDescription(msg, oldPos.x - 8, oldPos.y - 6, 1, 18, 14, 7, skip);
+			GetFloorDescription(msg, oldPos.x - 8, oldPos.y - 6, 0, 18, 14, 8, skip);
 
-			if(skip >= 0){
+			if (skip >= 0) {
 				msg->AddByte(skip);
 				msg->AddByte(0xFF);
 			}
 		}
 		//underground, going one floor up (still underground)
-		else if(newPos.z > 7){
+		else if (newPos.z > 7) {
 			int skip = -1;
-			GetFloorDescription(msg, oldPos.x - cMaxViewW, oldPos.y - cMaxViewH, oldPos.z - 3,
-				cMaxViewW * 2 - 1 + 2, cMaxViewH * 2 - 1 + 2
-				, 3, skip);			
+			GetFloorDescription(msg, oldPos.x - 8, oldPos.y - 6, oldPos.z - 3, 18, 14, 3, skip);
 
-			if(skip >= 0){
+			if (skip >= 0) {
 				msg->AddByte(skip);
 				msg->AddByte(0xFF);
 			}
@@ -2799,42 +2822,39 @@ void ProtocolGame::MoveUpCreature(NetworkMessage_ptr msg, const Creature* creatu
 		//moving up a floor up makes us out of sync
 		//west
 		msg->AddByte(0x68);
-		GetMapDescription(oldPos.x - cMaxViewW, oldPos.y - cMaxViewH + 1, newPos.z, 1, cMaxViewH * 2 - 1 + 2, msg);
+		GetMapDescription(oldPos.x - 8, oldPos.y + 1 - 6, newPos.z, 1, 14, msg);
 
 		//north
 		msg->AddByte(0x65);
-		GetMapDescription(oldPos.x - cMaxViewW, oldPos.y - cMaxViewH, newPos.z, cMaxViewW * 2 - 1 - 1 + 2, 1, msg);
+		GetMapDescription(oldPos.x - 8, oldPos.y - 6, newPos.z, 18, 1, msg);
 	}
 }
-
 void ProtocolGame::MoveDownCreature(NetworkMessage_ptr msg, const Creature* creature,
 	const Position& newPos, const Position& oldPos, uint32_t oldStackPos)
 {
-
-	if(creature == player)
-	{
+	if (creature == player) {
 		//floor change down
 		msg->AddByte(0xBF);
 
 		//going from surface to underground
-		if(newPos.z == 8){
+		if (newPos.z == 8) {
 			int skip = -1;
 
-			GetFloorDescription(msg, oldPos.x - cMaxViewW, oldPos.y - cMaxViewH, newPos.z + 0, cMaxViewH * 2 - 1 - 1 + 2, cMaxViewH * 2 - 1 + 2, -1, skip);
-			GetFloorDescription(msg, oldPos.x - cMaxViewW, oldPos.y - cMaxViewH, newPos.z + 1, cMaxViewH * 2 - 1 - 1 + 2, cMaxViewH * 2 - 1 + 2, -2, skip);
-			GetFloorDescription(msg, oldPos.x - cMaxViewW, oldPos.y - cMaxViewH, newPos.z + 2, cMaxViewH * 2 - 1 - 1 + 2, cMaxViewH * 2 - 1 + 2, -3, skip);
+			GetFloorDescription(msg, oldPos.x - 8, oldPos.y - 6, newPos.z, 18, 14, -1, skip);
+			GetFloorDescription(msg, oldPos.x - 8, oldPos.y - 6, newPos.z + 1, 18, 14, -2, skip);
+			GetFloorDescription(msg, oldPos.x - 8, oldPos.y - 6, newPos.z + 2, 18, 14, -3, skip);
 
-			if(skip >= 0){
+			if (skip >= 0) {
 				msg->AddByte(skip);
 				msg->AddByte(0xFF);
 			}
 		}
 		//going further down
-		else if(newPos.z > oldPos.z && newPos.z > 8 && newPos.z < 14){
+		else if (newPos.z > oldPos.z && newPos.z > 8 && newPos.z < 14) {
 			int skip = -1;
-			GetFloorDescription(msg, oldPos.x - cMaxViewW, oldPos.y - cMaxViewH, newPos.z + 2, cMaxViewH * 2 - 1 - 1 + 2, cMaxViewH * 2 - 1 + 2, -3, skip);
+			GetFloorDescription(msg, oldPos.x - 8, oldPos.y - 6, newPos.z + 2, 18, 14, -3, skip);
 
-			if(skip >= 0){
+			if (skip >= 0) {
 				msg->AddByte(skip);
 				msg->AddByte(0xFF);
 			}
@@ -2843,13 +2863,14 @@ void ProtocolGame::MoveDownCreature(NetworkMessage_ptr msg, const Creature* crea
 		//moving down a floor makes us out of sync
 		//east
 		msg->AddByte(0x66);
-		GetMapDescription(oldPos.x + cMaxViewW + 1, oldPos.y - cMaxViewH - 1, newPos.z, 1, cMaxViewH * 2 - 1 + 2, msg);
+		GetMapDescription(oldPos.x + 8 + 1, oldPos.y - 6 - 1, newPos.z, 1, 14, msg);
 
 		//south
 		msg->AddByte(0x67);
-		GetMapDescription(oldPos.x - cMaxViewW, oldPos.y + cMaxViewH + 1, newPos.z, cMaxViewH * 2 - 1 + 2, 1, msg);
+		GetMapDescription(oldPos.x - 8, oldPos.y + 6 + 1, newPos.z, 18, 1, msg);
 	}
 }
+
 
 //inventory
 void ProtocolGame::AddInventoryItem(NetworkMessage_ptr msg, slots_t slot, const Item* item)

@@ -489,10 +489,10 @@ struct AmmoActionNames{
 };
 
 MagicEffectNames magicEffectNames[] = {
-	{"redspark", NM_ME_DRAW_BLOOD},
+	/*{"redspark", NM_ME_DRAW_BLOOD},
 	{"bluebubble", NM_ME_LOSE_ENERGY},
 	{"poff", NM_ME_PUFF},
-	{"yellowspark", NM_ME_BLOCKHIT},
+	{"yellowspark", NM_ME_BLOCKHIT},*/
 	{"explosionarea", NM_ME_EXPLOSION_AREA},
 	{"explosion", NM_ME_FIREBALL},
 	{"firearea", NM_ME_FIRESHIELD},

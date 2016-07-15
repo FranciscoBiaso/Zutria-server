@@ -27,6 +27,7 @@
 #include <string>
 #include <map>
 
+
 class Vocation
 {
 public:

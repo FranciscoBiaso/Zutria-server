@@ -77,7 +77,7 @@ ItemType::ItemType()
 	maxItems      = 8;  // maximum size if this is a container
 	weight        = 0;  // weight of the item, e.g. throwing distance depends on it
 	showCount     = true;
-	weaponType    = WEAPON_NONE;
+	weaponType    = WEAPON_TYPE_NONE;
 	slot_position = SLOTP_RIGHT | SLOTP_LEFT;
 	wield_position= SLOT_HAND;
 	amuType       = AMMO_NONE;
@@ -127,7 +127,12 @@ ItemType::ItemType()
 	noSleeperID = 0;
 
 	doCombatAfterDecay = false;
-	//]
+	
+
+	//atack factors
+	slashAttackFactor = 0;
+	traumaAttackFactor = 0;
+	perforationAttackFactor = 0;
 }
 
 ItemType::~ItemType()
@@ -497,6 +502,21 @@ bool Items::loadFromXml(const std::string& datadir)
 									it.attack = intValue;
 								}
 							}
+							else if (asLowerCaseString(strValue) == "slash_attack") {
+								if (readXMLInteger(itemAttributesNode, "value", intValue)) {
+									it.slashAttackFactor = intValue;
+								}
+							}
+							else if (asLowerCaseString(strValue) == "perforation_attack") {
+								if (readXMLInteger(itemAttributesNode, "value", intValue)) {
+									it.perforationAttackFactor = intValue;
+								}
+							}
+							else if (asLowerCaseString(strValue) == "trauma_attack") {
+								if (readXMLInteger(itemAttributesNode, "value", intValue)) {
+									it.traumaAttackFactor = intValue;
+								}
+							}
 							else if(asLowerCaseString(strValue) == "rotateto"){
 								if(readXMLInteger(itemAttributesNode, "value", intValue)){
 									it.rotateTo = intValue;
@@ -627,26 +647,26 @@ bool Items::loadFromXml(const std::string& datadir)
 							}
 							else if(asLowerCaseString(strValue) == "weapontype"){
 								if(readXMLString(itemAttributesNode, "value", strValue)){
-									if(asLowerCaseString(strValue) == "sword"){
+									/*if(asLowerCaseString(strValue) == "sword"){
 										it.weaponType = WEAPON_SWORD;
 									}
 									else if(asLowerCaseString(strValue) == "club"){
 										it.weaponType = WEAPON_CLUB;
-									}
-									else if(asLowerCaseString(strValue) == "axe"){
-										it.weaponType = WEAPON_AXE;
+									}*/
+									if(asLowerCaseString(strValue) == "melee"){
+										it.weaponType = WEAPON_TYPE_MELEE;
 									}
 									else if(asLowerCaseString(strValue) == "shield"){
-										it.weaponType = WEAPON_SHIELD;
+										it.weaponType = WEAPON_TYPE_SHIELD;
 									}
 									else if(asLowerCaseString(strValue) == "distance"){
-										it.weaponType = WEAPON_DIST;
+										it.weaponType = WEAPON_TYPE_DISTANCE;
 									}
-									else if(asLowerCaseString(strValue) == "wand"){
+									/*else if(asLowerCaseString(strValue) == "wand"){
 										it.weaponType = WEAPON_WAND;
-									}
+									}*/
 									else if(asLowerCaseString(strValue) == "ammunition"){
-										it.weaponType = WEAPON_AMMO;
+										it.weaponType = WEAPON_TYPE_AMMO;
 									}
 									else{
 										std::cout << "Warning: [Items::loadFromXml] " << "Unknown weaponType " << strValue  << std::endl;

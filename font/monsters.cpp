@@ -268,8 +268,8 @@ ConditionDamage* Monsters::getDamageCondition(ConditionType_t conditionType,
 {
 	ConditionDamage* condition = dynamic_cast<ConditionDamage*>(Condition::createCondition(CONDITIONID_COMBAT, conditionType, 0, 0));
 	condition->setParam(CONDITIONPARAM_TICKINTERVAL, tickInterval);
-	condition->setParam(CONDITIONPARAM_MINVALUE, minDamage);
-	condition->setParam(CONDITIONPARAM_MAXVALUE, maxDamage);
+	//condition->setParam(CONDITIONPARAM_MINVALUE, minDamage);
+	//condition->setParam(CONDITIONPARAM_MAXVALUE, maxDamage);
 	condition->setParam(CONDITIONPARAM_STARTVALUE, startDamage);
 	condition->setParam(CONDITIONPARAM_DELAYED, 1);
 

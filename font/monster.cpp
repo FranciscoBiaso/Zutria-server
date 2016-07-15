@@ -454,7 +454,7 @@ void Monster::onFollowCreatureComplete(const Creature* creature)
 BlockType_t Monster::blockHit(Creature* attacker, CombatType_t combatType, int32_t& damage,
 	bool checkDefense /* = false*/, bool checkArmor /* = false*/)
 {
-	BlockType_t blockType = (BlockType_t)Creature::blockHit(attacker, combatType, damage, checkDefense, checkArmor);
+	BlockType_t blockType;// = (BlockType_t)Creature::blockHit(attacker, combatType, damage, checkDefense, checkArmor);
 
 	/*if(damage != 0){
 		int32_t elementMod = 0;
@@ -629,6 +629,8 @@ void Monster::onThink(uint32_t interval)
 
 void Monster::doAttacking(uint32_t interval)
 {
+
+	std::cout << "attacking:" << getName() << std::endl;
 	
 	if(!attackedCreature || (isSummon() && attackedCreature == this)){
 		return;
@@ -653,6 +655,7 @@ void Monster::doAttacking(uint32_t interval)
 					updateLookDirection();
 					updateLook = false;
 				}
+			
 
 				minCombatValue = it->minCombatValue;
 				maxCombatValue = it->maxCombatValue;
@@ -969,7 +972,7 @@ void Monster::pushCreatures(Tile* tile)
 	}
 
 	if(removeCount > 0){
-		g_game.addMagicEffect(tile->getPosition(), NM_ME_BLOCKHIT);
+		g_game.addMagicEffect(tile->getPosition(), NM_ME_PUFF);
 	}
 }
 

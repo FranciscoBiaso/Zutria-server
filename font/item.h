@@ -299,9 +299,17 @@ public:
 	int32_t	getShootRange() const {return items[id].shootRange;}
 
 	virtual double getWeight() const;
-	int getAttack() const {return items[id].attack;}
+	int getAttack() const { return items[id].attack; }
+	int getTraumaAttack() const { return items[id].traumaAttackFactor; }
+	int getPerforationAttack() const {return items[id].perforationAttackFactor;}
+	int getSlashAttack() const { return items[id].slashAttackFactor; }
+
 	int getArmor() const {return items[id].armor;}
 	int getDefense() const {return items[id].defense;}
+
+
+
+
 	int getSlotPosition() const {return items[id].slot_position;}
 	int getWieldPosition() const {return items[id].wield_position;}
 	int getHitChance() const {return items[id].hitChance;}
@@ -326,7 +334,7 @@ public:
 	bool isMoveable() const {return items[id].moveable;}
 	bool isNotMoveable() const {return !items[id].moveable;}
 	bool isPickupable() const {return items[id].pickupable;}
-	bool isWeapon() const {return (items[id].weaponType != WEAPON_NONE);}
+	bool isWeapon() const {return (items[id].weaponType != WEAPON_TYPE_NONE);}
 	bool isUseable() const {return items[id].useable;}
 	bool isHangable() const {return items[id].isHangable;}
 	bool isRoteable() const {const ItemType& it = items[id]; return it.rotable && it.rotateTo;}

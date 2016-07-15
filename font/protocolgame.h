@@ -190,6 +190,7 @@ private:
 	void sendDistanceShoot(const Position& from, const Position& to, uint8_t type);
 	void sendMagicEffect(const Position& pos, uint8_t type);
 	void sendAnimatedText(const Position& pos, uint8_t color, std::string text);
+	void sendAnimatedTexts(const Position& pos, uint8_t colorOne, uint8_t colorTwo, std::string textOne, std::string textTwo);
 	void sendCreatureHealth(const Creature* creature);
 	void sendSkills();
 	void sendSpellLearned(unsigned char spellId, unsigned char spellLevel);
@@ -267,7 +268,9 @@ private:
 
 	void AddMapDescription(NetworkMessage_ptr msg, const Position& pos);
 	void AddTextMessage(NetworkMessage_ptr msg,uint8_t, MessageClasses mclass,MessageColors, const std::string& message);
-	void AddAnimatedText(NetworkMessage_ptr msg,const Position& pos, unsigned char color, const std::string& text);
+	void AddAnimatedText(NetworkMessage_ptr msg, const Position& pos, unsigned char color, const std::string& text);
+	void AddAnimatedTexts(NetworkMessage_ptr msg,const Position& pos, unsigned char colorOne, unsigned char colorTwo,
+		const std::string& textOne, const std::string & textTwo);
 	void AddMagicEffect(NetworkMessage_ptr msg,const Position& pos, unsigned char type);
 	void AddDistanceShoot(NetworkMessage_ptr msg,const Position& from, const Position& to, uint8_t type);
 	void AddCreature(NetworkMessage_ptr msg,const Creature* creature, bool known, uint32_t remove);

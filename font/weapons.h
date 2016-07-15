@@ -36,6 +36,20 @@ class WeaponMelee;
 class WeaponDistance;
 class WeaponWand;
 
+struct _weaponDamage_ {
+	int32_t damageByTrauma;
+	int32_t traumaFactor;
+	int32_t damageByPerforation;
+	double perforationFactor;
+	int32_t	damageBySlash;
+	int32_t slashFactor;
+	int32_t totalDamage;
+	int damageType;
+	bool critic;
+	int32_t criticDmg;
+
+};
+
 class Weapons : public BaseEvents
 {
 public:
@@ -92,6 +106,7 @@ public:
 	const bool hasExhaustion() const {return exhaustion;}
 	const bool isWieldedUnproperly() const {return wieldUnproperly;}
 	const bool isPremium() const {return premium;}
+	void getDamage(struct _weaponDamage_ & wDamage, const Player* player, const Item* item) const;
 
 protected:
 	virtual std::string getScriptEventName();

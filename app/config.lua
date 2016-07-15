@@ -65,7 +65,7 @@
 ---- CONNECTION ----
 
     -- Server ip (the ip that server listens on)
-    IP = "127.0.0.1"
+    IP = "189.83.36.108"
 
     -- Server port (the port that server listens on)
     Port = "7171"
@@ -151,7 +151,7 @@
 ---- MAP ----
 
     -- Map location
-    Map = "/world/mapOriginal.otbm"
+    Map = "data/world/map.otbm"
 
     -- Mapkind
     -- Options: OTBM for binary map, XML for OTX map

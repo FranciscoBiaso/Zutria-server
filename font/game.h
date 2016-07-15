@@ -32,6 +32,7 @@
 #include "spawn.h"
 #include "templates.h"
 #include "scheduler.h"
+#include "weapons.h"
 
 #include <queue>
 #include <vector>
@@ -494,10 +495,15 @@ public:
 	//combat game functions
 	bool combatBlockHit(CombatType_t combatType, Creature* attacker, Creature* target,
 		int32_t& healthChange, bool checkDefense, bool checkArmor);
+	bool combatBlockPhysicalHit(CombatType_t combatType, Creature* attacker, Creature* target,
+		struct _weaponDamage_ * );
+
 	bool combatChangeHealth(CombatType_t combatType, Creature* attacker, Creature* target, int32_t healthChange);
 	bool combatChangeMana(Creature* attacker, Creature* target, int32_t manaChange);
 	bool combatChangeHealth(CombatType_t combatType, MagicEffectClasses hitEffect,
 		TextColor_t customTextColor, Creature* attacker, Creature* target, int32_t healthChange);
+	bool combatChangeHealth(CombatType_t combatType, MagicEffectClasses hitEffect,
+		TextColor_t customTextColor, Creature* attacker, Creature* target, struct _weaponDamage_ *);
 
 	//animation help functions
 	void addCreatureHealth(const Creature* target);
@@ -506,6 +512,8 @@ public:
 		const std::string& text);
 	void addAnimatedText(const SpectatorVec& list, const Position& pos, uint8_t textColor,
 		const std::string& text);
+	void addAnimatedTexts(const SpectatorVec& list, const Position& pos, uint8_t textColorOne, uint8_t textColorTwo,
+		const std::string& textOne, const std::string& textTwo);
 	void addMagicEffect(const Position& pos, uint8_t effect);
 	void addMagicEffect(const SpectatorVec& list, const Position& pos, uint8_t effect);
 	void addDistanceEffect(const Position& fromPos, const Position& toPos,

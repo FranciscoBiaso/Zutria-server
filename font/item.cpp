@@ -651,34 +651,34 @@ std::string Item::getDescription(const ItemType& it, int32_t lookDistance,
 		}
 		s << ". It's " << it.article << " \"" << it.runeSpellName << "\"-spell (" << charges << "x). ";
 	}
-	else if(it.weaponType != WEAPON_NONE){
-		if(it.weaponType == WEAPON_DIST && it.amuType != AMMO_NONE){
-			if(it.attack != 0){
-				s << ", Atq" << std::showpos << it.attack << std::noshowpos;
-			}
-		}
-		else if(it.weaponType != WEAPON_AMMO && it.weaponType != WEAPON_WAND){ // Arrows and Bolts doesn't show atk
-			s << " (";
-			if(it.attack != 0){
-				s << "Atq:" << (int)it.attack;
-			}
+	else if(it.weaponType != WEAPON_TYPE_NONE){
+		//if(it.weaponType == WEAPON_TYPE_DISTANCE && it.amuType != AMMO_NONE){
+		//	if(it.attack != 0){
+		//		s << ", Atq" << std::showpos << it.attack << std::noshowpos;
+		//	}
+		//}
+		//else if(it.weaponType != WEAPON_TYPE_AMMO && it.weaponType != WEAPON_WAND){ // Arrows and Bolts doesn't show atk
+		//	s << " (";
+		//	if(it.attack != 0){
+		//		s << "Atq:" << (int)it.attack;
+		//	}
 
-			if(it.defense != 0){
-				if(it.attack != 0)
-					s << " ";
+		//	if(it.defense != 0){
+		//		if(it.attack != 0)
+		//			s << " ";
 
-				s << "Def:" << (int)it.defense;
-			}
+		//		s << "Def:" << (int)it.defense;
+		//	}
 
-			if(it.abilities.stats[STAT_MAGICPOINTS] != 0){
-				if(it.attack != 0 || it.defense != 0)
-					s << ", ";
+		//	if(it.abilities.stats[STAT_MAGICPOINTS] != 0){
+		//		if(it.attack != 0 || it.defense != 0)
+		//			s << ", ";
 
-				s << "magic level " << std::showpos << (int)it.abilities.stats[STAT_MAGICPOINTS] << std::noshowpos;
-			}
-			s << ")";
-		}
-		s << ".";
+		//		s << "magic level " << std::showpos << (int)it.abilities.stats[STAT_MAGICPOINTS] << std::noshowpos;
+		//	}
+		//	s << ")";
+		//}
+		//s << ".";
 	}
 	else if(it.armor != 0 || it.abilities.absorb.any()){
 		if(it.showCharges){

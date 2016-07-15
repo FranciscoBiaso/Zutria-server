@@ -56,7 +56,8 @@ enum ConditionType_t {
 	CONDITION_EXHAUST_COMBAT = 1 << 17,
 	CONDITION_EXHAUST_HEAL   = 1 << 18,
 	CONDITION_TRADE_MUTED    = 1 << 19,
-	CONDITION_FIRESHIELD     = 1 << 20
+	CONDITION_FIRESHIELD    =  1 << 20,
+	CONDITION_BLEEDING      = 1 << 21,
 };
 
 enum ConditionEnd_t{
@@ -308,6 +309,10 @@ protected:
 	int32_t periodDamage;
 	int32_t periodDamageTick;
 	int32_t tickInterval;
+
+	int32_t totalDamage;	
+	int32_t intervalsMin;
+	int32_t intervalsMax;
 
 	bool forceUpdate;
 	bool delayed;

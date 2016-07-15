@@ -1153,7 +1153,7 @@ bool Commands::buyHouse(Creature* creature, const std::string& cmd, const std::s
 		pos = getNextPosition(player->direction, pos);
 		for(HouseMap::iterator it = Houses::getInstance().getHouseBegin(); it != Houses::getInstance().getHouseEnd(); it++)
 		{
-			if (it->second->getHouseOwner() == player->guid) {
+			if (it->second->getHouseOwner() == player->identificator) {
 				player->sendCancel("You are already the owner of a house.");
 				return false;
 			}
@@ -1171,7 +1171,7 @@ bool Commands::buyHouse(Creature* creature, const std::string& cmd, const std::s
 								if (price) {
 									uint32_t money = g_game.getMoney(player);
 									if (money >= price && g_game.removeMoney(player, price)) {
-										house->setHouseOwner(player->guid);
+										house->setHouseOwner(player->identificator);
 										//player->sendTextMessage(MSG_INFO_DESCR, "You have successfully bought this house, be sure to have the money for the rent in your depot of this city.");
 										return true;
 									}

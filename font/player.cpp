@@ -185,6 +185,8 @@ Creature()
 #endif
 	currentNpc = nullptr;
 	m_spells.clear();
+
+	identificator = 0;
 }
 
 Player::~Player()
@@ -355,20 +357,17 @@ Item* Player::getWeapon(bool ignoreAmmu /*= false*/)
 
 		switch(item->getWeaponType())
 		{
-			case WEAPON_SWORD:
-			case WEAPON_AXE:
-			case WEAPON_CLUB:
-			case WEAPON_WAND:
+			case WEAPON_TYPE_MELEE:
 			{
 				const Weapon* weapon = g_weapons->getWeapon(item);
-				if(weapon){
+				if(weapon)
+				{
 					return item;
 				}
-
-				break;
 			}
+			break;
 
-			case WEAPON_DIST:
+			case WEAPON_TYPE_DISTANCE:
 			{
 				if(!ignoreAmmu && item->getAmuType() != AMMO_NONE){
 					Item* ammuItem = getInventoryItem(SLOT_AMMO);
@@ -402,7 +401,7 @@ WeaponType_t Player::getWeaponType()
 {
 	Item* item = getWeapon();
 	if(!item){
-		return WEAPON_NONE;
+		return WEAPON_TYPE_NONE;
 	}
 
 	return item->getWeaponType();
@@ -437,26 +436,21 @@ int32_t Player::getWeaponDefense() const
 		return weapon->getDefense();
 }
 
-int32_t Player::getArmor() const
+int32_t Player::getDefenseFactors() const
 {
 	int32_t armor = 0;
-
+	//elm + armor + legs  + shield
 	if(getInventoryItem(SLOT_HEAD))
 		armor += getInventoryItem(SLOT_HEAD)->getArmor();
-	if(getInventoryItem(SLOT_NECKLACE))
-		armor += getInventoryItem(SLOT_NECKLACE)->getArmor();
 	if(getInventoryItem(SLOT_ARMOR))
 		armor += getInventoryItem(SLOT_ARMOR)->getArmor();
 	if(getInventoryItem(SLOT_LEGS))
 		armor += getInventoryItem(SLOT_LEGS)->getArmor();
-	if(getInventoryItem(SLOT_FEET))
-		armor += getInventoryItem(SLOT_FEET)->getArmor();
-	if(getInventoryItem(SLOT_RING))
-		armor += getInventoryItem(SLOT_RING)->getArmor();
-
-	if(vocation->armorMultiplier != 1.0)
+	/*if (hasShield())
+		armor += getShieldDefense();*/
+	/*if(vocation->armorMultiplier != 1.0)
 		armor = int32_t(armor * vocation->armorMultiplier);
-
+*/
 	return armor;
 }
 
@@ -469,9 +463,9 @@ void Player::getShieldAndWeapon(const Item* &shield, const Item* &weapon) const
 		item = getInventoryItem((slots_t)slot);
 		if(item){
 			switch(item->getWeaponType()){
-			case WEAPON_NONE:
+			case WEAPON_TYPE_NONE:
 				break;
-			case WEAPON_SHIELD:
+			case WEAPON_TYPE_SHIELD:
 				shield = item;
 				break;
 			default: // weapons that are not shields
@@ -508,10 +502,14 @@ int32_t Player::getDefense() const
 float Player::getAttackFactor() const
 {
 	switch(fightMode){
-		case FIGHTMODE_ATTACK:	return 0.3f;  // increments 30% of attack
-		case FIGHTMODE_BALANCED: return 0.2f; // increments 20% of attack
-		case FIGHTMODE_DEFENSE: return 0.1f;  // increments 10% of attack
+		//0 % unitl 100%
+		case FIGHTMODE_ATTACK:	return (rand() % 101) / 100.0f;  						
+		//0 % unitl 60%
+		case FIGHTMODE_BALANCED: return (rand() % 61) / 100.0f;		
+		//0 % unitl 20%
+		case FIGHTMODE_DEFENSE: return (rand() % 21) / 100.0f;			
 		default: return 0.2f;
+			break;
 	}
 }
 
@@ -568,7 +566,7 @@ int32_t Player::getPlayerInfo(playerinfo_t playerinfo) const
 		case PLAYERINFO_HEALTH: 
 			return health; 
 		case PLAYERINFO_MAXHEALTH: 
-			return getSkillValue(PLAYER_SKILL_HEALTH_POINTS);
+			return getSkillValue(ATTR_VITALITY);
 		case PLAYERINFO_MANA: 
 			return mana; 
 		case PLAYERINFO_MAXMANA: 
@@ -1567,11 +1565,14 @@ void Player::onThink(uint32_t interval)
 	Creature::onThink(interval);
 	sendPing(interval);
 
+
+
 	MessageBufferTicks += interval;
 	if(MessageBufferTicks >= 1500){
 		MessageBufferTicks = 0;
 		addMessageBuffer();
 	}
+	
 
 	checkIdleTime(interval);
 
@@ -1705,6 +1706,22 @@ void Player::addManaSpent(uint32_t amount, bool useMultiplier /*= true*/)
 	//}
 }
 
+bool Player::canExecuteAttack(Creature * defendingCreature, int * attackType)
+{
+	//probability of concentration
+	double probabilityOccurr = std::pow(0.5, getSkillValue(ATTR_CONCENTRATION) / 40.0) * 0.35;
+
+	if ((random_range(0, 100) / 100.0) > probabilityOccurr)
+	{
+		return true;
+	}
+	else
+	{
+		*attackType = ATTACK_FAIL_CONCENTRATION;
+		return false;
+	}
+}
+
 
 void Player::updateAttributes()
 {
@@ -1791,7 +1808,8 @@ void Player::onAttackedCreatureBlockHit(Creature* target, BlockType_t blockType)
 
 	lastAttackBlockType = blockType;
 
-	switch(blockType){
+	switch(blockType)
+	{
 		case BLOCK_NONE:
 		{
 			addAttackSkillPoint = true;
@@ -1801,11 +1819,13 @@ void Player::onAttackedCreatureBlockHit(Creature* target, BlockType_t blockType)
 			break;
 		}
 
-		case BLOCK_DEFENSE:
-		case BLOCK_ARMOR:
+		case BLOCK_DEFENSE_MIN:
+		case BLOCK_DEFENSE_MEDIUM:
+		case BLOCK_DEFENSE_MAX:
 		{
 			//need to draw blood every 30 hits
-			if(bloodHitCount > 0){
+			if(bloodHitCount > 0)
+			{
 				addAttackSkillPoint = true;
 				--bloodHitCount;
 			}
@@ -1830,52 +1850,335 @@ bool Player::hasShield() const
 	Item* item;
 
 	item = getInventoryItem(SLOT_LEFT);
-	if(item && item->getWeaponType() == WEAPON_SHIELD){
+	if(item && item->getWeaponType() == WEAPON_TYPE_SHIELD){
 		result = true;
 	}
 
 	item = getInventoryItem(SLOT_RIGHT);
-	if(item && item->getWeaponType() == WEAPON_SHIELD){
+	if(item && item->getWeaponType() == WEAPON_TYPE_SHIELD){
 		result = true;
 	}
 
 	return result;
 }
 
-int Player::blockHit(Creature* attacker, CombatType_t combatType, int32_t& damage, 
-	bool checkDefense /* = false*/, bool checkArmor /* = false*/, float * missPorcentage)
+int Player::blockHit(Creature* attacker, CombatType_t combatType, int * blockType, void * data)
 { 
-	int blockType = Creature::blockHit(attacker, combatType, damage, checkDefense, checkArmor,missPorcentage);
+	struct _weaponDamage_ * wd = (struct _weaponDamage_ *)data;
+	//reset
+	wd->damageType = 0;
+	wd->critic = false;
+	
+	Item * weapon = getWeapon(); 
+	Item * elm = getInventoryItem(SLOT_HEAD);
+	Item * legs = getInventoryItem(SLOT_LEGS);
+	Item * armor = getInventoryItem(SLOT_ARMOR);
+	double itemDefenseFactor = 0;
+	double bodyDefenseFactor = 0;
 
-	if(attacker) 
-		sendCreatureSquare(attacker, SQ_COLOR_BLACK); 
+	double probabilityOccurr = 0.05;
+	double attackingCreaturesPercentage = 0;
+	double randomNumber = random_range(0, 100) / 100.0;
 
-	if(blockType != BLOCK_NONE) 
-		return blockType; 
+	double attackingCreatureAttackSkill = attacker->getSkillValue(attacker->getAttackSkillType(attacker->getWeaponType()));	
+	double defendingPlayerAgility = getSkillValue(ATTR_AGILITY);
+	double defendingPlayerDefenseSkill = getSkillValue(ATTR_DEFENSE);	
+	double damageBlockled = (0.5 * getSkillValue(ATTR_FORCE) + 0.5 * defendingPlayerDefenseSkill);
 
-	if (damage != 0) { 
-		//reduce damage against inventory items 
-		Item* item = NULL; 
-		/*for (int32_t slot = SLOT_FIRST; slot < SLOT_LAST; ++slot) 
+
+	//inheritance
+	Creature::blockHit(attacker, combatType, blockType);
+	
+
+	//a player can not block more than your max number block
+	if (blockCount < _player_::max_creatures_to_block)
+	{
+		double reducePercentageByAmountOfCreatures = 1.0 - (blockCount - 1.0) / _player_::max_creatures_to_block;		
+
+		//------------- 1º) agility phase -------------//
+		//has attacking player a low agility then defending player?
+		//so it's possible to try dodge
+		double attackerAgilityRandomNumber = random_range(1, attacker->getSkillValue(ATTR_AGILITY) + 1);
+		double defenderAgilityRandomNumber = random_range(1, defendingPlayerAgility + 1);
+		if (attackerAgilityRandomNumber - defenderAgilityRandomNumber <= 0)
 		{
-			if(!(item = getEquippedItem((slots_t)slot)))
-				continue; 
+			//get the influence of the amount of agility of this player
+			double defenderAgilityInfluence = 1 - std::pow(0.5, defendingPlayerAgility / 20.0);
+			//(defenderAgilityRandomNumber - attackerAgilityRandomNumber)/defendingPlayerAgility = %of agility in use in this moment                 
+			probabilityOccurr = (defenderAgilityRandomNumber - attackerAgilityRandomNumber)/ defenderAgilityRandomNumber * defenderAgilityInfluence;
+			
 
-			const ItemType& it = Item::items[item->getID()]; 
-
-			if (it.abilities.absorb.reduce(combatType, damage)) { 
-				int32_t charges = item->getCharges(); 
-				if(charges != 0) 
-					g_game.transformItem(item, item->getID(), charges - 1); 
-			} 
+			//+ creatures attacking - chance to dodge
+			probabilityOccurr *= reducePercentageByAmountOfCreatures;
+			randomNumber = random_range(0, 100) / 100.0;
+			if (randomNumber <= probabilityOccurr)
+				*blockType = BLOCK_DODGE;
 		}
-*/
-		if (damage <= 0) { 
-			damage = 0; 
-			blockType = BLOCK_DEFENSE; 
-		} 
-	} 
-	return blockType; 
+		//------------- agility phase -------------//
+
+		//------------- 2º) skill defending phase -------------//	
+		//has attacking player a low skill attack then defedeing player skill defense?
+
+		double attackerSkillRandomNumber = random_range(1, attackingCreatureAttackSkill+1);
+		double defenderSkillRandomNumber = random_range(1, defendingPlayerDefenseSkill+1);
+		if (attackerSkillRandomNumber - defenderSkillRandomNumber <= 0)
+		{
+			//get the influence of the amount of defense of this player
+			double defenderDefenseInfluence = 1 - std::pow(0.5, defendingPlayerDefenseSkill / 20.0);
+			//(defenderAgilityRandomNumber - attackerAgilityRandomNumber)/defendingPlayerAgility = %of agility in use in this moment                 
+			probabilityOccurr = (defenderSkillRandomNumber - attackerSkillRandomNumber) / defenderSkillRandomNumber * defenderDefenseInfluence;			
+
+			probabilityOccurr *= reducePercentageByAmountOfCreatures;			
+			//trying to block with shield
+			randomNumber = random_range(0, 100) / 100.0;
+			if (randomNumber <= probabilityOccurr && hasShield())			
+				*blockType = BLOCK_SHIELD;
+
+			//trying to block with weapon
+			randomNumber = random_range(0, 100) / 100.0;
+			if (randomNumber <= probabilityOccurr && weapon)
+				*blockType = BLOCK_WEAPON;				
+		}
+	}
+
+	//where the damage took? It was not defended by the weapon or shield or not dodge
+	if (*blockType == BLOCK_NONE)
+	{
+		randomNumber = random_range(0, 100) / 100.0;
+		//55% chance armor
+		if (randomNumber >= 0.0 && randomNumber <= 0.55)
+			*blockType = BLOCK_ARMOR;
+		//30% legs
+		else if (randomNumber > 0.55 && randomNumber <= 0.85)
+			*blockType = BLOCK_LEGS;
+		//15% helmet
+		else
+			*blockType = BLOCK_ELM;
+	}
+	//------------- 2º) skill defending phase -------------//	
+
+	//let's see if we coul'd defense and subtract the dmg
+	switch (*blockType)
+	{
+		//dodge
+		case BLOCK_DODGE:
+		{
+			std::cout << "esquiva" << std::endl;
+		}break;
+				
+		case BLOCK_WEAPON:
+		{
+			itemDefenseFactor = weapon->getDefense();
+			bodyDefenseFactor = 0.045;
+			std::cout << "arma" << std::endl;
+
+		}break;
+
+		case BLOCK_SHIELD:
+		{
+			itemDefenseFactor = getShieldDefense();		
+			bodyDefenseFactor = 0.07;
+			std::cout << "escudo" << std::endl;
+		}break;
+
+		case BLOCK_ARMOR:
+		{
+			std::cout << "armadura" << std::endl;
+			bodyDefenseFactor = 0.040;
+			if (armor)
+			{
+				itemDefenseFactor = armor->getDefense();
+			}
+		}break;
+
+		case BLOCK_LEGS:
+		{
+			std::cout << "calça" << std::endl;
+			bodyDefenseFactor = 0.035;
+			if (legs)
+			{
+				itemDefenseFactor = legs->getDefense();
+			}
+		}break;
+
+		case BLOCK_ELM:
+		{
+			wd->critic = true;
+			std::cout << "elmo" << std::endl;
+			bodyDefenseFactor = 0.030;
+			if (elm)
+			{
+				itemDefenseFactor = elm->getDefense();
+			}
+		}break;
+	}	
+
+	//***perfuration***//
+
+	bool perfurationOcurr = false;
+	if (!(*blockType & BLOCK_DODGE) && wd->perforationFactor > 0)//block type is not a dodge, so reset	
+	{
+		//reset
+		*blockType = BLOCK_NONE;
+
+		//lets subract defense if perforation was occured	
+		probabilityOccurr = 1 - std::pow(0.5, wd->perforationFactor / 55.0);
+		randomNumber = random_range(0, 100) / 100.0;
+
+		//perforation ocurred
+		if (randomNumber <= probabilityOccurr)
+		{
+			perfurationOcurr = true;
+			//perforation exist's but defense player has blocking with def > 0
+			double ignoreDefenseFactor = 1;	
+			double weaponPerforationPercentage = 
+				random_range(0.3 * (1 - std::pow(0.5, wd->perforationFactor / 20.0)) * 100.0, (1 - std::pow(0.5, wd->perforationFactor / 20.0)) * 100.0)/100.0;
+			if (itemDefenseFactor != 0)
+			{
+				double tmpItemDefenseFactor = itemDefenseFactor;
+				// let's break it def
+				itemDefenseFactor = itemDefenseFactor - itemDefenseFactor * weaponPerforationPercentage;
+				ignoreDefenseFactor = 1 - itemDefenseFactor/tmpItemDefenseFactor;
+				//reducing armor percentPerforationEffective %	
+
+				//print in text msg count perfured %
+				wd->perforationFactor = ignoreDefenseFactor * 100.0;
+			}
+			//perforation exist's but defense player has blokcint with def == 0
+			else 
+			{
+				//the damage was incresed proportional to weapon dmg 
+				double weaponPerforationPercentage = 1 - std::pow(0.5, wd->perforationFactor / 20.0);
+				wd->totalDamage += wd->totalDamage * weaponPerforationPercentage;
+				//100% of perforation, igonre defense factor keep 1
+
+				//used in text msg to print how much + dmg perforation did
+				wd->perforationFactor = random_range(0.3 * (1 - std::pow(0.5, wd->perforationFactor / 20.0)) * 100.0, (1 - std::pow(0.5, wd->perforationFactor / 20.0)) * 100.0);
+			}
+
+			if (ignoreDefenseFactor >= 0 && ignoreDefenseFactor <= 0.33)
+			{
+				*blockType |= BLOCK_PERFORATION_MIN;
+				wd->damageType |= DAMAGE_PERFORATION_MIN;
+			}
+			else if (ignoreDefenseFactor > 0.33 && ignoreDefenseFactor <= 0.66)
+			{
+				*blockType |= BLOCK_PERFORATION_MEDIUM;
+				wd->damageType |= DAMAGE_PERFORATION_MED;
+			}			
+			else
+			{
+				*blockType |= BLOCK_PERFORATION_MAX;
+				wd->damageType |= DAMAGE_PERFORATION_MAX;
+			}					
+		}	
+	}
+
+	if (!perfurationOcurr)
+		wd->perforationFactor = 0;
+
+	damageBlockled *= bodyDefenseFactor * itemDefenseFactor;
+		
+	//if dodge
+	if (*blockType & BLOCK_DODGE)
+		wd->totalDamage = 0;
+	else//subtract the dmg
+		wd->totalDamage += damageBlockled;
+
+
+	if (wd->critic)
+	{
+		wd->criticDmg = 0.45 * wd->totalDamage;
+		wd->totalDamage = wd->totalDamage + wd->criticDmg;
+	}
+
+	//send square to attacker, the defender can see who is attacking
+	if (attacker)
+		sendCreatureSquare(attacker, SQ_COLOR_BLACK);
+
+	//the dmg was def
+	if (wd->totalDamage >= 0)
+	{
+		double damageProportionality = 0;
+		if(damageBlockled != 0)
+			damageProportionality = 1 - wd->totalDamage / damageBlockled;
+		//we blocked so let's 0 the dmg, we are not gain life, only blocking
+		if (*blockType & BLOCK_DODGE)
+			return true;
+		else if (damageProportionality >= 0 && damageProportionality <= 0.40)
+			*blockType |= BLOCK_DEFENSE_MAX;
+		else if (damageProportionality > 0.40 && damageProportionality < 0.85)
+			*blockType |= BLOCK_DEFENSE_MEDIUM;
+		else if (damageProportionality >= 0.85)
+			*blockType |= BLOCK_DEFENSE_MIN;
+		return true;
+	}
+	else //block none - the dmg passed, we are losing life
+	{
+		//0% until 100%
+		double percentageOfLife = std::abs(wd->totalDamage) / (double)getMaxHealth();		
+		//*** slash can occur ***//
+		bool slashOcurr = false;
+		if (wd->slashFactor > 0)
+		{
+			probabilityOccurr = 1 - std::pow(0.5, wd->slashFactor / 55.0);
+			randomNumber = random_range(0, 100) / 100.0;
+
+			//slash was generated let's do bleeding
+			if (randomNumber <= probabilityOccurr)
+			{
+				double slashValuePercentage = 1 + std::pow(1 - std::pow(0.5, wd->slashFactor / 20.0), 2) * 0.8;
+				//if perforation ocurred
+				if ((DAMAGE_PERFORATION_MAX | DAMAGE_PERFORATION_MED | DAMAGE_PERFORATION_MIN) &  wd->damageType)
+				{
+					probabilityOccurr = 0.5;
+					randomNumber = random_range(0, 100) / 100.0;
+
+					if (randomNumber <= probabilityOccurr)
+					{
+						slashOcurr = true;
+					}
+				}
+				else
+				{
+					slashOcurr = true;
+				}
+
+				if (slashOcurr)
+				{
+					//reset
+					wd->damageType = 0;
+					if (percentageOfLife <= 0.07)
+						wd->damageType |= DAMAGE_SLASH_MIN;
+					else if (percentageOfLife <= 0.15)
+						wd->damageType |= DAMAGE_SLASH_MED;
+					else
+						wd->damageType |= DAMAGE_SLASH_MAX;
+					int32_t dmgBySlash = random_range(std::floor(slashValuePercentage * wd->totalDamage) * 0.3, std::floor(slashValuePercentage * wd->totalDamage));
+					addCombatBleeding(dmgBySlash);
+					
+					wd->slashFactor = -dmgBySlash;
+				}
+			}
+		}
+
+		if (!slashOcurr)
+			wd->slashFactor = 0;
+
+		if (percentageOfLife <= 0.07)
+			wd->damageType |= DAMAGE_MIN;
+		else if (percentageOfLife <= 0.15)
+			wd->damageType |= DAMAGE_MEDIUM;
+		else
+			wd->damageType |= DAMAGE_MAX;
+
+		return false;
+	}		
+}
+
+uint8_t Player::getAttackSkillType(WeaponType_t weaponType) const
+{
+	return Creature::getAttackSkillType(weaponType);
 }
 
 uint32_t Player::getIP() const
@@ -1885,6 +2188,7 @@ uint32_t Player::getIP() const
 	}
 	return 0;
 }
+
 
 void Player::onDie()
 {
@@ -2191,7 +2495,7 @@ bool Player::removeVIP(uint32_t _guid)
 
 bool Player::addVIP(uint32_t _guid, std::string& name, bool isOnline, bool internal /*=false*/)
 {
-	if(guid == _guid){
+	if(identificator == _guid){
 		if(!internal)
 			sendTextMessage(MSG_TARGET_BOTTOM_CENTER_MAP, MSG_INFORMATION, MSG_COLOR_WHITE, "Você não pode se adicionar.");
 		return false;
@@ -2364,13 +2668,13 @@ ReturnValue Player::__queryAdd(int32_t index, const Thing* thing, uint32_t count
 								ret = RET_NOERROR;
 							}
 							else if(!item->isWeapon() ||
-								item->getWeaponType() == WEAPON_SHIELD ||
-								item->getWeaponType() == WEAPON_AMMO){
+								item->getWeaponType() == WEAPON_TYPE_DISTANCE){ //||
+								//item->getWeaponType() == WEAPON_TYPE_AMMO){
 									ret = RET_NOERROR;
 							}
 							else if(!leftItem->isWeapon() ||
-								leftItem->getWeaponType() == WEAPON_AMMO ||
-								leftItem->getWeaponType() == WEAPON_SHIELD){
+								leftItem->getWeaponType() == WEAPON_TYPE_AMMO ||
+								leftItem->getWeaponType() == WEAPON_TYPE_SHIELD){
 								ret = RET_NOERROR;
 							}
 							else{
@@ -2406,13 +2710,13 @@ ReturnValue Player::__queryAdd(int32_t index, const Thing* thing, uint32_t count
 								ret = RET_NOERROR;
 							}
 							else if(!item->isWeapon() ||
-								item->getWeaponType() == WEAPON_SHIELD ||
-								item->getWeaponType() == WEAPON_AMMO){
+								item->getWeaponType() == WEAPON_TYPE_SHIELD ||
+								item->getWeaponType() == WEAPON_TYPE_AMMO){
 									ret = RET_NOERROR;
 							}
 							else if(!rightItem->isWeapon() ||
-								rightItem->getWeaponType() == WEAPON_AMMO ||
-								rightItem->getWeaponType() == WEAPON_SHIELD){
+								rightItem->getWeaponType() == WEAPON_TYPE_AMMO ||
+								rightItem->getWeaponType() == WEAPON_TYPE_SHIELD){
 								ret = RET_NOERROR;
 							}
 							else{
@@ -3082,13 +3386,15 @@ void Player::doAttacking(uint32_t interval)
 		Item* tool = getWeapon();
 		bool result = false;
 		const Weapon* weapon = g_weapons->getWeapon(tool);
+
 		if(weapon)
 		{
 			if(!weapon->interruptSwing())
 			{
 				result = weapon->useWeapon(this, tool, attackedCreature);
 			}
-			else if(!canDoAction()){
+			else if(!canDoAction())
+			{
 				uint32_t delay = getNextActionTime();
 				SchedulerTask* task = createSchedulerTask(delay, boost::bind(&Game::checkCreatureAttack,
 					&g_game, getID()));
