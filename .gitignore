@@ -7,4 +7,4 @@
 *.suo
 *.filters
 *.vc.opendb
-*.vc.db
+*ZutriaServer.VC.db
