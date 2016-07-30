@@ -84,7 +84,7 @@ ItemType::ItemType()
 	ammoAction    = AMMOACTION_NONE;
 	shootType     = (ShootType_t)0;
 	magicEffect   = NM_ME_NONE;
-	attack        = 0;
+	defaultAttackFactor  = 0;
 	defense       = 0;
 	armor         = 0;
 	decayTo       = -1;
@@ -499,7 +499,7 @@ bool Items::loadFromXml(const std::string& datadir)
 							}
 							else if(asLowerCaseString(strValue) == "attack"){
 								if(readXMLInteger(itemAttributesNode, "value", intValue)){
-									it.attack = intValue;
+									it.defaultAttackFactor = intValue;
 								}
 							}
 							else if (asLowerCaseString(strValue) == "slash_attack") {

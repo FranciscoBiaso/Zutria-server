@@ -165,8 +165,8 @@ public:
 	Map();
 	~Map();
 
-	static const int32_t maxViewportX = 11;         
-	static const int32_t maxViewportY = 11;        
+	static const int32_t maxViewportX = cMaxViewW + 4;
+	static const int32_t maxViewportY = cMaxViewH + 5;
 	static const int32_t maxClientViewportX = cMaxViewW;
 	static const int32_t maxClientViewportY = cMaxViewH;
 

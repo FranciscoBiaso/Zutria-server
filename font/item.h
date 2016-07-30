@@ -299,7 +299,7 @@ public:
 	int32_t	getShootRange() const {return items[id].shootRange;}
 
 	virtual double getWeight() const;
-	int getAttack() const { return items[id].attack; }
+	int getDefaultAttack() const { return items[id].defaultAttackFactor; }
 	int getTraumaAttack() const { return items[id].traumaAttackFactor; }
 	int getPerforationAttack() const {return items[id].perforationAttackFactor;}
 	int getSlashAttack() const { return items[id].slashAttackFactor; }

@@ -65,7 +65,7 @@
 ---- CONNECTION ----
 
     -- Server ip (the ip that server listens on)
-    IP = "189.83.36.108"
+    IP = "189.83.57.77"
 
     -- Server port (the port that server listens on)
     Port = "7171"

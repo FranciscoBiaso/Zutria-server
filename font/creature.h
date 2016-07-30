@@ -253,8 +253,10 @@ public:
 	virtual int blockHit(Creature* attacker, CombatType_t combatType, int * blockType, void * data = nullptr);
 	virtual int getAvoindanceDefense() { return 0; }
 
+	
 
-	virtual double getSkillValue(uint8_t id) const { return this->m_skills[id]; }
+	double getSkillValue(uint8_t id) const { return this->m_skills[id]; }
+	void setSkillValue(uint8_t id, double value) { this->m_skills[id] = value; }
 	virtual uint8_t getAttackSkillType(WeaponType_t) const;
 
 
@@ -328,6 +330,12 @@ public:
 	virtual void onChangeZone(ZoneType_t zone);
 	virtual void onAttackedCreatureChangeZone(ZoneType_t zone);
 	virtual void onIdleStatus();
+	
+	virtual bool whereDmgTook(Creature *attacker, int32_t& blockType, double & defenseBodyFactor, int32_t & defenseItemFactor) { blockType = BLOCK_NONE; return false; }//no critic 
+	virtual int32_t getBlockDmg(const double defenseBodyFactor, const int32_t defenseItemFactor) { return 0; }
+	virtual bool canExecuteAttack() { return true; }
+	virtual int32_t getAttackDmg(struct _weaponDamage_ * wd) { return 1; }
+
 
 	virtual void getCreatureLight(LightInfo& light) const;
 	virtual void setNormalCreatureLight();

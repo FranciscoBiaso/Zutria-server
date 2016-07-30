@@ -192,7 +192,9 @@ private:
 	void sendAnimatedText(const Position& pos, uint8_t color, std::string text);
 	void sendAnimatedTexts(const Position& pos, uint8_t colorOne, uint8_t colorTwo, std::string textOne, std::string textTwo);
 	void sendCreatureHealth(const Creature* creature);
+	
 	void sendSkills();
+	
 	void sendSpellLearned(unsigned char spellId, unsigned char spellLevel);
 	void sendPing();
 	void sendCreatureTurn(const Creature* creature, uint32_t stackpos);
@@ -206,7 +208,7 @@ private:
 	void sendCreatureOutfit(const Creature* creature, const Outfit_t& outfit);
 	void sendCreatureInvisible(const Creature* creature);
 	void sendStats();
-	void ProtocolGame::sendTextMessage(uint8_t targetsGUI, MessageClasses mclass, MessageColors color, const std::string& message);
+	void sendTextMessage(uint8_t targetsGUI, MessageClasses mclass, MessageColors color, const std::string& message);
 
 	void sendTradeItemRequest(const Player* player, const Item* item, bool ack);
 	void sendCloseTrade();

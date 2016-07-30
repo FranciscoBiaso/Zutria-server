@@ -179,7 +179,7 @@ public:
 	bool getStorageValue(const uint32_t key, int32_t& value) const;
 
 
-	virtual double getSkillValue(uint8_t id) const { return this->m_skills[id]; }
+	
 	virtual uint8_t getAttackSkillType(WeaponType_t) const;
 
 
@@ -281,7 +281,7 @@ public:
 	void addStorageValue(const uint32_t key, const int32_t value);
 	void setLevelPoints(uint16_t value){ this->m_levelPoints = value; }
 	void setUnusedMagicPoints(uint16_t value){ this->m_unusedMagicPoints = value; }
-	void setSkillValue(uint8_t id, double value){ this->m_skills[id] = value; }
+	
 
 	bool withdrawMoney(uint32_t amount);
 	bool depositMoney(uint32_t amount);
@@ -373,7 +373,6 @@ public:
 	virtual void drainHealth(Creature* attacker, CombatType_t combatType, int32_t damage);
 	virtual void drainMana(Creature* attacker, int32_t manaLoss);
 	void addManaSpent(uint32_t amount, bool useMultiplier = true);
-	bool canExecuteAttack(Creature * defedingCreature, int * blockType);
 
 
 	
@@ -560,8 +559,7 @@ public:
 		{if(client) client->sendMagicEffect(pos,type);}
 	void sendPing(uint32_t interval);
 	void sendStats();
-	void sendSkills() const
-		{if(client) client->sendSkills();}
+	void sendSkills();
 	void sendTextMessage(uint8_t GUItarget,MessageClasses mclass,MessageColors color, const std::string& message) const
 	{
 		if (client) client->sendTextMessage(GUItarget, mclass, color, message);
@@ -613,6 +611,12 @@ public:
 
 	virtual void postAddNotification(Thing* thing, const Cylinder* oldParent, int32_t index, cylinderlink_t link = LINK_OWNER);
 	virtual void postRemoveNotification(Thing* thing, const Cylinder* newParent, int32_t index, bool isCompleteRemoval, cylinderlink_t link = LINK_OWNER);
+	
+	bool whereDmgTook(Creature *attacker, int32_t& blockType, double & defenseBodyFactor, int32_t & defenseItem);
+	int32_t getBlockDmg(const double defenseBodyFactor, const int32_t defenseItemFactor);
+	bool canExecuteAttack();
+	int32_t getAttackDmg(struct _weaponDamage_ * wd) { /*dmg is negative*/ return wd->totalDamage; }
+	
 
 	void setWriteItem(Item* item, uint16_t _maxWriteLen = 0);
 

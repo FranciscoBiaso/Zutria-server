@@ -735,17 +735,27 @@ int32_t WeaponMelee::getElementDamage(const Player* player, const Item* item) co
 }
 
 void Weapon::getDamage(struct _weaponDamage_ & wDamage, const Player* player, const Item* item) const
-{	
-	double playerSkillMelee = player->getSkillValue(ATTR_MELEE);
-	double playerAttrForce = player->getSkillValue(ATTR_FORCE);
-	double attackFactor = 0.5 * playerSkillMelee + 0.5 * playerAttrForce;
+{
+	//reset
+	wDamage.damageType = 0;
+	wDamage.critic = 0;
+	wDamage.criticDmg = 0;
+
+	double attackFactor = 0.6 *  player->getSkillValue(ATTR_MELEE) + 0.4 * player->getSkillValue(ATTR_FORCE);
+	
 	wDamage.traumaFactor = item->getTraumaAttack();
-	wDamage.damageByTrauma = -random_range(std::ceil(attackFactor * wDamage.traumaFactor * 0.05 * 0.45), std::ceil(attackFactor * wDamage.traumaFactor * 0.05));
-	wDamage.perforationFactor = item->getPerforationAttack();
-	wDamage.damageByPerforation = -random_range(std::ceil(attackFactor * wDamage.perforationFactor * 0.05 * 0.45), std::ceil(attackFactor * wDamage.perforationFactor * 0.05));
 	wDamage.slashFactor = item->getSlashAttack();
-	wDamage.damageBySlash = -random_range(std::ceil(attackFactor * wDamage.slashFactor * 0.05 * 0.45), std::ceil(attackFactor * wDamage.slashFactor * 0.05));
-	wDamage.totalDamage = wDamage.damageByTrauma + wDamage.damageByPerforation + wDamage.damageBySlash;
+	wDamage.perforationFactor = item->getPerforationAttack();
+
+
+	//35% until 100%
+	wDamage.perforationFactorPercentage = dice_35_10() *  (1 - std::pow(0.5, wDamage.perforationFactor / 20.0));		
+
+	wDamage.damageByPerforation = 0;	
+	wDamage.damageBySlash = 0;
+	wDamage.damageByTrauma = 0;
+
+	wDamage.totalDamage = -dice_35_10() * attackFactor * item->getDefaultAttack() * 0.05 - 1;
 }
 
 int32_t WeaponMelee::getWeaponDamage(const Player* player, const Creature* target, const Item* item, bool maxDamage /*= false*/) const
@@ -831,7 +841,7 @@ bool WeaponDistance::configureWeapon(const ItemType& it)
 
 	params.distanceEffect = it.shootType;
 	range = it.shootRange;
-	ammuAttackValue = it.attack;
+	ammuAttackValue = it.defaultAttackFactor;
 
 	if(it.hitChance > 0){
 		hitChance = it.hitChance;

@@ -136,6 +136,7 @@ void closeRunfile(void)
 
 int main(int argc, char *argv[])
 {
+
 	if(parseCommandLine(g_command_opts, std::vector<std::string>(argv, argv + argc)) == false){
 		return 0;
 	}

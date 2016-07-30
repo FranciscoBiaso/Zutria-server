@@ -329,7 +329,8 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 	}
 
 	//player->updateBaseSpeed();
-	player->setBaseSpeed(player->getSkillValue(skillsID::PLAYER_SKILL_SPEED));
+	//player->setBaseSpeed(player->getSkillValue(skillsID::PLAYER_SKILL_SPEED));
+	player->setBaseSpeed(240);
 	player->updateInventoryWeigth();
 	player->updateItemsLight(true);
 

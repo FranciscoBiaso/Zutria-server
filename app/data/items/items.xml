@@ -705,8 +705,9 @@
   <item id="2220" name="clava valorosa bestial">    
     <attribute key="weight" value="3800" />
 		<attribute key="slottype" value="hand"/>
-		<attribute key="perforation_attack" value="7" />
-		<attribute key="slash_attack" value="7" />
+		<attribute key="attack" value="19" />
+		<attribute key="perforation_attack" value="28" />
+		<attribute key="slash_attack" value="0" />
 		<attribute key="weapontype" value="melee" />
 	</item>
   
@@ -790,29 +791,28 @@
   
    <item id="2645" name="escudo de tor">	
 		<attribute key="weaponType" value="shield"/>
-		<attribute key="trauma_defense" value="36"/>
-		<attribute key="defense" value="36"/>
+		<attribute key="defense" value="21"/>
 		<attribute key="weight" value="9" />
     <attribute key="slotType" value="hand" />
 		<attribute key="weaponType" value="shield"/>
 	</item>
     
-   <item id="2642" name="">    
-    <attribute key="weight" value="3800" />		
+   <item id="2642" name="elm">    
+    <attribute key="weight" value="80" />		
     <attribute key="slotType" value="head" />
-		<attribute key="defense" value="9"/>
+		<attribute key="defense" value="19"/>
 	</item>
   
    <item id="2656" name="">    
-    <attribute key="weight" value="3800" />		
+    <attribute key="weight" value="80" />		
     <attribute key="slotType" value="body" />
-		<attribute key="defense" value="9"/>
+		<attribute key="defense" value="20"/>
 	</item>
   
    <item id="2647" name="">    
-    <attribute key="weight" value="3800" />		
+    <attribute key="weight" value="80" />		
     <attribute key="slotType" value="legs" />
-		<attribute key="defense" value="9"/>
+		<attribute key="defense" value="18"/>
 	</item>
 
    <item id="2643" name="clava  bestial">    

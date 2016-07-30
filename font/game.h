@@ -498,12 +498,18 @@ public:
 	bool combatBlockPhysicalHit(CombatType_t combatType, Creature* attacker, Creature* target,
 		struct _weaponDamage_ * );
 
+	void dmgBlocked(Creature const * target, int32_t const BlockType);
+
 	bool combatChangeHealth(CombatType_t combatType, Creature* attacker, Creature* target, int32_t healthChange);
 	bool combatChangeMana(Creature* attacker, Creature* target, int32_t manaChange);
 	bool combatChangeHealth(CombatType_t combatType, MagicEffectClasses hitEffect,
 		TextColor_t customTextColor, Creature* attacker, Creature* target, int32_t healthChange);
 	bool combatChangeHealth(CombatType_t combatType, MagicEffectClasses hitEffect,
 		TextColor_t customTextColor, Creature* attacker, Creature* target, struct _weaponDamage_ *);
+	bool occurStab(const Creature * attacker);
+	void breakDefense(int32_t & itemDefenseFactor, double & preforationFactor);
+	void increaseDmgByStab(int32_t & dmgHit, struct _weaponDamage_ * wd);
+	void increaseDmgByCritic(int32_t & dmgHit, struct _weaponDamage_ * wd);
 
 	//animation help functions
 	void addCreatureHealth(const Creature* target);

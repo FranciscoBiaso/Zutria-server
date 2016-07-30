@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <spawns>
+	<spawn centerx="758" centery="642" centerz="2" radius="5" />
 	<spawn centerx="872" centery="683" centerz="2" radius="5" />
 	<spawn centerx="598" centery="695" centerz="4" radius="1">
 		<monster name="esqueleto feitiçeiro" x="1" y="0" z="4" spawntime="60" />
@@ -95,6 +96,18 @@
 	</spawn>
 	<spawn centerx="607" centery="707" centerz="6" radius="1">
 		<monster name="esqueleto arqueiro" x="0" y="0" z="6" spawntime="60" />
+	</spawn>
+	<spawn centerx="797" centery="485" centerz="7" radius="1">
+		<monster name="javali" x="0" y="0" z="7" spawntime="60" />
+	</spawn>
+	<spawn centerx="789" centery="490" centerz="7" radius="1">
+		<monster name="javali" x="0" y="0" z="7" spawntime="60" />
+	</spawn>
+	<spawn centerx="821" centery="491" centerz="7" radius="1">
+		<monster name="javali" x="0" y="0" z="7" spawntime="60" />
+	</spawn>
+	<spawn centerx="800" centery="509" centerz="7" radius="1">
+		<monster name="javali" x="0" y="0" z="7" spawntime="60" />
 	</spawn>
 	<spawn centerx="586" centery="528" centerz="7" radius="5">
 		<monster name="goblim impetuoso" x="4" y="-5" z="7" spawntime="60" />
@@ -195,8 +208,33 @@
 		<monster name="javali" x="0" y="0" z="7" spawntime="60" />
 		<monster name="javali" x="1" y="1" z="7" spawntime="60" />
 	</spawn>
-	<spawn centerx="753" centery="639" centerz="7" radius="1">
-		<monster name="abelhão" x="0" y="0" z="7" spawntime="60" />
+	<spawn centerx="746" centery="638" centerz="7" radius="1">
+		<monster name="javali" x="-1" y="0" z="7" spawntime="19918592" />
+		<monster name="javali" x="0" y="0" z="7" spawntime="60" />
+		<monster name="javali" x="-1" y="1" z="7" spawntime="19918592" />
+	</spawn>
+	<spawn centerx="740" centery="639" centerz="7" radius="1">
+		<monster name="javali" x="0" y="0" z="7" spawntime="19918592" />
+		<monster name="javali" x="0" y="1" z="7" spawntime="19918592" />
+	</spawn>
+	<spawn centerx="745" centery="640" centerz="7" radius="1">
+		<monster name="javali" x="-1" y="0" z="7" spawntime="19918592" />
+		<monster name="javali" x="0" y="0" z="7" spawntime="19918592" />
+		<monster name="javali" x="-1" y="1" z="7" spawntime="19918592" />
+	</spawn>
+	<spawn centerx="741" centery="641" centerz="7" radius="1">
+		<monster name="javali" x="-1" y="0" z="7" spawntime="19918592" />
+		<monster name="javali" x="0" y="0" z="7" spawntime="19918592" />
+		<monster name="javali" x="0" y="1" z="7" spawntime="19918592" />
+	</spawn>
+	<spawn centerx="744" centery="642" centerz="7" radius="1">
+		<monster name="javali" x="-1" y="0" z="7" spawntime="19918592" />
+		<monster name="javali" x="0" y="0" z="7" spawntime="19918592" />
+		<monster name="javali" x="-1" y="1" z="7" spawntime="19918592" />
+	</spawn>
+	<spawn centerx="742" centery="643" centerz="7" radius="1">
+		<monster name="javali" x="-1" y="0" z="7" spawntime="19918592" />
+		<monster name="javali" x="0" y="0" z="7" spawntime="19918592" />
 	</spawn>
 	<spawn centerx="616" centery="645" centerz="7" radius="1">
 		<monster name="besouro" x="0" y="0" z="7" spawntime="60" />

@@ -994,8 +994,8 @@ bool ProtocolGame::canSee(int x, int y, int z) const
 	//negative offset means that the action taken place is on a lower floor than ourself
 	int offsetz = myPos.z - z;
 
-	if ((x >= myPos.x - 8 + offsetz) && (x <= myPos.x + 9 + offsetz) &&
-		(y >= myPos.y - 6 + offsetz) && (y <= myPos.y + 7 + offsetz))
+	if ((x >= myPos.x - cMaxViewW + offsetz) && (x <= myPos.x + cMaxViewW + offsetz) &&
+		(y >= myPos.y - cMaxViewH + offsetz) && (y <= myPos.y + cMaxViewH + offsetz))
 		return true;
 
 	return false;
@@ -1956,6 +1956,7 @@ void ProtocolGame::sendSkills()
 	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg){
 		TRACK_MESSAGE(msg);
+		
 		AddPlayerSkills(msg);
 	}
 }
@@ -2246,20 +2247,20 @@ void ProtocolGame::sendMoveCreature(const Creature* creature, const Tile* newTil
 				// north, for old x
 				if (oldPos.y > newPos.y) {
 					msg->AddByte(0x65);
-					GetMapDescription(oldPos.x - 8, newPos.y - 6, newPos.z, 18, 1, msg);
+					GetMapDescription(oldPos.x - cMaxViewW, newPos.y - cMaxViewH, newPos.z, 2 * cMaxViewW + 1, 1, msg);
 				}
 				else if (oldPos.y < newPos.y) { // south, for old x
 					msg->AddByte(0x67);
-					GetMapDescription(oldPos.x - 8, newPos.y + 7, newPos.z, 18, 1, msg);
+					GetMapDescription(oldPos.x - cMaxViewW, newPos.y + cMaxViewH, newPos.z, 2 * cMaxViewW + 1, 1, msg);
 				}
 
 				if (oldPos.x < newPos.x) { // east, [with new y]
 					msg->AddByte(0x66);
-					GetMapDescription(newPos.x + 9, newPos.y - 6, newPos.z, 1, 14, msg);
+					GetMapDescription(newPos.x + cMaxViewW, newPos.y - cMaxViewH, newPos.z, 1, 2 * cMaxViewH + 1, msg);
 				}
 				else if (oldPos.x > newPos.x) { // west, [with new y]
 					msg->AddByte(0x68);
-					GetMapDescription(newPos.x - 8, newPos.y - 6, newPos.z, 1, 14, msg);
+					GetMapDescription(newPos.x - cMaxViewW, newPos.y - cMaxViewH, newPos.z, 1, 2 * cMaxViewH + 1, msg);
 				}
 			}
 		}
@@ -2476,7 +2477,7 @@ void ProtocolGame::AddMapDescription(NetworkMessage_ptr msg, const Position& pos
 	msg->AddByte(SEND_PROTOCOL::protocol_map_description);
 	msg->AddPosition(player->getPosition());	  
 
-	GetMapDescription(pos.x - 8, pos.y - 6, pos.z, 18, 14, msg);
+	GetMapDescription(pos.x - cMaxViewW, pos.y - cMaxViewH, pos.z, 2 * cMaxViewW + 1, 2 * cMaxViewH + 1, msg);
 	//GetMapDescription(pos.x - cMaxViewW, pos.y - cMaxViewH, pos.z,  cMaxViewW * 2, cMaxViewH * 2, msg);
 }
 
@@ -2625,7 +2626,8 @@ void ProtocolGame::AddPlayerSkills(NetworkMessage_ptr msg)
 {
 	// conection protocol 0xA1
 	msg->AddByte(0xA1);
-	// all player skills
+	
+	//activation skills
 	msg->AddU16(player->getSkillValue(ATTR_VITALITY));
 	msg->AddU16(player->getSkillValue(ATTR_FORCE));
 	msg->AddU16(player->getSkillValue(ATTR_AGILITY));
@@ -2633,11 +2635,13 @@ void ProtocolGame::AddPlayerSkills(NetworkMessage_ptr msg)
 	msg->AddU16(player->getSkillValue(ATTR_CONCENTRATION));
 	msg->AddU16(player->getSkillValue(ATTR_STAMINA));
 
+	//passive skills
 	msg->AddU16(player->getSkillValue(ATTR_DISTANCE));
 	msg->AddU16(player->getSkillValue(ATTR_MELEE));
 	msg->AddU16(player->getSkillValue(ATTR_MENTALITY));
 	msg->AddU16(player->getSkillValue(ATTR_TRAINER));
 	msg->AddU16(player->getSkillValue(ATTR_DEFENSE));
+
 
 	msg->AddU16(player->getLevelPoints());
 	msg->AddByte(player->getUnusedMagicPoints());

@@ -646,7 +646,8 @@ bool Map::checkSightLine(const Position& fromPos, const Position& toPos) const
 
 bool Map::isSightClear(const Position& fromPos, const Position& toPos, bool floorCheck) const
 {
-	if(floorCheck && fromPos.z != toPos.z){
+	if(floorCheck && fromPos.z != toPos.z)
+	{
 		return false;
 	}
 

@@ -629,8 +629,6 @@ void Monster::onThink(uint32_t interval)
 
 void Monster::doAttacking(uint32_t interval)
 {
-
-	std::cout << "attacking:" << getName() << std::endl;
 	
 	if(!attackedCreature || (isSummon() && attackedCreature == this)){
 		return;
@@ -692,10 +690,13 @@ void Monster::doAttacking(uint32_t interval)
 
 bool Monster::canUseAttack(const Position& pos, const Creature* target) const
 {
-	if(isHostile()){
+	if(isHostile())
+	{
 		const Position& targetPos = target->getPosition();
-		for(SpellList::iterator it = mType->spellAttackList.begin(); it != mType->spellAttackList.end(); ++it){
-			if((*it).range != 0 && std::max(std::abs(pos.x - targetPos.x), std::abs(pos.y - targetPos.y)) <= (int32_t)(*it).range){
+		for(SpellList::iterator it = mType->spellAttackList.begin(); it != mType->spellAttackList.end(); ++it)
+		{
+			if((*it).range != 0 && std::max(std::abs(pos.x - targetPos.x), std::abs(pos.y - targetPos.y)) <= (int32_t)(*it).range)
+			{
 				return g_game.isSightClear(pos, targetPos, true);
 			}
 		}
@@ -1453,7 +1454,8 @@ void Monster::getPathSearchParams(const Creature* creature, FindPathParams& fpp)
 	fpp.minTargetDist = 1;
 	fpp.maxTargetDist = mType->targetDistance;
 
-	if(isSummon()){
+	if(isSummon())
+	{
 		if(getMaster() == creature){
 			fpp.maxTargetDist = 2;
 			fpp.fullPathSearch = true;
@@ -1462,15 +1464,18 @@ void Monster::getPathSearchParams(const Creature* creature, FindPathParams& fpp)
 			fpp.fullPathSearch = !canUseAttack(getPosition(), creature);
 		}
 	}
-	else{
-		if(isFleeing()){
+	else
+	{
+		if(isFleeing())
+		{
 			//Distance should be higher than the client view range (Map::maxClientViewportX/Map::maxClientViewportY)
 			fpp.maxTargetDist = Map::maxViewportX;
 			fpp.clearSight = false;
 			fpp.keepDistance = true;
 			fpp.fullPathSearch = false;
 		}
-		else{
+		else
+		{
 			fpp.fullPathSearch = !canUseAttack(getPosition(), creature);
 		}
 	}

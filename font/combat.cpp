@@ -1281,7 +1281,7 @@ void ValueCallback::getMinMaxValues(Player* player, int32_t& min, int32_t& max, 
 				int32_t attackSkill = player->getWeaponSkill(tool);
 				int32_t attackValue = 7;
 				if(tool){
-					attackValue = tool->getAttack();
+					//attackValue = tool->getAttack();
 
 					if(useCharges && tool->hasCharges() && g_config.getNumber(ConfigManager::REMOVE_WEAPON_CHARGES)){
 						int32_t newCharge = std::max(0, tool->getCharges() - 1);

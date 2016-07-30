@@ -8671,7 +8671,7 @@ int LuaScriptInterface::luaGetItemAttack(lua_State *L)
 	uint32_t itemid = popNumber(L);
 	const ItemType& it = Item::items[itemid];
 	if(it.id != 0)
-		lua_pushnumber(L, it.attack);
+		lua_pushnumber(L, it.defaultAttackFactor);
 	else{
 		reportErrorFunc("Invalid itemid number.");
 		lua_pushnil(L);
@@ -8745,7 +8745,7 @@ int LuaScriptInterface::luaGetItemAttackByUID(lua_State *L)
 		return 1;
 	}
 
-	lua_pushnumber(L, item->getAttack());
+	lua_pushnumber(L, item->getDefaultAttack());
 	return 1;
 }
 

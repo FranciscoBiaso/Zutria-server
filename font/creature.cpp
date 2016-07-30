@@ -310,6 +310,9 @@ uint8_t Creature::getAttackSkillType(WeaponType_t weaponType) const
 		case WEAPON_TYPE_DISTANCE:
 			return ATTR_DISTANCE;
 			break;
+
+		default:
+			return ATTR_MELEE;
 	}
 }
 
@@ -352,8 +355,10 @@ void Creature::updateMapCache()
 	const Position& myPos = getPosition();
 	Position pos(0, 0, myPos.z);
 
-	for(int32_t y = -((mapWalkHeight - 1) / 2); y <= ((mapWalkHeight - 1) / 2); ++y){
-		for(int32_t x = -((mapWalkWidth - 1) / 2); x <= ((mapWalkWidth - 1) / 2); ++x){
+	for(int32_t y = -((mapWalkHeight - 1) / 2); y <= ((mapWalkHeight - 1) / 2); ++y)
+	{
+		for(int32_t x = -((mapWalkWidth - 1) / 2); x <= ((mapWalkWidth - 1) / 2); ++x)
+		{
 			pos.x = myPos.x + x;
 			pos.y = myPos.y + y;
 			tile = g_game.getTile(pos.x, pos.y, myPos.z);
@@ -376,8 +381,7 @@ void Creature::validateMapCache()
 
 void Creature::updateTileCache(const Tile* tile, int32_t dx, int32_t dy)
 {
-	if((std::abs(dx) <= (mapWalkWidth - 1) / 2) &&
-		(std::abs(dy) <= (mapWalkHeight - 1) / 2)){
+	if((std::abs(dx) <= (mapWalkWidth - 1) / 2) && (std::abs(dy) <= (mapWalkHeight - 1) / 2)){
 
 		int32_t x = (mapWalkWidth - 1) / 2 + dx;
 		int32_t y = (mapWalkHeight - 1) / 2 + dy;
@@ -421,15 +425,15 @@ int32_t Creature::getWalkCache(const Position& pos) const
 	int32_t dx = pos.x - myPos.x;
 	int32_t dy = pos.y - myPos.y;
 
-	if((std::abs(dx) <= (mapWalkWidth - 1) / 2) &&
-		(std::abs(dy) <= (mapWalkHeight - 1) / 2)){
-
+	if((std::abs(dx) <= (mapWalkWidth - 1) / 2) && (std::abs(dy) <= (mapWalkHeight - 1) / 2))
+	{
 		int32_t x = (mapWalkWidth - 1) / 2 + dx;
 		int32_t y = (mapWalkHeight - 1) / 2 + dy;
 
 #ifdef __DEBUG__
 		//testing
 		Tile* tile = g_game.getTile(pos.x, pos.y, pos.z);
+
 		if(tile && (tile->__queryAdd(0, this, 1, FLAG_PATHFINDING | FLAG_IGNOREFIELDDAMAGE) == RET_NOERROR)){
 			if(!localMapCache[y][x]){
 				std::cout << "Wrong cache value" << std::endl;
@@ -442,12 +446,10 @@ int32_t Creature::getWalkCache(const Position& pos) const
 		}
 #endif
 
-		if(localMapCache[y][x]){
+		if(localMapCache[y][x])
 			return 1;
-		}
-		else{
+		else
 			return 0;
-		}
 	}
 
 	//out of range
@@ -456,10 +458,10 @@ int32_t Creature::getWalkCache(const Position& pos) const
 
 void Creature::onAddTileItem(const Tile* tile, const Position& pos, const Item* item)
 {
-	if(isMapLoaded){
-		if(pos.z == getPosition().z){
-			updateTileCache(tile, pos);
-		}
+	if(isMapLoaded)
+	{
+		if(pos.z == getPosition().z)
+			updateTileCache(tile, pos);		
 	}
 }
 
@@ -555,26 +557,26 @@ void Creature::onAttackedCreatureChangeZone(ZoneType_t zone)
 void Creature::onCreatureMove(const Creature* creature, const Tile* newTile, const Position& newPos,
 	const Tile* oldTile, const Position& oldPos, uint32_t oldStackPos, bool teleport)
 {
-	if(creature == this){
+	if(creature == this)
+	{
 		lastStep = OTSYS_TIME();
 		extraStepDuration = 0;
 		lastStepCost = 1;
 
-		if(teleport){
+		if(teleport)
 			stopEventWalk();
-		}
-		else{
-			if(oldPos.z != newPos.z){
-				//floor change extra cost
-				lastStepCost = 2;
-			}
-			else if(std::abs(newPos.x - oldPos.x) >=1 && std::abs(newPos.y - oldPos.y) >= 1){
-				//diagonal extra cost
-				lastStepCost = 2;
-			}
+		else
+		{
+			//floor change extra cost
+			if(oldPos.z != newPos.z)
+				lastStepCost = 2;			
+			//diagonal extra cost
+			else if(std::abs(newPos.x - oldPos.x) >=1 && std::abs(newPos.y - oldPos.y) >= 1)				
+				lastStepCost = 2;			
 		}
 
-		if(!summons.empty()){
+		if(!summons.empty())
+		{
 			//check if any of our summons is out of range (+/- 2 floors or 30 tiles away)
 
 			std::list<Creature*> despawnList;
@@ -596,16 +598,18 @@ void Creature::onCreatureMove(const Creature* creature, const Tile* newTile, con
 		onChangeZone(getZone());
 
 		//update map cache
-		if(isMapLoaded){
-			if(teleport || oldPos.z != newPos.z){
-				updateMapCache();
-			}
-			else{
+		if(isMapLoaded)
+		{
+			if(teleport || oldPos.z != newPos.z)
+				updateMapCache();			
+			else
+			{
 				Tile* tile;
 				const Position& myPos = getPosition();
 				Position pos;
 
-				if(oldPos.y > newPos.y){ // north
+				if(oldPos.y > newPos.y)
+				{ // north
 					//shift y south
 					for(int32_t y = mapWalkHeight - 1 - 1; y >= 0; --y){
 						memcpy(localMapCache[y + 1], localMapCache[y], sizeof(localMapCache[y]));
@@ -912,137 +916,327 @@ void Creature::drainMana(Creature* attacker, int32_t manaLoss)
 
 int Creature::blockHit(Creature* attacker, CombatType_t combatType, int * blockType, void * data)
 {	
-	if(isImmune(combatType))
-	{
-		//damage = 0;
-		*blockType = BLOCK_IMMUNITY;
-	}
-
-	//count of hits in a interval time
-	blockCount++;
-
-	//legs + elm + armor - factors
-	//		int32_t defenseFactors = getDefenseFactors();
-	//		//shield factor
-	//		int32_t shieldFactor = getShieldDefense();
-
-	//		//increment factors with shield + 0% until 20%
-	//		defenseFactors += shieldFactor * random_range(100, 120)/100;
-
-	//		double attackerPhyAtt = 0;
-	//		double defenserPhyDef = 0;
-	//	
-	//		//is defenser a player or a enym?
-	//		if (defenserPlayer)
-	//		{
-	//			defenserPhyDef =  getPlayer()->getSkillValue(SKILL_PHYSICAL_DEFFENSE);
-	//		}
-
-	//		damage -= defenseFactors * defenserPlayer->getSkillValue(skillsID::PLAYER_SKILL_PHYSICAL_DEFENSE);
-
-
-	//try avoidance
-	/*else if (damage > 0 && getAvoindanceDefense() > 0.0)
-	{
-		float maxAvoidancePorcentage = getAvoindanceDefense() / 800.0 * 0.3 * 100;
-		float minAvoidancePorcentage = maxAvoidancePorcentage / 3.0;
-		(*missPorcentage) = minAvoidancePorcentage + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (maxAvoidancePorcentage - minAvoidancePorcentage)));
-		damage = damage * (*missPorcentage);
-		blockType |= BLOCK_AVOIDANCE;
-	}*/
-	//else if(checkDefense || checkArmor)
+	//if(isImmune(combatType))
 	//{
-	//	bool hasDefense = false;
+	//	//the defender is immune, so blocked
+	//	return true;
+	//}
 
-	//	//count of def in a interval time
-	//	if(blockCount > 0)
+	////count of hits in a interval time
+	//blockCount++;
+
+	//struct _weaponDamage_ * wd = (struct _weaponDamage_ *)data;
+	////reset
+	//wd->damageType = 0;
+	//wd->critic = false;
+
+	//Item * weapon = getWeapon();
+	//Item * elm = getInventoryItem(SLOT_HEAD);
+	//Item * legs = getInventoryItem(SLOT_LEGS);
+	//Item * armor = getInventoryItem(SLOT_ARMOR);
+	//double itemDefenseFactor = 0;
+	//double bodyDefenseFactor = 0;
+
+	//double probabilityOccurr = 0.05;
+	//double attackingCreaturesPercentage = 0;
+	//double randomNumber = random_range(0, 100) / 100.0;
+
+	//double attackingCreatureAttackSkill = attacker->getSkillValue(attacker->getAttackSkillType(attacker->getWeaponType()));
+	//double defendingPlayerAgility = getSkillValue(ATTR_AGILITY);
+	//double defendingPlayerDefenseSkill = getSkillValue(ATTR_DEFENSE);
+	//double damageBlockled = (0.5 * getSkillValue(ATTR_FORCE) + 0.5 * defendingPlayerDefenseSkill);
+
+	////a player can not block more than your max number block
+	//if (blockCount < _player_::max_creatures_to_block)
+	//{
+	//	double reducePercentageByAmountOfCreatures = 1.0 - (blockCount - 1.0) / _player_::max_creatures_to_block;
+
+	//	//------------- 1º) agility phase -------------//
+	//	//has attacking player a low agility then defending player?
+	//	//so it's possible to try dodge
+	//	double attackerAgilityRandomNumber = random_range(1, attacker->getSkillValue(ATTR_AGILITY) + 1);
+	//	double defenderAgilityRandomNumber = random_range(1, defendingPlayerAgility + 1);
+	//	if (attackerAgilityRandomNumber - defenderAgilityRandomNumber <= 0)
 	//	{
-	//		--blockCount;
-	//		//can def
-	//		hasDefense = true;
+	//		//get the influence of the amount of agility of this player
+	//		double defenderAgilityInfluence = 1 - std::pow(0.5, defendingPlayerAgility / 20.0);
+	//		//(defenderAgilityRandomNumber - attackerAgilityRandomNumber)/defendingPlayerAgility = %of agility in use in this moment                 
+	//		probabilityOccurr = (defenderAgilityRandomNumber - attackerAgilityRandomNumber) / defenderAgilityRandomNumber * defenderAgilityInfluence;
+
+
+	//		//+ creatures attacking - chance to dodge
+	//		probabilityOccurr *= reducePercentageByAmountOfCreatures;
+	//		randomNumber = random_range(0, 100) / 100.0;
+	//		if (randomNumber <= probabilityOccurr)
+	//			*blockType = BLOCK_DODGE;
 	//	}
+	//	//------------- agility phase -------------//
 
-	//	//get sum of factors defense
-	//	if (hasDefense)
+	//	//------------- 2º) skill defending phase -------------//	
+	//	//has attacking player a low skill attack then defedeing player skill defense?
+
+	//	double attackerSkillRandomNumber = random_range(1, attackingCreatureAttackSkill + 1);
+	//	double defenderSkillRandomNumber = random_range(1, defendingPlayerDefenseSkill + 1);
+	//	if (attackerSkillRandomNumber - defenderSkillRandomNumber <= 0)
 	//	{
-	//		//legs + elm + armor - factors
-	//		int32_t defenseFactors = getDefenseFactors();
-	//		//shield factor
-	//		int32_t shieldFactor = getShieldDefense();
+	//		//get the influence of the amount of defense of this player
+	//		double defenderDefenseInfluence = 1 - std::pow(0.5, defendingPlayerDefenseSkill / 20.0);
+	//		//(defenderAgilityRandomNumber - attackerAgilityRandomNumber)/defendingPlayerAgility = %of agility in use in this moment                 
+	//		probabilityOccurr = (defenderSkillRandomNumber - attackerSkillRandomNumber) / defenderSkillRandomNumber * defenderDefenseInfluence;
 
-	//		//increment factors with shield + 0% until 20%
-	//		defenseFactors += shieldFactor * random_range(100, 120)/100;
+	//		probabilityOccurr *= reducePercentageByAmountOfCreatures;
+	//		//trying to block with shield
+	//		randomNumber = random_range(0, 100) / 100.0;
+	//		if (randomNumber <= probabilityOccurr && hasShield())
+	//			*blockType = BLOCK_SHIELD;
 
-	//		double attackerPhyAtt = 0;
-	//		double defenserPhyDef = 0;
-	//	
-	//		//is defenser a player or a enym?
-	//		if (defenserPlayer)
+	//		//trying to block with weapon
+	//		randomNumber = random_range(0, 100) / 100.0;
+	//		if (randomNumber <= probabilityOccurr && weapon)
+	//			*blockType = BLOCK_WEAPON;
+	//	}
+	//}
+
+	////where the damage took? It was not defended by the weapon or shield or not dodge
+	//if (*blockType == BLOCK_NONE)
+	//{
+	//	randomNumber = random_range(0, 100) / 100.0;
+	//	//55% chance armor
+	//	if (randomNumber >= 0.0 && randomNumber <= 0.55)
+	//		*blockType = BLOCK_ARMOR;
+	//	//30% legs
+	//	else if (randomNumber > 0.55 && randomNumber <= 0.85)
+	//		*blockType = BLOCK_LEGS;
+	//	//15% helmet
+	//	else
+	//		*blockType = BLOCK_ELM;
+	//}
+	////------------- 2º) skill defending phase -------------//	
+
+	////let's see if we coul'd defense and subtract the dmg
+	//switch (*blockType)
+	//{
+	//	//dodge
+	//case BLOCK_DODGE:
+	//{
+	//	std::cout << "esquiva" << std::endl;
+	//}break;
+
+	//case BLOCK_WEAPON:
+	//{
+	//	itemDefenseFactor = weapon->getDefense();
+	//	bodyDefenseFactor = 0.045;
+	//	std::cout << "arma" << std::endl;
+
+	//}break;
+
+	//case BLOCK_SHIELD:
+	//{
+	//	itemDefenseFactor = getShieldDefense();
+	//	bodyDefenseFactor = 0.07;
+	//	std::cout << "escudo" << std::endl;
+	//}break;
+
+	//case BLOCK_ARMOR:
+	//{
+	//	std::cout << "armadura" << std::endl;
+	//	bodyDefenseFactor = 0.040;
+	//	if (armor)
+	//	{
+	//		itemDefenseFactor = armor->getDefense();
+	//	}
+	//}break;
+
+	//case BLOCK_LEGS:
+	//{
+	//	std::cout << "calça" << std::endl;
+	//	bodyDefenseFactor = 0.035;
+	//	if (legs)
+	//	{
+	//		itemDefenseFactor = legs->getDefense();
+	//	}
+	//}break;
+
+	//case BLOCK_ELM:
+	//{
+	//	wd->critic = true;
+	//	std::cout << "elmo" << std::endl;
+	//	bodyDefenseFactor = 0.030;
+	//	if (elm)
+	//	{
+	//		itemDefenseFactor = elm->getDefense();
+	//	}
+	//}break;
+	//}
+
+	////***perfuration***//
+
+	//bool perfurationOcurr = false;
+	//if (!(*blockType & BLOCK_DODGE) && wd->perforationFactor > 0)//block type is not a dodge, so reset	
+	//{
+	//	//reset
+	//	*blockType = BLOCK_NONE;
+
+	//	//lets subract defense if perforation was occured	
+	//	probabilityOccurr = 1 - std::pow(0.5, wd->perforationFactor / 55.0);
+	//	randomNumber = random_range(0, 100) / 100.0;
+
+	//	//perforation ocurred
+	//	if (randomNumber <= probabilityOccurr)
+	//	{
+	//		perfurationOcurr = true;
+	//		//perforation exist's but defense player has blocking with def > 0
+	//		double ignoreDefenseFactor = 1;
+	//		double weaponPerforationPercentage =
+	//			random_range(0.3 * (1 - std::pow(0.5, wd->perforationFactor / 20.0)) * 100.0, (1 - std::pow(0.5, wd->perforationFactor / 20.0)) * 100.0) / 100.0;
+	//		if (itemDefenseFactor != 0)
 	//		{
-	//			defenserPhyDef =  getPlayer()->getSkillValue(SKILL_PHYSICAL_DEFFENSE);
+	//			double tmpItemDefenseFactor = itemDefenseFactor;
+	//			// let's break it def
+	//			itemDefenseFactor = itemDefenseFactor - itemDefenseFactor * weaponPerforationPercentage;
+	//			ignoreDefenseFactor = 1 - itemDefenseFactor / tmpItemDefenseFactor;
+	//			//reducing armor percentPerforationEffective %	
+
+	//			//print in text msg count perfured %
+	//			wd->perforationFactor = ignoreDefenseFactor * 100.0;
+	//		}
+	//		//perforation exist's but defense player has blokcint with def == 0
+	//		else
+	//		{
+	//			//the damage was incresed proportional to weapon dmg 
+	//			double weaponPerforationPercentage = 1 - std::pow(0.5, wd->perforationFactor / 20.0);
+	//			wd->totalDamage += wd->totalDamage * weaponPerforationPercentage;
+	//			//100% of perforation, igonre defense factor keep 1
+
+	//			//used in text msg to print how much + dmg perforation did
+	//			wd->perforationFactor = random_range(0.3 * (1 - std::pow(0.5, wd->perforationFactor / 20.0)) * 100.0, (1 - std::pow(0.5, wd->perforationFactor / 20.0)) * 100.0);
 	//		}
 
-	//		damage -= defenseFactors * defenserPlayer->getSkillValue(skillsID::PLAYER_SKILL_PHYSICAL_DEFENSE);
-	//	}
-
-	//	if(checkDefense && hasDefense)
-	//	{
-	//		//shield defense
-	//		int32_t maxShieldDefense = getShieldDefense();
-	//		int32_t minShieldDefense = maxShieldDefense / 3.0f;
-	//		damage -= random_range(minShieldDefense, maxShieldDefense);
-	//		if(damage <= 0)
+	//		if (ignoreDefenseFactor >= 0 && ignoreDefenseFactor <= 0.33)
 	//		{
-	//			damage = 0;
-	//			blockType |= BLOCK_SHIELD;
-	//			checkArmor = false;
-	//			checkWeapon = false;
+	//			*blockType |= BLOCK_PERFORATION_MIN;
+	//			wd->damageType |= DAMAGE_PERFORATION_MIN;
+	//		}
+	//		else if (ignoreDefenseFactor > 0.33 && ignoreDefenseFactor <= 0.66)
+	//		{
+	//			*blockType |= BLOCK_PERFORATION_MEDIUM;
+	//			wd->damageType |= DAMAGE_PERFORATION_MED;
+	//		}
+	//		else
+	//		{
+	//			*blockType |= BLOCK_PERFORATION_MAX;
+	//			wd->damageType |= DAMAGE_PERFORATION_MAX;
 	//		}
 	//	}
+	//}
 
-	//	//weapon defense
-	//	if (checkWeapon)
+	//if (!perfurationOcurr)
+	//	wd->perforationFactor = 0;
+
+	//damageBlockled *= bodyDefenseFactor * itemDefenseFactor;
+
+	////if dodge
+	//if (*blockType & BLOCK_DODGE)
+	//	wd->totalDamage = 0;
+	//else//subtract the dmg
+	//	wd->totalDamage += damageBlockled;
+
+
+	//if (wd->critic)
+	//{
+	//	wd->criticDmg = 0.45 * wd->totalDamage;
+	//	wd->totalDamage = wd->totalDamage + wd->criticDmg;
+	//}
+
+	////the dmg was def
+	//if (wd->totalDamage >= 0)
+	//{
+	//	double damageProportionality = 0;
+	//	if (damageBlockled != 0)
+	//		damageProportionality = 1 - wd->totalDamage / damageBlockled;
+	//	//we blocked so let's 0 the dmg, we are not gain life, only blocking
+	//	if (*blockType & BLOCK_DODGE)
+	//		return true;
+	//	else if (damageProportionality >= 0 && damageProportionality <= 0.40)
+	//		*blockType |= BLOCK_DEFENSE_MAX;
+	//	else if (damageProportionality > 0.40 && damageProportionality < 0.85)
+	//		*blockType |= BLOCK_DEFENSE_MEDIUM;
+	//	else if (damageProportionality >= 0.85)
+	//		*blockType |= BLOCK_DEFENSE_MIN;
+	//	return true;
+	//}
+	//else //block none - the dmg passed, we are losing life
+	//{
+	//	//0% until 100%
+	//	double percentageOfLife = std::abs(wd->totalDamage) / (double)getMaxHealth();
+	//	//*** slash can occur ***//
+	//	bool slashOcurr = false;
+	//	if (wd->slashFactor > 0)
 	//	{
-	//		int32_t maxWeaponDefense = getWeaponDefense();
-	//		int32_t minWeaponDefense = maxWeaponDefense / 2;
-	//		if (maxWeaponDefense > 0)
+	//		probabilityOccurr = 1 - std::pow(0.5, wd->slashFactor / 55.0);
+	//		randomNumber = random_range(0, 100) / 100.0;
+
+	//		//slash was generated let's do bleeding
+	//		if (randomNumber <= probabilityOccurr)
 	//		{
-	//			damage -= random_range(minWeaponDefense, maxWeaponDefense);
-	//			if (damage <= 0)
+	//			double slashValuePercentage = 1 + std::pow(1 - std::pow(0.5, wd->slashFactor / 20.0), 2) * 0.8;
+	//			//if perforation ocurred
+	//			if ((DAMAGE_PERFORATION_MAX | DAMAGE_PERFORATION_MED | DAMAGE_PERFORATION_MIN) &  wd->damageType)
 	//			{
-	//				damage = 0;
-	//				blockType |= BLOCK_WEAPON;
-	//				checkArmor = false;
+	//				probabilityOccurr = 0.5;
+	//				randomNumber = random_range(0, 100) / 100.0;
+
+	//				if (randomNumber <= probabilityOccurr)
+	//				{
+	//					slashOcurr = true;
+	//				}
 	//			}
-	//		}		
-	//	}
-	//
-	//	if(checkArmor)
-	//	{
-	//		int32_t armorDefense = getDefenseFactors();
-	//		int32_t maxArmorDefense = ceil(armorDefense * 0.75);
-	//		int32_t minArmorDefense = maxArmorDefense / 3.0f;
-	//		damage -= random_range(minArmorDefense, maxArmorDefense);
-	//		if(damage <= 0)
-	//		{
-	//			damage = 0;
-	//			blockType |= BLOCK_ARMOR;
+	//			else
+	//			{
+	//				slashOcurr = true;
+	//			}
+
+	//			if (slashOcurr)
+	//			{
+	//				//reset
+	//				wd->damageType = 0;
+	//				if (percentageOfLife <= 0.07)
+	//					wd->damageType |= DAMAGE_SLASH_MIN;
+	//				else if (percentageOfLife <= 0.15)
+	//					wd->damageType |= DAMAGE_SLASH_MED;
+	//				else
+	//					wd->damageType |= DAMAGE_SLASH_MAX;
+	//				int32_t dmgBySlash = random_range(std::floor(slashValuePercentage * wd->totalDamage) * 0.3, std::floor(slashValuePercentage * wd->totalDamage));
+	//				addCombatBleeding(dmgBySlash);
+
+	//				wd->slashFactor = -dmgBySlash;
+	//			}
 	//		}
 	//	}
 
-	//	if(hasDefense && blockType != BLOCK_NONE)
-	//		onBlockHit(blockType);		
+	//	if (!slashOcurr)
+	//		wd->slashFactor = 0;
+
+	//	if (percentageOfLife <= 0.07)
+	//		wd->damageType |= DAMAGE_MIN;
+	//	else if (percentageOfLife <= 0.15)
+	//		wd->damageType |= DAMAGE_MEDIUM;
+	//	else
+	//		wd->damageType |= DAMAGE_MAX;
+
+	//	return false;
 	//}
 
 
-	if(attacker)
-	{
-		attacker->onAttackedCreature(this);
-		attacker->onAttackedCreatureBlockHit(this, *blockType);
-	}
+	//if(attacker)
+	//{
+	//	attacker->onAttackedCreature(this);
+	//	attacker->onAttackedCreatureBlockHit(this, *blockType);
+	//}
 
-	onAttacked();
+	//onAttacked();
 
+	//return true;
 	return true;
 }
 
@@ -1075,7 +1269,7 @@ void Creature::getPathSearchParams(const Creature* creature, FindPathParams& fpp
 {
 	fpp.fullPathSearch = !hasFollowPath;
 	fpp.clearSight = true;
-	fpp.maxSearchDist = 12;
+	fpp.maxSearchDist = 13;
 	fpp.minTargetDist = 1;
 	fpp.maxTargetDist = 1;
 }

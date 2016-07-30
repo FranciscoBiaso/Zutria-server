@@ -3299,7 +3299,8 @@ bool Game::playerAddSkillPoint(uint32_t playerId, uint8_t skillId)
 	if (player->getLevelPoints() > 0)
 	{
 		player->setLevelPoints(player->getLevelPoints() - 1);
-		player->setSkillValue(skillId,player->getSkillValue(skillId) + 1);
+		player->setSkillValue(skillId, player->getSkillValue(skillId) + 1);
+		
 		player->sendSkills();
 
 		if (skillId == PLAYER_SKILL_CAPACITY)
@@ -3311,10 +3312,10 @@ bool Game::playerAddSkillPoint(uint32_t playerId, uint8_t skillId)
 			player->setBaseSpeed(player->getBaseSpeed() + 1);
 			changeSpeed(player, 0);
 		}*/
-		if (skillId == ATTR_VITALITY)
+		/*if (skillId == ATTR_VITALITY)
 		{
 			player->sendCreatureHealth(player);
-		}
+		}*/
 	}
 	return true;
 }
@@ -4090,9 +4091,7 @@ bool Game::combatBlockHit(CombatType_t combatType, Creature* attacker, Creature*
 
 
 bool Game::combatBlockPhysicalHit(CombatType_t combatType, Creature* attacker, Creature* target, struct _weaponDamage_ * wd)
-{
-	Player * attackerPlayer = attacker->getPlayer();
-	Player * denfenderPlayer = target->getPlayer();
+{		
 	if (!target->isAttackable() || Combat::canDoCombat(attacker, target) != RET_NOERROR)
 	{
 		const Position& targetPos = target->getPosition();
@@ -4100,159 +4099,229 @@ bool Game::combatBlockPhysicalHit(CombatType_t combatType, Creature* attacker, C
 		addMagicEffect(defenderSpectors, targetPos, NM_ME_PUFF);
 		return true;
 	}
-	
-	int attackType = ATTACK_FAIL_NONE;
-	//if attacker can hit, defender will defend
-	
-	if (attackerPlayer->canExecuteAttack(target, &attackType))
+
+	if (attacker->canExecuteAttack())
 	{
 		int blockType = BLOCK_NONE;
-		const Position& targetPos = target->getPosition();		
-		const SpectatorVec& defenderSpectors = getSpectators(targetPos);
-		//can denfender player denfed?
-		std::cout << "attacker:"<<attacker->getName() << std::endl;
-		if (target->blockHit(attacker, combatType, &blockType,(struct _weaponDamage_ *) wd))
-		{
-			switch (blockType)
-			{
-				case BLOCK_DODGE:
-				{
-					addMagicEffect(defenderSpectors, targetPos, NM_ME_PUFF);
-					std::stringstream ss;
-					ss << "miss";
-					addAnimatedText(defenderSpectors, targetPos, TEXTCOLOR_ORANGE, ss.str());
-					return true;
-				}break;
-
-				case BLOCK_DEFENSE_MIN:
-					addMagicEffect(defenderSpectors, targetPos, NM_ME_MIN_DEF);
-					break;
-
-				case BLOCK_DEFENSE_MEDIUM:
-					addMagicEffect(defenderSpectors, targetPos, NM_ME_MEDIUM_DEF);
-					break;
-
-				case BLOCK_DEFENSE_MAX:
-					addMagicEffect(defenderSpectors, targetPos, NM_ME_MAX_DEF);
-					break;
-
-				//defense min but armor perfured
-				case (BLOCK_DEFENSE_MIN | BLOCK_PERFORATION_MIN):
-					addMagicEffect(defenderSpectors, targetPos, NM_ME_MIN_DEF_PLUS_PERFORATION_MIN);
-					break;
-
+		int32_t defenseItemFactor = 0;
+		double defenseBodyFactor = 0;
+		//dmgHit is negative
+		int32_t dmgHit = attacker->getAttackDmg(wd);// player(ok)
+		wd->critic = target->whereDmgTook(attacker, blockType, defenseBodyFactor, defenseItemFactor);// player(ok)
 				
-				case (BLOCK_DEFENSE_MIN | BLOCK_PERFORATION_MEDIUM):
-					addMagicEffect(defenderSpectors, targetPos, NM_ME_MEDIUM_DEF_PLUS_PERFORATION_MEDIUM);
-					break;
-
-				case (BLOCK_DEFENSE_MIN | BLOCK_PERFORATION_MAX):
-					addMagicEffect(defenderSpectors, targetPos, NM_ME_MIN_DEF_PLUS_PERFORATION_MAX);
-					break;				
-
-				//defense medium but armor perfured
-				case (BLOCK_DEFENSE_MEDIUM | BLOCK_PERFORATION_MIN):
-					addMagicEffect(defenderSpectors, targetPos, NM_ME_MEDIUM_DEF_PLUS_PERFORATION_MIN);
-					break;
-
-				case (BLOCK_DEFENSE_MEDIUM | BLOCK_PERFORATION_MEDIUM):
-					addMagicEffect(defenderSpectors, targetPos, NM_ME_MEDIUM_DEF_PLUS_PERFORATION_MEDIUM);
-					break;
-
-				case (BLOCK_DEFENSE_MEDIUM | BLOCK_PERFORATION_MAX):
-					addMagicEffect(defenderSpectors, targetPos, NM_ME_MEDIUM_DEF_PLUS_PERFORATION_MAX);
-					break;
-
-				//defense max but armor perfured medium
-				case (BLOCK_DEFENSE_MAX | BLOCK_PERFORATION_MIN):
-					addMagicEffect(defenderSpectors, targetPos, NM_ME_MAX_DEF_PLUS_PERFORATION_MIN);
-					break;
-
-				case (BLOCK_DEFENSE_MAX | BLOCK_PERFORATION_MEDIUM):
-					addMagicEffect(defenderSpectors, targetPos, NM_ME_MAX_DEF_PLUS_PERFORATION_MEDIUM);
-					break;
-
-				case (BLOCK_DEFENSE_MAX | BLOCK_PERFORATION_MAX):
-					addMagicEffect(defenderSpectors, targetPos, NM_ME_MAX_DEF_PLUS_PERFORATION_MAX);
-					break;
-
-				default:
-					addMagicEffect(defenderSpectors, targetPos, 3);
-					break;
-			}
-		}
-		//defender player can not denfed
-		else
+		//not dodge, the weapon has perforation factor and can occur
+		if (!(blockType & BLOCK_DODGE) && wd->perforationFactor && occurStab(attacker))// 
 		{
-			//damage taked
+			//the player is defending with a item, break the def
+			if (defenseItemFactor != 0)			
+				breakDefense(defenseItemFactor, wd->perforationFactorPercentage);										
+
+			//print how much dmg was incresed by stab
+			increaseDmgByStab(dmgHit, wd);
+
+			if (wd->perforationFactor >= 0 && wd->perforationFactor <= 0.33)
+			{
+				blockType |= BLOCK_PERFORATION_MIN;
+				wd->damageType |= DAMAGE_PERFORATION_MIN;
+			}
+			else if (wd->perforationFactor > 0.33 && wd->perforationFactor <= 0.66)
+			{
+				blockType |= BLOCK_PERFORATION_MEDIUM;
+				wd->damageType |= DAMAGE_PERFORATION_MED;
+			}
+			else
+			{
+				blockType |= BLOCK_PERFORATION_MAX;
+				wd->damageType |= DAMAGE_PERFORATION_MAX;
+			}
+		}		
+
+		if(wd->critic)
+			increaseDmgByCritic(dmgHit, wd);
+
+		//dmgBlock is positive
+		int32_t dmgBlock = target->getBlockDmg(defenseBodyFactor, defenseItemFactor);// player(ok)				
+
+		if (dmgHit + dmgBlock < 0)//dmg taked, we are losing life
+		{
+			//blockDmg
+			dmgHit += dmgBlock;
+
+			std::cout << "dmgHit" << dmgHit << std::endl << std::endl;
+
+			//0% until 100%
+			double percentageOfLife = -dmgHit / (double)target->getMaxHealth();
+
+			//if (wd->slashFactor && occurSlash()) //slash only ocurr with hit
+			//{
+			//}
+			//else
+				wd->slashFactor = 0;
+
+			if (percentageOfLife <= 0.07)
+				wd->damageType |= DAMAGE_MIN;
+			else if (percentageOfLife <= 0.15)
+				wd->damageType |= DAMAGE_MEDIUM;
+			else
+				wd->damageType |= DAMAGE_MAX;
+			
+			wd->totalDamage = dmgHit;
 			return false;
 		}
-
-		if (wd->perforationFactor > 0)
+		else if (blockType & BLOCK_DODGE)//dodge
 		{
-			std::stringstream ss;
-			ss << std::setprecision(2) << 100.0 -  wd->perforationFactor << "% blocked";
-			addAnimatedText(defenderSpectors, targetPos, TEXTCOLOR_ORANGE, ss.str());
+			dmgBlocked(target, blockType);
+			return true;
 		}
-		return true;
+		else//blocked with item
+		{
+			double damageProportionality = 0;
+			if (dmgBlock != 0)
+				damageProportionality = -dmgHit / (float)dmgBlock;
+			
+			std::cout << dmgHit << std::endl;
+			std::cout << dmgBlock << std::endl;
+			std::cout << "damageProportionality:" << damageProportionality << std::endl << std::endl;
+			//we blocked so let's reset the dmg, we are not gain life, only blocking			
+			if (damageProportionality >= 0 && damageProportionality <= 0.40)
+				blockType |= BLOCK_DEFENSE_MAX;
+			else if (damageProportionality > 0.40 && damageProportionality < 0.85)
+				blockType |= BLOCK_DEFENSE_MEDIUM;
+			else if (damageProportionality >= 0.85)
+				blockType |= BLOCK_DEFENSE_MIN;
+
+			dmgBlocked(target, blockType);
+
+
+			if (wd->damageByPerforation)
+			{
+				std::stringstream ss;
+				ss <<std::setprecision(3)<< damageProportionality * 100.0  - 0.001 <<" % penetrado" << std::endl;
+				addAnimatedText(target->getPosition(), TEXTCOLOR_ORANGE, ss.str());
+			}
+			
+			return true;
+		}			
 	}
 	//attack fail
 	else
-	{
-
-		if (denfenderPlayer)
-			denfenderPlayer->sendCreatureSquare(attacker, SQ_COLOR_BLACK);
-
-		const Position& attackerPos = attacker->getPosition();
-		const SpectatorVec& attackerSpectors = getSpectators(attackerPos);
-		switch (attackType)
-		{
-			case ATTACK_FAIL_CONCENTRATION:
-
-				addMagicEffect(attackerSpectors, attackerPos, NM_ME_MAX_PUFF);
-				//addMagicEffect(attackerSpectors, attackerPos, NM_ME_PUFF);
-				return true;									
-
-			case ATTACK_FAIL_NONE:
-				return false;
-		}
-	}
-
-	
-	/*else if (blockType & BLOCK_IMMUNITY)
-	{
-		uint8_t hitEffect = 0;
-
-		switch (combatType) {
-		case COMBAT_UNDEFINEDDAMAGE:
-			break;
-
-		case COMBAT_ENERGYDAMAGE:
-		case COMBAT_FIREDAMAGE:
-		case COMBAT_PHYSICALDAMAGE:
-		{
-			hitEffect = NM_ME_BLOCKHIT;
-			break;
-		}
-
-		case COMBAT_POISONDAMAGE:
-		{
-			hitEffect = NM_ME_POISON_RINGS;
-			break;
-		}
-
-
-		default:
-			hitEffect = NM_ME_PUFF;
-			break;
-		}
-
-		addMagicEffect(list, targetPos, hitEffect);
-
+	{				
+		addMagicEffect(getSpectators(attacker->getPosition()), attacker->getPosition(), NM_ME_MAX_PUFF);
 		return true;
-	}*/
+	}		
 
 	return false;
+}
+
+bool Game::occurStab(const Creature * attacker)
+{
+	//15 % of concetraion + 25 % of skills
+	if (dice_00_10() <= ((0.1 - std::pow(0.5, attacker->getSkillValue(ATTR_CONCENTRATION) / 20.0) * 0.10)
+		+ (0.15 - std::pow(0.5, attacker->getSkillValue(ATTR_MELEE) / 20.0) * 0.15)))
+		return true;
+	else
+		return false;
+}
+
+void Game::increaseDmgByStab(int32_t & dmgHit, struct _weaponDamage_ * wd)
+{
+	//increasing dmg	
+	wd->damageByPerforation = -std::ceil(wd->perforationFactorPercentage * -dmgHit);
+
+	dmgHit += wd->damageByPerforation;	
+}
+
+void Game::increaseDmgByCritic(int32_t & dmgHit, struct _weaponDamage_ * wd)
+{
+	//increasing dmg	
+	wd->criticDmg = -std::ceil(dice_02_45() * -dmgHit);
+
+	dmgHit += wd->damageByPerforation;
+}
+
+
+void Game::breakDefense(int32_t & itemDefenseFactor, double & perforationFactorPercentage)
+{	
+	double tmpItemDefenseFactor = itemDefenseFactor;	
+	//breaking def
+	itemDefenseFactor -= itemDefenseFactor * perforationFactorPercentage;
+
+	//reducing armor percentPerforationEffective %	
+	//print in text msg count perfured %
+	perforationFactorPercentage = 1 - itemDefenseFactor / tmpItemDefenseFactor;
+}
+
+void Game::dmgBlocked(Creature const * target, int32_t const blockType)
+{
+	const Position& targetPos = target->getPosition();
+	const SpectatorVec& defenderSpectors = getSpectators(targetPos);
+	//can denfender player denfed?
+	switch (blockType)
+	{
+		case BLOCK_DODGE:
+		{
+			addMagicEffect(defenderSpectors, targetPos, NM_ME_PUFF);
+			std::stringstream ss;
+			ss << "miss";
+			addAnimatedText(defenderSpectors, targetPos, TEXTCOLOR_ORANGE, ss.str());
+		}break;
+
+		case BLOCK_DEFENSE_MIN:
+			addMagicEffect(defenderSpectors, targetPos, NM_ME_MIN_DEF);
+			break;
+
+		case BLOCK_DEFENSE_MEDIUM:
+			addMagicEffect(defenderSpectors, targetPos, NM_ME_MEDIUM_DEF);
+			break;
+
+		case BLOCK_DEFENSE_MAX:
+			addMagicEffect(defenderSpectors, targetPos, NM_ME_MAX_DEF);
+			break;
+
+			//defense min but armor perfured
+		case (BLOCK_DEFENSE_MIN | BLOCK_PERFORATION_MIN):
+			addMagicEffect(defenderSpectors, targetPos, NM_ME_MIN_DEF_PLUS_PERFORATION_MIN);
+			break;
+
+
+		case (BLOCK_DEFENSE_MIN | BLOCK_PERFORATION_MEDIUM):
+			addMagicEffect(defenderSpectors, targetPos, NM_ME_MEDIUM_DEF_PLUS_PERFORATION_MEDIUM);
+			break;
+
+		case (BLOCK_DEFENSE_MIN | BLOCK_PERFORATION_MAX):
+			addMagicEffect(defenderSpectors, targetPos, NM_ME_MIN_DEF_PLUS_PERFORATION_MAX);
+			break;
+
+			//defense medium but armor perfured
+		case (BLOCK_DEFENSE_MEDIUM | BLOCK_PERFORATION_MIN):
+			addMagicEffect(defenderSpectors, targetPos, NM_ME_MEDIUM_DEF_PLUS_PERFORATION_MIN);
+			break;
+
+		case (BLOCK_DEFENSE_MEDIUM | BLOCK_PERFORATION_MEDIUM):
+			addMagicEffect(defenderSpectors, targetPos, NM_ME_MEDIUM_DEF_PLUS_PERFORATION_MEDIUM);
+			break;
+
+		case (BLOCK_DEFENSE_MEDIUM | BLOCK_PERFORATION_MAX):
+			addMagicEffect(defenderSpectors, targetPos, NM_ME_MEDIUM_DEF_PLUS_PERFORATION_MAX);
+			break;
+
+			//defense max but armor perfured medium
+		case (BLOCK_DEFENSE_MAX | BLOCK_PERFORATION_MIN):
+			addMagicEffect(defenderSpectors, targetPos, NM_ME_MAX_DEF_PLUS_PERFORATION_MIN);
+			break;
+
+		case (BLOCK_DEFENSE_MAX | BLOCK_PERFORATION_MEDIUM):
+			addMagicEffect(defenderSpectors, targetPos, NM_ME_MAX_DEF_PLUS_PERFORATION_MEDIUM);
+			break;
+
+		case (BLOCK_DEFENSE_MAX | BLOCK_PERFORATION_MAX):
+			addMagicEffect(defenderSpectors, targetPos, NM_ME_MAX_DEF_PLUS_PERFORATION_MAX);
+			break;
+
+		default:
+			addMagicEffect(defenderSpectors, targetPos, 3);
+			break;
+	}
 }
 
 bool Game::combatChangeHealth(CombatType_t combatType, Creature* attacker, Creature* target, int32_t healthChange)
@@ -4437,22 +4506,21 @@ bool Game::combatChangeHealth(CombatType_t combatType, MagicEffectClasses custom
 
 					std::stringstream ss;
 					std::stringstream ss2;
-					if (wDamage->critic)
-						healthChange = healthChange - std::abs(wDamage->criticDmg);
+					if (wDamage->critic < 0)
+						healthChange = healthChange + wDamage->criticDmg;
 
-					if (wDamage->perforationFactor > 0)
-					{						
-						int32_t hitPerfuration = std::ceil(healthChange * wDamage->perforationFactor / 100.0);
-						healthChange = healthChange - hitPerfuration;
-						ss << healthChange <<std::endl;
-						if (wDamage->critic)													
-							ss2 << "+ " << hitPerfuration - wDamage->criticDmg << "perf (crít)" << std::endl;
+					if (wDamage->damageByPerforation < 0)
+					{							
+						ss2 << " + " << -wDamage->damageByPerforation << " (perf)" << std::endl;													
+						
+						if (wDamage->critic)
+							ss << healthChange - wDamage->criticDmg << " (crít)";
 						else
-							ss2 << "+ " << hitPerfuration << " perf" << std::endl;
+							ss << healthChange;
 
 						addAnimatedTexts(list, targetPos, TEXTCOLOR_GRAY, TEXTCOLOR_LIGHT_YELLOW, ss.str(), ss2.str());
 					}
-					else if (wDamage->slashFactor > 0)
+					else if (wDamage->slashFactor)
 					{
 						ss << healthChange << std::endl;
 						if (wDamage->critic)
@@ -4465,12 +4533,11 @@ bool Game::combatChangeHealth(CombatType_t combatType, MagicEffectClasses custom
 					{
 						ss << healthChange;
 
-						if (wDamage->critic)					
-							ss2 << "+ " << -wDamage->criticDmg << " crítico"<< std::endl;						
-						
-						
 						if (wDamage->critic)
-							addAnimatedTexts(list, targetPos, TEXTCOLOR_GRAY, TEXTCOLOR_LIGHT_YELLOW, ss.str(), ss2.str());
+						{
+							ss2 << " + " << -wDamage->criticDmg << " (crít)" << std::endl;
+							addAnimatedTexts(list, targetPos, TEXTCOLOR_GRAY, TEXTCOLOR_LIGHT_YELLOW, ss.str(), ss2.str());							
+						}
 						else
 							addAnimatedText(list, targetPos, TEXTCOLOR_GRAY, ss.str());
 					}

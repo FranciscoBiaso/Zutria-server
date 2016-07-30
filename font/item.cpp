@@ -853,8 +853,8 @@ std::string Item::getXRayDescription() const
 	if(uniqueId > 0)
 		ret << "Unique ID: " << uniqueId << std::endl;
 #ifdef __DEBUG__
-	if (getContainer())
-		ret << "There are " << getContainer()->getTotalAmountOfItemsInside() - 1 << " things inside of this." << std::endl;
+	//if (getContainer())
+	//	ret << "There are " << getContainer()->getTotalAmountOfItemsInside() - 1 << " things inside of this." << std::endl;
 #endif
 	ret << Thing::getXRayDescription();
 	return ret.str();

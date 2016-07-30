@@ -167,11 +167,11 @@ public:
 	Ammo_t         amuType;
 	ShootType_t    shootType;
 	MagicEffectClasses magicEffect;
-	int32_t        attack;
 
 	int32_t        defense;
 
 	//atack factors
+	int32_t		   defaultAttackFactor;
 	int32_t		   slashAttackFactor;
 	int32_t		   traumaAttackFactor;
 	int32_t		   perforationAttackFactor;

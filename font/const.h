@@ -24,6 +24,7 @@
 #include "definitions.h"
 #include "Color.h"
 #include <utility>  
+#include <random>
 
 #define NETWORKMESSAGE_MAXSIZE 16768
 
@@ -32,7 +33,7 @@
 #define MONSTER_ID_RANGE 0x40000000
 #define NPC_ID_RANGE 0x80000000
 
-static const int cMaxViewW = 8;
+static const int cMaxViewW = 12;
 static const int cMaxViewH = 7;
 
 enum MagicEffectClasses {
@@ -245,10 +246,11 @@ enum TextColor_t {
 	TEXTCOLOR_LIGHTBLUE   = 35,
 	TEXTCOLOR_LIGHTGREEN  = 30,
 	TEXTCOLOR_LIGHTGREY   = 129,
+	TEXTCOLOR_LIGHT_RED   = 144,
 	TEXTCOLOR_RED         = 180,
 	TEXTCOLOR_ORANGE      = 198,
-	TEXTCOLOR_YELLOW = 212,
-	TEXTCOLOR_LIGHT_YELLOW      = 214,
+	TEXTCOLOR_YELLOW       = 212,
+	TEXTCOLOR_LIGHT_YELLOW   = 211,
 	TEXTCOLOR_WHITE_EXP   = 215,
 	TEXTCOLOR_DARK_BLUE   = 3,
 	TEXTCOLOR_GRAY        = 172,
@@ -487,7 +489,37 @@ namespace _player_{
 	extern std::map<std::string, struct spell> g_spellsTree;	
 };
 
+struct _weaponDamage_ {
+	int32_t damageByTrauma;
+	int32_t traumaFactor;
+	int32_t damageByPerforation;
+	int32_t perforationFactor;
+	double perforationFactorPercentage;
+	int32_t	damageBySlash;
+	int32_t slashFactor;
+	int32_t totalDamage;
+	int damageType;
+	bool critic;
+	int32_t criticDmg;
+};
 
+
+#define inifity 2e15
+
+//only one definition
+static std::default_random_engine engine;
+static auto dice_00_10 = std::bind(std::uniform_real_distribution<double> (0, 1), engine);
+static auto dice_01_75 = std::bind(std::uniform_real_distribution<double>(0.1, 0.75), engine);
+static auto dice_02_45 = std::bind(std::uniform_real_distribution<double>(0.20, 0.45), engine);
+static auto dice_05_10 = std::bind(std::uniform_real_distribution<double> (0.05,0.10), engine);
+static auto dice_04_09 = std::bind(std::uniform_real_distribution<double>(0.04,0.09), engine);
+static auto dice_04_085 = std::bind(std::uniform_real_distribution<double>(0.04, 0.085), engine);
+static auto dice_04_075 = std::bind(std::uniform_real_distribution<double>(0.04, 0.075), engine);
+static auto dice_04_065 = std::bind(std::uniform_real_distribution<double>(0.04, 0.065), engine);
+static auto dice_25_10 = std::bind(std::uniform_real_distribution<double>(0.25, 1), engine);
+static auto dice_35_10 = std::bind(std::uniform_real_distribution<double>(0.35, 1), engine);
+static auto dice_35_055 = std::bind(std::uniform_real_distribution<double>(0.35, 0.55), engine);
+static auto dice_07_10 = std::bind(std::uniform_real_distribution<double> (0.7, 1.0), engine);
 
 //Reserved player storage key ranges
 //[10000000 - 20000000]

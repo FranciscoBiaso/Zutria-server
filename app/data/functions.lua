@@ -85,7 +85,7 @@ function getDistanceBetween(pos1, pos2)
 
 	local posDif = math.max(xDif, yDif)
 	if (pos1.z ~= pos2.z) then
-		posDif = (posDif + 9 + 6)
+		posDif = (posDif + 7 + 12)
 	end
 	return posDif
 end
