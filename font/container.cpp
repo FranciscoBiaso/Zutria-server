@@ -250,6 +250,10 @@ void Container::onRemoveContainerItem(uint32_t index, Item* item)
 ReturnValue Container::__queryAdd(int32_t index, const Thing* thing, uint32_t count,
 	uint32_t flags) const
 {
+	//a container can not add a backpack(id = 2222)
+	if (thing->getItem()->getID() == 2222)
+		return RET_NOTPOSSIBLE;
+
 	bool childIsOwner = ((flags & FLAG_CHILDISOWNER) == FLAG_CHILDISOWNER);
 	if(childIsOwner){
 		//a child container is querying, since we are the top container (not carried by a player)

@@ -751,21 +751,21 @@ bool Game::playerMoveThing(uint32_t playerId, const Position& fromPos,
 		return false;
 	}
 
-	if(Creature* movingCreature = thing->getCreature()){
-		if(Position::areInRange<1,1,0>(movingCreature->getPosition(), player->getPosition())){
+	if(Creature* movingCreature = thing->getCreature())
+	{
+		if(Position::areInRange<1,1,0>(movingCreature->getPosition(), player->getPosition()))
+		{
 			SchedulerTask* task = createSchedulerTask(1500,
 				boost::bind(&Game::playerMoveCreature, this, player->getID(),
 				movingCreature->getID(), movingCreature->getPosition(), toCylinder->getPosition()));
 			player->setNextActionTask(task);
 		}
-		else{
+		else
 			playerMoveCreature(playerId, movingCreature->getID(), movingCreature->getPosition(),
-				toCylinder->getPosition());
-		}
+				toCylinder->getPosition());		
 	}
-	else if(thing->getItem()){
-		playerMoveItem(playerId, fromPos, spriteId, fromStackPos, toPos, count);
-	}
+	else if(thing->getItem())
+		playerMoveItem(playerId, fromPos, spriteId, fromStackPos, toPos, count);	
 
 	return true;
 }
@@ -1190,18 +1190,20 @@ ReturnValue Game::internalMoveItem(Cylinder* fromCylinder, Cylinder* toCylinder,
 	}
 
 	//destination is the same as the source?
-	if(item == toItem){
-		return RET_NOERROR; //silently ignore move
-	}
+	if(item == toItem)
+		return RET_NOERROR; //silently ignore move	
+	
 
 	//check if we can add this item
 	ReturnValue ret = toCylinder->__queryAdd(index, item, count, flags);
-	if(ret == RET_NEEDEXCHANGE){
+	if(ret == RET_NEEDEXCHANGE)
+	{
 		//check if we can add it to source cylinder
 		int32_t fromIndex = fromCylinder->__getIndexOfThing(item);
 
 		ret = fromCylinder->__queryAdd(fromIndex, toItem, toItem->getItemCount(), 0);
-		if(ret == RET_NOERROR){
+		if(ret == RET_NOERROR)
+		{
 			//check how much we can move
 			uint32_t maxExchangeQueryCount = 0;
 			ReturnValue retExchangeMaxCount = fromCylinder->__queryMaxCount(-1, toItem, toItem->getItemCount(), maxExchangeQueryCount, 0);
@@ -1229,6 +1231,8 @@ ReturnValue Game::internalMoveItem(Cylinder* fromCylinder, Cylinder* toCylinder,
 			}
 		}
 	}
+
+
 
 	if(ret != RET_NOERROR){
 		return ret;
@@ -2414,10 +2418,13 @@ bool Game::playerUseItem(uint32_t playerId, const Position& pos, uint8_t stackPo
 	}
 
 	ReturnValue ret = g_actions->canUse(player, pos);
-	if(ret != RET_NOERROR){
-		if(ret == RET_TOOFARAWAY){
+	if(ret != RET_NOERROR)
+	{
+		if(ret == RET_TOOFARAWAY)
+		{
 			std::list<Direction> listDir;
-			if(getPathToEx(player, pos, listDir, 0, 1, true, true)){
+			if(getPathToEx(player, pos, listDir, 0, 1, true, true))
+			{
 				Dispatcher::getDispatcher().addTask(createTask(boost::bind(&Game::playerAutoWalk,
 					this, player->getID(), listDir)));
 
@@ -2436,7 +2443,8 @@ bool Game::playerUseItem(uint32_t playerId, const Position& pos, uint8_t stackPo
 
 	player->resetIdle();
 
-	if(!player->canDoAction()){
+	if(!player->canDoAction())
+	{
 		uint32_t delay = player->getNextActionTime();
 		SchedulerTask* task = createSchedulerTask(delay, boost::bind(&Game::playerUseItem, this,
 			playerId, pos, stackPos, index, spriteId));
@@ -2767,6 +2775,51 @@ bool Game::playerRequestTrade(uint32_t playerId, const Position& pos, uint8_t st
 	}
 
 	return internalStartTrade(player, tradePartner, tradeItem);
+}
+
+
+bool Game::playerTryAddMoney(uint32_t playerId, const Position& itemPosition, uint8_t stackPos, const uint16_t spriteId)
+{
+	Player* player = getPlayerByID(playerId);
+	if (!player || player->isRemoved())
+		return false;
+
+	Thing* thing = internalGetThing(player, itemPosition, stackPos);
+	if (!thing) 
+		return false;
+
+	Item* item = thing->getItem();
+	if (!item || item->getClientID() != spriteId || item->getUniqueId() != 0) 
+	{
+		player->sendCancelMessage(RET_NOTPOSSIBLE);
+		return false;
+	}
+
+	
+	if (itemPosition.x != 0xFFFF && !Position::areInRange<1, 1, 0>(itemPosition, player->getPosition())) 
+	{
+		std::list<Direction> listDir;
+		if (getPathToEx(player, itemPosition, listDir, 0, 1, true, true)) 
+		{
+			Dispatcher::getDispatcher().addTask(createTask(boost::bind(&Game::playerAutoWalk,
+				this, player->getID(), listDir)));
+
+			/*SchedulerTask* task = createSchedulerTask(400, boost::bind(&Game::playerTryAddMoney, this,
+				playerId, itemPosition, stackPos, spriteId));*/
+			
+			return true;
+		}
+		else 
+		{
+			player->sendCancelMessage(RET_THEREISNOWAY);
+			return false;
+		}
+	}
+
+	player->setLocalBalance(player->getLocalBalance() + item->getItemCount());
+	internalRemoveItem(item);
+	player->sendUpdateBalance(player->getLocalBalance());
+	return true;
 }
 
 bool Game::internalStartTrade(Player* player, Player* tradePartner, Item* tradeItem)
@@ -4108,9 +4161,23 @@ bool Game::combatBlockPhysicalHit(CombatType_t combatType, Creature* attacker, C
 		//dmgHit is negative
 		int32_t dmgHit = attacker->getAttackDmg(wd);// player(ok)
 		wd->critic = target->whereDmgTook(attacker, blockType, defenseBodyFactor, defenseItemFactor);// player(ok)
+
+		uint8_t occurredAttack = 0;
+
+		if (occurGoodAttack(attacker))
+		{
+			if (wd->perforationFactor > 0)
+				occurredAttack = 0x01;//stab
+			else if(wd->slashFactor > 0)
+				occurredAttack = 0x02;//slash
+			else
+				occurredAttack = 0x04;//trauma
+		}
+
+
 				
 		//not dodge, the weapon has perforation factor and can occur
-		if (!(blockType & BLOCK_DODGE) && wd->perforationFactor && occurStab(attacker))// 
+		if (!(blockType & BLOCK_DODGE) && occurredAttack & 0x01)
 		{
 			//the player is defending with a item, break the def
 			if (defenseItemFactor != 0)			
@@ -4147,16 +4214,21 @@ bool Game::combatBlockPhysicalHit(CombatType_t combatType, Creature* attacker, C
 			//blockDmg
 			dmgHit += dmgBlock;
 
-			std::cout << "dmgHit" << dmgHit << std::endl << std::endl;
-
 			//0% until 100%
 			double percentageOfLife = -dmgHit / (double)target->getMaxHealth();
 
-			//if (wd->slashFactor && occurSlash()) //slash only ocurr with hit
-			//{
-			//}
-			//else
-				wd->slashFactor = 0;
+			if (occurredAttack & 0x02) //slash only ocurr with hit
+			{
+				wd->damageType = 0;
+				if (wd->slashFactor >= 0 && wd->slashFactor <= 0.33)
+					wd->damageType |= DAMAGE_SLASH_MIN;
+				else if (wd->slashFactor > 0.33 && wd->slashFactor <= 0.66)
+					wd->damageType |= DAMAGE_SLASH_MED;
+				else
+					wd->damageType |= DAMAGE_SLASH_MAX;
+				wd->damageBySlash = dmgHit * dice_07_10();
+				target->addCombatBleeding(wd->damageBySlash);
+			}
 
 			if (percentageOfLife <= 0.07)
 				wd->damageType |= DAMAGE_MIN;
@@ -4179,9 +4251,6 @@ bool Game::combatBlockPhysicalHit(CombatType_t combatType, Creature* attacker, C
 			if (dmgBlock != 0)
 				damageProportionality = -dmgHit / (float)dmgBlock;
 			
-			std::cout << dmgHit << std::endl;
-			std::cout << dmgBlock << std::endl;
-			std::cout << "damageProportionality:" << damageProportionality << std::endl << std::endl;
 			//we blocked so let's reset the dmg, we are not gain life, only blocking			
 			if (damageProportionality >= 0 && damageProportionality <= 0.40)
 				blockType |= BLOCK_DEFENSE_MAX;
@@ -4213,7 +4282,7 @@ bool Game::combatBlockPhysicalHit(CombatType_t combatType, Creature* attacker, C
 	return false;
 }
 
-bool Game::occurStab(const Creature * attacker)
+bool Game::occurGoodAttack(const Creature * attacker)
 {
 	//15 % of concetraion + 25 % of skills
 	if (dice_00_10() <= ((0.1 - std::pow(0.5, attacker->getSkillValue(ATTR_CONCENTRATION) / 20.0) * 0.10)
@@ -4222,6 +4291,7 @@ bool Game::occurStab(const Creature * attacker)
 	else
 		return false;
 }
+
 
 void Game::increaseDmgByStab(int32_t & dmgHit, struct _weaponDamage_ * wd)
 {
@@ -4236,7 +4306,7 @@ void Game::increaseDmgByCritic(int32_t & dmgHit, struct _weaponDamage_ * wd)
 	//increasing dmg	
 	wd->criticDmg = -std::ceil(dice_02_45() * -dmgHit);
 
-	dmgHit += wd->damageByPerforation;
+	dmgHit += wd->criticDmg;
 }
 
 
@@ -4500,7 +4570,8 @@ bool Game::combatChangeHealth(CombatType_t combatType, MagicEffectClasses custom
 				if (customTextColor != TEXTCOLOR_UNK)
 					textColor = customTextColor;
 
-				if (textColor != TEXTCOLOR_NONE) {
+				if (textColor != TEXTCOLOR_NONE) 
+				{
 
 					addMagicEffect(list, targetPos, hitEffect);
 
@@ -4508,25 +4579,25 @@ bool Game::combatChangeHealth(CombatType_t combatType, MagicEffectClasses custom
 					std::stringstream ss2;
 					if (wDamage->critic < 0)
 						healthChange = healthChange + wDamage->criticDmg;
-
+					
 					if (wDamage->damageByPerforation < 0)
-					{							
+					{
 						ss2 << " + " << -wDamage->damageByPerforation << " (perf)" << std::endl;													
 						
 						if (wDamage->critic)
 							ss << healthChange - wDamage->criticDmg << " (crít)";
 						else
 							ss << healthChange;
-
+						std::cout << TEXTCOLOR_LIGHT_YELLOW << std::endl;
 						addAnimatedTexts(list, targetPos, TEXTCOLOR_GRAY, TEXTCOLOR_LIGHT_YELLOW, ss.str(), ss2.str());
 					}
-					else if (wDamage->slashFactor)
+					else if (wDamage->damageBySlash < 0)
 					{
 						ss << healthChange << std::endl;
 						if (wDamage->critic)
-							ss2 << "slashing " << wDamage->slashFactor - wDamage->criticDmg << " hp (crít)"<< std::endl;
+							ss2 << " slashing " << -wDamage->damageBySlash - wDamage->criticDmg << " hp (crít)"<< std::endl;
 						else
-							ss2 << "slashing " << wDamage->slashFactor << " hp" << std::endl;
+							ss2 << " slashing " << -wDamage->damageBySlash << " hp" << std::endl;
 						addAnimatedTexts(list, targetPos, TEXTCOLOR_GRAY, TEXTCOLOR_LIGHT_YELLOW, ss.str(), ss2.str());
 					}
 					else

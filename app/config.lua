@@ -151,7 +151,7 @@
 ---- MAP ----
 
     -- Map location
-    Map = "data/world/map.otbm"
+    Map = "data/world/global.otbm"
 
     -- Mapkind
     -- Options: OTBM for binary map, XML for OTX map

@@ -727,6 +727,13 @@ void ProtocolGame::parsePacket(NetworkMessage &msg)
 			parseCancelMove(msg);
 			break;
 
+
+		case 0xBF: // try to add money
+			parsePlayerTryAddMoney(msg);
+			break;
+
+
+
 		case 0xC9: //client request to resend the tile
 			parseUpdateTile(msg);
 			break;
@@ -1430,12 +1437,19 @@ void ProtocolGame::parseAddSpellLevelButtonClick(NetworkMessage& msg)
 	addGameTask(&Game::playerAddSpellLevel, player->getID(), spellId);
 }
 
-
-
 void ProtocolGame::parseSpell(NetworkMessage& msg)
 {
 	uint8_t spellId = msg.GetByte();
 	addGameTask(&Game::playerUseSpell, player->getID(), spellId);
+}
+
+void ProtocolGame::parsePlayerTryAddMoney(NetworkMessage& msg)
+{
+	Position pos = msg.GetPosition();
+	uint16_t spriteId = msg.GetSpriteId();
+	uint8_t stackpos = msg.GetByte();
+
+	addGameTask(&Game::playerTryAddMoney, player->getID(), pos, stackpos, spriteId);
 }
 
 void ProtocolGame::parseRequestTrade(NetworkMessage& msg)
@@ -1748,6 +1762,16 @@ void ProtocolGame::sendRuleViolationCancel(const std::string& name)
 		TRACK_MESSAGE(msg);
 		msg->AddByte(0xB0);
 		msg->AddString(name);
+	}
+}
+
+void ProtocolGame::sendUpdateBalance(uint32_t countMoney)
+{
+	NetworkMessage_ptr msg = getOutputBuffer();
+	if (msg) {
+		TRACK_MESSAGE(msg);
+		msg->AddByte(0xa8);
+		msg->AddU32(countMoney);
 	}
 }
 

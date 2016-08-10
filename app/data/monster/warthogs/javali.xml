@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <monster name="javali" namedescription="" race="blood" experience="2883" speed="130" manacost="300">
-  <health now="405" max="405"/>
+  <health now="300" max="300"/>
   <look type="12" corpse="2894"/>
   <targetchange interval="2000" chance="0"/>
   <strategy attack="100" defense="0"/>

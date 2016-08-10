@@ -604,6 +604,11 @@ public:
 	void sendRuleViolationCancel(const std::string& name)
 		{if(client) client->sendRuleViolationCancel(name);}
 
+	void sendUpdateBalance(uint32_t countMoney)
+	{
+		if (client) client->sendUpdateBalance(countMoney);
+	}
+
 	void receivePing() {if(npings > 0) npings--;}
 
 	virtual void onThink(uint32_t interval);
@@ -672,6 +677,7 @@ public:
 	DepotMap depots;
 	uint32_t maxDepotLimit;
 
+
 protected:
 	void checkTradeState(const Item* item);
 	bool hasCapacity(const Item* item, uint32_t count) const;
@@ -718,7 +724,15 @@ protected:
 	virtual void __internalAddThing(Thing* thing);
 	virtual void __internalAddThing(uint32_t index, Thing* thing);
 
+
+	uint32_t getLocalBalance() const { return local_balance; }
+	uint32_t getGlobalBalance() const { return global_balance; }
+	void setLocalBalance(uint32_t balance) { this->local_balance = balance; }
+	void setGlobalBalance(uint32_t balance) { this->global_balance = balance; }
 protected:
+	uint32_t local_balance;
+	uint32_t global_balance;
+
 	ProtocolGame* client;
 
 	uint32_t level;

@@ -183,10 +183,14 @@ Creature()
 #ifdef __ENABLE_SERVER_DIAGNOSTIC__
 	playerCount++;
 #endif
+
 	currentNpc = nullptr;
 	m_spells.clear();
-
+	
 	identificator = 0;
+
+	setLocalBalance(0);
+	setGlobalBalance(0);
 }
 
 Player::~Player()

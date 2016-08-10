@@ -267,10 +267,10 @@ ReturnValue Actions::internalUseItem(Player* player, const Position& pos,
 	uint8_t index, Item* item, uint32_t creatureId)
 {
 	//check if it is a house door
-	if(Door* door = item->getDoor()){
-		if(!door->canUse(player)){
+	if(Door* door = item->getDoor())
+	{
+		if(!door->canUse(player))
 			return RET_CANNOTUSETHISOBJECT;
-		}
 	}
 
 	int32_t stack = item->getParent()->__getIndexOfThing(item);
@@ -278,84 +278,102 @@ ReturnValue Actions::internalUseItem(Player* player, const Position& pos,
 	bool foundAction = false;
 
 	Action* action = getAction(item, ACTION_UNIQUEID);
-	if(action){
+	if(action)
+	{
 		//only continue with next action in the list if the previous returns false
-		if(executeUse(action, player, item, posEx, creatureId)){
+		if(executeUse(action, player, item, posEx, creatureId))
 			return RET_NOERROR;
-		}
 		foundAction = true;
 	}
 
 	action = getAction(item, ACTION_ACTIONID);
-	if(action){
+	if(action)
+	{
 		//only continue with next action in the list if the previous returns false
-		if(executeUse(action, player, item, posEx, creatureId)){
+		if(executeUse(action, player, item, posEx, creatureId))
+		{
 			return RET_NOERROR;
 		}
 		foundAction = true;
 	}
 
 	action = getAction(item, ACTION_ITEMID);
-	if(action){
+	if(action)
+	{
 		//only continue with next action in the list if the previous returns false
-		if(executeUse(action, player, item, posEx, creatureId)){
+		if(executeUse(action, player, item, posEx, creatureId))
+		{
 			return RET_NOERROR;
 		}
 		foundAction = true;
 	}
 
 	action = getAction(item, ACTION_RUNEID);
-	if(action){
+	if(action)
+	{
 		//only continue with next action in the list if the previous returns false
-		if(executeUse(action, player, item, posEx, creatureId)){
+		if(executeUse(action, player, item, posEx, creatureId))
+		{
 			return RET_NOERROR;
 		}
 		foundAction = true;
 	}
 
-	if(BedItem* bed = item->getBed()){
-		if(!bed->canUse(player)){
+	/*if(BedItem* bed = item->getBed())
+	{
+		if(!bed->canUse(player))
+		{
 			return RET_CANNOTUSETHISOBJECT;
 		}
 
 		bed->sleep(player);
 		return RET_NOERROR;
-	}
+	}*/
 
 	//if it is a container try to open it
-	if(Container* container = item->getContainer()){
+	if(Container* container = item->getContainer())
+	{
 
-		Container* openContainer = NULL;
+		Container* containerToOpen = NULL;
 		//depot container
-		if(Depot* depot = container->getDepot()){
+		if(Depot* depot = container->getDepot())
+		{
 			Depot* myDepot = player->getDepot(depot->getDepotId(), true);
 			myDepot->setParent(depot->getParent());
-			openContainer = myDepot;
+			containerToOpen = myDepot;
 		}
-		else{
-			openContainer = container;
-		}
+		else		
+			containerToOpen = container;
+		
 
 		//open/close container
-		int32_t oldcid = player->getContainerID(openContainer);
-		if(oldcid != -1){
-			player->onCloseContainer(openContainer);
+		int32_t oldcid = player->getContainerID(containerToOpen);
+		//already opned
+		if(oldcid != -1)
+		{
+			//open
+			player->onCloseContainer(containerToOpen);
 			player->closeContainer(oldcid);
 		}
-		else{
-			player->addContainer(index, openContainer);
-			player->onSendContainer(openContainer);
+		else
+		{
+			//close
+			player->addContainer(index, containerToOpen);
+			player->onSendContainer(containerToOpen);
 		}
 
 		return RET_NOERROR;
 	}
 
-	if(item->isReadable()){
-		if(item->canWriteText()){
+	if(item->isReadable())
+	{
+		if(item->canWriteText())
+		{
 			player->setWriteItem(item, item->getMaxWriteLength());
 			player->sendTextWindow(item, item->getMaxWriteLength(), true);
 		}
-		else{
+		else
+		{
 			player->setWriteItem(NULL);
 			player->sendTextWindow(item, 0, false);
 		}
@@ -363,9 +381,11 @@ ReturnValue Actions::internalUseItem(Player* player, const Position& pos,
 		return RET_NOERROR;
 	}
 
-	if(foundAction){
+	if(foundAction)
+	{
 		return RET_NOERROR;
 	}
+
 	return RET_CANNOTUSETHISOBJECT;
 }
 
@@ -380,7 +400,8 @@ bool Actions::useItem(Player* player, const Position& pos, uint8_t index,
 	player->stopWalk();
 
 	ReturnValue ret = internalUseItem(player, pos, index, item, 0);
-	if(ret != RET_NOERROR){
+	if(ret != RET_NOERROR)
+	{
 		player->sendCancelMessage(ret);
 		return false;
 	}

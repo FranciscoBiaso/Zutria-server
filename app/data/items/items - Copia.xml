@@ -1,0 +1,824 @@
+<items>
+	<!-- grama -->
+	<item id="101" name="grama">	</item>
+	<item id="102" name="grama">	</item>
+	<item id="103" name="grama">	</item>
+	<item id="104" name="grama">	</item>
+	<item id="105" name="grama">	</item>
+	<item id="106" name="grama">	</item>
+	<item id="107" name="grama">	</item>
+	<item id="108" name="grama">	</item>
+	<item id="109" name="grama">	</item>
+	<item id="110" name="grama">	</item>
+	<item id="111" name="grama">	</item>
+	<item id="112" name="grama">	</item>
+	<item id="113" name="grama">	</item>
+	<item id="114" name="grama">	</item>
+	<item id="115" name="grama">	</item>
+	<item id="116" name="grama">	</item>
+	
+	<!-- grama e pedras -->
+	<item id="117" name="grama e pedras">	</item>
+	<item id="118" name="grama e pedras">	</item>
+	<item id="119" name="grama e pedras">	</item>
+	<item id="120" name="grama e pedras">	</item>
+	
+	<!-- grama florida -->
+	<item id="121" name="grama florida">	</item>
+	<item id="122" name="grama florida">	</item>
+	<item id="123" name="grama florida">	</item>
+	<item id="124" name="grama florida">	</item>
+	<item id="125" name="grama florida">	</item>
+	<item id="126" name="grama florida">	</item>
+	<item id="127" name="grama florida">	</item>
+	<item id="128" name="grama florida">	</item>
+	
+	<!-- grama terrosa -->
+	<item id="129" name="grama terrosa">	</item>
+	<item id="130" name="grama terrosa">	</item>
+	<item id="131" name="grama terrosa">	</item>
+	<item id="132" name="grama terrosa">	</item>
+	<item id="133" name="grama terrosa">	</item>
+	<item id="134" name="grama terrosa">	</item>
+	<item id="135" name="grama terrosa">	</item>
+	<item id="136" name="grama terrosa">	</item>
+	<item id="137" name="grama terrosa">	</item>
+	<item id="138" name="grama terrosa">	</item>
+	<item id="139" name="grama terrosa">	</item>
+	<item id="140" name="grama terrosa">	</item>
+	<item id="141" name="grama terrosa">	</item>
+	<item id="142" name="grama terrosa">	</item>
+	<item id="143" name="grama terrosa">	</item>
+	<item id="144" name="grama terrosa">	</item>
+	
+	<!-- grama e pedregulhos -->
+	<item id="145" name="grama e pedregulhos">	</item>
+	<item id="146" name="grama e pedregulhos">	</item>
+	<item id="147" name="grama e pedregulhos">	</item>
+	<item id="148" name="grama e pedregulhos">	</item>
+	<item id="149" name="grama e pedregulhos">	</item>
+	<item id="150" name="grama e pedregulhos">	</item>
+	<item id="151" name="grama e pedregulhos">	</item>
+	<item id="152" name="grama e pedregulhos">	</item>
+	
+	<!-- montanha de pedra -->
+	<item id="153" name="rocha">	</item>
+	<item id="154" name="rocha">	</item>
+	<item id="155" name="rocha">	</item>
+	<item id="156" name="rocha">	</item>
+	<item id="157" name="rocha">	</item>
+	<item id="158" name="rocha">	</item>
+	<item id="159" name="rocha">	</item>
+	<item id="160" name="rocha">	</item>
+	<item id="161" name="rocha">	</item>
+	<item id="162" name="rocha">	</item>
+	<item id="163" name="rocha">	</item>
+	<item id="164" name="rocha">	</item>
+	
+	<!-- piso de preenchimento da montanha -->
+	<item id="165" name="rocha">	</item>
+	
+	<!-- piso calcário -->
+	<item id="166" name="calcário claro">	</item>
+	<item id="167" name="calcário escuro">	</item>
+	<item id="168" name="rocha carbonática">	</item>
+	
+	<!-- borda rochas -->
+	<item id="169" name="rocha">	</item>
+	<item id="170" name="rocha">	</item>
+	<item id="171" name="rocha">	</item>
+	<item id="172" name="rocha">	</item>
+	<item id="173" name="rocha">	</item>
+	<item id="174" name="rocha">	</item>
+	<item id="175" name="rocha">	</item>
+	<item id="176" name="rocha">	</item>
+	<item id="177" name="rocha">	</item>
+	<item id="178" name="rocha">	</item>
+	<item id="180" name="rocha">	</item>
+	
+	<!-- borda grama -->
+	<item id="181" name="grama">	</item>
+	<item id="182" name="grama">	</item>
+	<item id="183" name="grama">	</item>
+	<item id="184" name="grama">	</item>
+	<item id="185" name="grama">	</item>
+	<item id="186" name="grama">	</item>
+	<item id="187" name="grama">	</item>
+	<item id="188" name="grama">	</item>
+	<item id="189" name="grama">	</item>
+	<item id="190" name="grama">	</item>
+	<item id="191" name="grama">	</item>
+	<item id="192" name="grama">	</item>
+	
+	<!-- escadas da montanha -->
+	<item id="193" name="escada de rocha">
+		<attribute key="floorchange" value="north"/>
+	</item>
+	<item id="194" name="escada de rocha">	
+		<attribute key="floorchange" value="west"/>
+	</item>
+	
+	<!-- pedras -->
+	<item id="195" name="pedras">	</item>
+	<item id="196" name="pedras">	</item>
+	<item id="197" name="pedras">	</item>
+	<item id="198" name="pedras">	</item>
+	<item id="199" name="pedras">	</item>
+	<item id="200" name="pedras">	</item>
+	<item id="201" name="pedras">	</item>
+	<item id="202" name="pedras">	</item>
+	<item id="203" name="pedras">	</item>
+	<item id="204" name="pedras">	</item>
+	<item id="205" name="pedras">	</item>
+	<item id="206" name="pedras">	</item>
+	<item id="207" name="pedras">	</item>
+	<item id="208" name="pedras">	</item>
+	<item id="209" name="pedras">	</item>
+	<item id="210" name="pedras">	</item>
+	<item id="211" name="pedras">	</item>
+	<item id="212" name="pedras">	</item>
+	<item id="213" name="pedras">	</item>
+	<item id="214" name="pedras">	</item>
+	<item id="215" name="pedras">	</item>
+	<item id="216" name="pedras">	</item>
+	<item id="217" name="pedras">	</item>
+	<item id="218" name="pedras">	</item>
+	<item id="219" name="pedras">	</item>
+	<item id="220" name="pedras">	</item>
+	<item id="221" name="pedras">	</item>
+	<item id="222" name="pedras">	</item>
+	<item id="223" name="pedras">	</item>
+	<item id="224" name="pedras">	</item>
+	<item id="225" name="pedras">	</item>
+	<item id="226" name="pedras">	</item>
+	<item id="227" name="pedras">	</item>
+	<item id="228" name="pedras">	</item>
+	<item id="229" name="pedras">	</item>
+	<item id="230" name="pedras">	</item>
+	<item id="231" name="pedras">	</item>
+	<item id="232" name="pedras">	</item>
+	<item id="233" name="pedras">	</item>
+	<item id="234" name="pedras">	</item>
+	<item id="235" name="pedras">	</item>
+	<item id="236" name="pedras">	</item>
+	<item id="237" name="pedras">	</item>
+	<item id="238" name="pedras">	</item>
+	<item id="239" name="pedras">	</item>
+	<item id="240" name="pedras">	</item>
+	
+	<!-- água de rio -->
+	<item id="241" name="água">	</item>
+	<item id="242" name="água">	</item>
+	<item id="243" name="água">	</item>
+	<item id="244" name="água">	</item>
+	<item id="245" name="água">	</item>
+	<item id="246" name="água">	</item>
+	<item id="247" name="água">	</item>
+	<item id="248" name="água">	</item>
+	<item id="249" name="água">	</item>
+	<item id="250" name="água">	</item>
+	<item id="251" name="água">	</item>
+	<item id="252" name="água">	</item>
+	<item id="253" name="água">	</item>
+	<item id="254" name="água">	</item>
+	<item id="255" name="água">	</item>
+	<item id="256" name="água">	</item>
+	
+	<!-- ponte de madeira -->
+	<item id="257" name="ponte de madeira">	</item>
+	<item id="258" name="ponte de madeira">	</item>
+	<item id="259" name="ponte de madeira">	</item>
+	<item id="260" name="ponte de madeira">	</item>
+	<item id="261" name="ponte de madeira">	</item>
+	<item id="262" name="ponte de madeira">	</item>
+	<item id="263" name="ponte de madeira">	</item>
+	<item id="264" name="ponte de madeira">	</item>
+	
+	<!-- plantas -->
+	<item id="266" name="planta">	</item>
+	<item id="267" name="planta">	</item>
+	<item id="268" name="planta">	</item>
+	<item id="269" name="planta">	</item>
+	<item id="270" name="planta">	</item>
+	<item id="271" name="planta">	</item>
+	<item id="272" name="planta">	</item>
+	<item id="273" name="planta">	</item>
+	<item id="274" name="planta">	</item>
+	<item id="275" name="planta">	</item>
+	<item id="276" name="planta">	</item>
+	<item id="277" name="planta">	</item>
+	<item id="278" name="planta">	</item>
+	<item id="279" name="planta">	</item>
+	<item id="280" name="planta">	</item>
+	<item id="281" name="planta">	</item>
+	<item id="282" name="planta">	</item>
+	<item id="283" name="planta">	</item>
+	<item id="284" name="planta">	</item>
+	<item id="285" name="planta">	</item>
+	<item id="286" name="planta">	</item>
+	<item id="287" name="planta">	</item>
+	<item id="288" name="planta">	</item>
+	<item id="289" name="planta">	</item>
+	<item id="290" name="planta">	</item>
+	<item id="291" name="planta">	</item>
+	<item id="292" name="planta">	</item>
+	<item id="293" name="planta">	</item>
+	<item id="294" name="planta">	</item>
+	<item id="295" name="planta">	</item>
+	<item id="296" name="planta">	</item>
+	<item id="297" name="planta">	</item>
+	<item id="298" name="planta">	</item>
+	<item id="299" name="planta">	</item>
+	<item id="300" name="planta">	</item>
+	<item id="301" name="planta">	</item>
+	<item id="302" name="planta">	</item>
+	<item id="303" name="planta">	</item>
+	<item id="304" name="planta">	</item>
+	<item id="305" name="planta">	</item>
+	<item id="306" name="planta">	</item>
+	<item id="307" name="planta">	</item>
+	<item id="308" name="planta">	</item>
+	<item id="309" name="planta">	</item>
+	<item id="310" name="planta">	</item>
+	<item id="311" name="planta">	</item>
+	<item id="312" name="planta">	</item>
+	<item id="313" name="planta">	</item>
+	<item id="314" name="planta">	</item>
+	<item id="315" name="planta">	</item>
+	<item id="316" name="planta">	</item>
+	<item id="317" name="planta">	</item>
+	<item id="318" name="planta">	</item>
+	<item id="319" name="planta">	</item>
+	<item id="320" name="planta">	</item>
+	
+	<!-- terra clara piso -->
+	<item id="321" name="terra">	</item>
+	<item id="322" name="terra">	</item>
+	<item id="323" name="terra">	</item>
+	<item id="324" name="terra">	</item>
+	<item id="325" name="terra">	</item>
+	<item id="326" name="terra">	</item>
+	<item id="327" name="terra">	</item>
+	<item id="328" name="terra">	</item>
+	<item id="329" name="terra">	</item>
+	<item id="330" name="terra">	</item>
+	<item id="331" name="terra">	</item>
+	<item id="332" name="terra">	</item>
+	<item id="333" name="terra">	</item>
+	<item id="334" name="terra">	</item>
+	<item id="335" name="terra">	</item>
+	<item id="336" name="terra">	</item>
+	
+	<!-- terra clara variações -->
+	<item id="337" name="terra">	</item>
+	<item id="338" name="terra">	</item>
+	<item id="339" name="terra">	</item>
+	<item id="340" name="terra">	</item>
+	<item id="341" name="terra">	</item>
+	<item id="342" name="terra">	</item>
+	<item id="343" name="terra">	</item>
+	<item id="344" name="terra">	</item>
+	<item id="345" name="terra">	</item>
+	<item id="346" name="terra">	</item>
+	<item id="347" name="terra">	</item>
+	
+	<!-- terra clara bordas -->
+	<item id="348" name="variações da terra">	</item>
+	<item id="349" name="variações da terra">	</item>
+	<item id="350" name="variações da terra">	</item>
+	<item id="351" name="variações da terra">	</item>
+	<item id="352" name="variações da terra">	</item>
+	<item id="353" name="variações da terra">	</item>
+	<item id="354" name="variações da terra">	</item>
+	<item id="355" name="variações da terra">	</item>
+	<item id="356" name="variações da terra">	</item>
+	<item id="357" name="variações da terra">	</item>
+	<item id="358" name="variações da terra">	</item>
+	<item id="359" name="variações da terra">	</item>
+	
+	<!-- borda terra clara e grama -->
+	<item id="360" name="terra e grama">	</item>
+	<item id="361" name="terra e grama">	</item>
+	<item id="362" name="terra e grama">	</item>
+	<item id="363" name="terra e grama">	</item>
+	<item id="364" name="terra e grama">	</item>
+	<item id="365" name="terra e grama">	</item>
+	<item id="366" name="terra e grama">	</item>
+	<item id="367" name="terra e grama">	</item>
+	<item id="368" name="terra e grama">	</item>
+	<item id="369" name="terra e grama">	</item>
+	<item id="370" name="terra e grama">	</item>
+	<item id="371" name="terra e grama">	</item>
+	
+	<!-- terra barrosa -->	
+	<item id="372" name="terra barrosa">	</item>
+	<item id="373" name="terra barrosa">	</item>
+	<item id="374" name="terra barrosa">	</item>
+	<item id="375" name="terra barrosa">	</item>
+	<item id="376" name="terra barrosa">	</item>
+	<item id="377" name="terra barrosa">	</item>
+	<item id="378" name="terra barrosa">	</item>
+	<item id="379" name="terra barrosa">	</item>
+	<item id="380" name="terra barrosa">	</item>
+	<item id="381" name="terra barrosa">	</item>
+	<item id="382" name="terra barrosa">	</item>
+	<item id="383" name="terra barrosa">	</item>
+	<item id="384" name="terra barrosa">	</item>
+	<item id="385" name="terra barrosa">	</item>
+	<item id="386" name="terra barrosa">	</item>
+	<item id="387" name="terra barrosa">	</item>
+	<item id="388" name="terra barrosa">	</item>
+	<item id="389" name="terra barrosa">	</item>
+	<item id="390" name="terra barrosa">	</item>
+	<item id="391" name="terra barrosa">	</item>
+	<item id="392" name="terra barrosa">	</item>
+	<item id="393" name="terra barrosa">	</item>
+	<item id="394" name="terra barrosa">	</item>
+	<item id="395" name="terra barrosa">	</item>
+	
+	<!-- piso terra escura -->
+	<item id="408" name="terra barrosa escura">	</item>
+	<item id="409" name="terra barrosa escura">	</item>
+	<item id="410" name="terra barrosa escura">	</item>
+	<item id="411" name="terra barrosa escura">	</item>
+	<item id="412" name="terra barrosa escura">	</item>
+	<item id="413" name="terra barrosa escura">	</item>
+	<item id="414" name="terra barrosa escura">	</item>
+	<item id="415" name="terra barrosa escura">	</item>
+	<item id="416" name="terra barrosa escura">	</item>
+	<item id="417" name="terra barrosa escura">	</item>
+	<item id="418" name="terra barrosa escura">	</item>
+	<item id="419" name="terra barrosa escura">	</item>
+	<item id="420" name="terra barrosa escura">	</item>
+	<item id="421" name="terra barrosa escura">	</item>
+	<item id="422" name="terra barrosa escura">	</item>
+	<item id="423" name="terra barrosa escura">	</item>
+	
+	<!-- entrada para montanha de pedras -->
+	<item id="436" name="pedras">	</item>
+	<item id="437" name="pedras">	</item>
+	<item id="438" name="pedras">	</item>
+	<item id="439" name="pedras">	</item>
+	<item id="440" name="pedras">	</item>
+	<item id="441" name="pedras">	</item>
+	<item id="582" name="pedras">	</item>
+	<item id="583" name="pedras">	</item>
+	
+	<!-- pedras médias de calcário -->
+	<item id="442" name="pedras">	</item>
+	
+	<!-- tochas -->	
+	<item id="443" name="tocha">	</item>
+	<item id="444" name="tocha">	</item>
+	<item id="445" name="tocha">	</item>
+	<item id="446" name="tocha">	</item>
+	<item id="447" name="tocha">	</item>
+	<item id="448" name="tocha">	</item>
+	<item id="449" name="tocha">	</item>
+	<item id="450" name="tocha">	</item>
+	
+	<!-- água de rio animada -->	
+	<item id="451" name="água corrente">	</item>
+	
+	<!-- buraco -->	
+	<item id="458" name="buraco">	
+		<attribute key="floorchange" value="down"/>
+	</item>
+	
+	<!-- floor change down -->
+	<item id="459" name="buraco">
+		<attribute key="floorchange" value="down"/>
+	</item>
+	
+	<!-- corda / pedra e corda-->	
+	<item id="461" name="pedra com corda">	</item>
+	<item id="462" name="corda">	</item>
+	<item id="463" name="corda">	</item>
+	<item id="464" name="pedra com corda">	</item>
+	
+	
+	<!-- buraco -->	
+	<item id="465" name="buraco">	
+		<attribute key="floorchange" value="down"/>
+	</item>
+	
+	<!-- buraco -->	
+	<item id="466" name="buraco">	
+		<attribute key="floorchange" value="down"/>
+	</item>	
+	
+	<!-- pedras -->	
+	<item id="467" name="pedras">	</item>
+	<item id="468" name="pedras">	</item>
+	<item id="469" name="pedras">	</item>
+	<item id="470" name="pedras">	</item>
+	<item id="471" name="pedras">	</item>
+	<item id="472" name="pedras">	</item>
+	<item id="473" name="pedras">	</item>
+	<item id="474" name="pedras">	</item>
+	<item id="475" name="pedras">	</item>
+	<item id="476" name="pedras">	</item>
+	<item id="477" name="pedras">	</item>
+	<item id="478" name="pedras">	</item>
+	<item id="479" name="pedras">	</item>
+	<item id="480" name="pedras">	</item>
+	<item id="481" name="pedras">	</item>
+	<item id="482" name="pedras">	</item>
+	
+	<!-- buraco -->	
+	<item id="483" name="buraco">	
+		<attribute key="floorchange" value="down"/>
+	</item>
+	<!-- buraco -->	
+	<item id="484" name="buraco">	
+		<attribute key="floorchange" value="down"/>
+	</item>
+	<!-- buraco -->	
+	<item id="485" name="buraco">	
+		<attribute key="floorchange" value="down"/>
+	</item>
+	
+	<!-- trilhos -->
+	<item id="486" name="trilho">	</item>
+	<item id="487" name="trilho">	</item>
+	<item id="488" name="trilho">	</item>
+	<item id="489" name="trilho">	</item>
+	<item id="490" name="trilho">	</item>
+	<item id="491" name="trilho">	</item>
+	<item id="492" name="trilho">	</item>
+	<item id="493" name="trilho">	</item>
+	<item id="494" name="trilho">	</item>
+	<item id="495" name="trilho">	</item>
+	<item id="496" name="trilho">	</item>
+	<item id="497" name="trilho">	</item>
+	<item id="498" name="trilho">	</item>
+	<item id="499" name="trilho">	</item>
+	<item id="500" name="trilho">	</item>
+	<item id="501" name="trilho">	</item>
+	<item id="502" name="trilho">	</item>
+	<item id="503" name="trilho">	</item>
+	
+	<!-- trilhos piso -->
+	<item id="504" name="trilho">	</item>
+	<item id="505" name="trilho">	</item>
+	
+	<!-- caixas -->	
+	<item id="506" name="caixa">	
+		<attribute key="weight" value="800"/>
+		<attribute key="containersize" value="8"/>
+	</item>
+	<item id="507" name="caixa">	
+		<attribute key="weight" value="800"/>
+		<attribute key="containersize" value="8"/>
+	</item>
+	<item id="508" name="caixa">	
+		<attribute key="weight" value="800"/>
+		<attribute key="containersize" value="8"/>
+	</item>
+	
+	<!-- lampião -->
+	<item id="509" name="lampião">	
+		<attribute key="weight" value="800"/>
+		<attribute key="stopduration" value="1"/>
+		<attribute key="decayTo" value="510"/>
+		<attribute key="duration" value="60"/>
+	</item>
+	<item id="510" name="lampião">	
+		<attribute key="weight" value="600"/>
+	</item>
+	
+	<!-- fluidos -->
+	<item id="511" name="sangue">	
+		<attribute key="decayTo" value="0"/>
+		<attribute key="duration" value="12"/>
+	</item>
+	
+	<!-- corpo de anão guerreiro -->
+	<item id="512" name="cadáver do anão guerreiro">	
+		<attribute key="decayTo" value="513"/>
+		<attribute key="duration" value="12"/>
+		<attribute key="containersize" value="4"/>
+	</item>
+	<item id="513" name="cadáver do anão guerreiro">	
+		<attribute key="decayTo" value="514"/>
+		<attribute key="duration" value="240"/>
+		<attribute key="containersize" value="4"/>
+	</item>
+	<item id="514" name="cadáver do anão guerreiro">	
+		<attribute key="decayTo" value="0"/>
+		<attribute key="duration" value="120"/>
+	</item>
+  
+  <!-- corpo da besta  -->
+  <item id="2226" name="cadáver da besta">	
+		<attribute key="decayTo" value="2227"/>
+		<attribute key="duration" value="20"/>
+		<attribute key="containersize" value="12"/>
+	</item>
+  <item id="2227" name="cadáver da besta">	
+		<attribute key="decayTo" value="2228"/>
+		<attribute key="duration" value="20"/>
+		<attribute key="containersize" value="12"/>
+	</item>  
+  <item id="2228" name="cadáver da besta">	
+		<attribute key="decayTo" value="0"/>
+		<attribute key="duration" value="20"/>
+		<attribute key="containersize" value="12"/>
+	</item>
+  
+  <!-- corpo da cobra  -->
+  <item id="2231" name="cobra morta">	
+		<attribute key="decayTo" value="2232"/>
+		<attribute key="duration" value="20"/>
+	</item>
+  <item id="2232" name="cobra morta">	
+		<attribute key="decayTo" value="0"/>
+		<attribute key="duration" value="20"/>
+	</item>   
+	
+  <!-- corpo humano -->
+	<item id="515" name="cadáver do mago de fogo">	
+		<attribute key="decayTo" value="0"/>
+		<attribute key="duration" value="3000"/>
+		<attribute key="containersize" value="7"/>
+	</item>
+	
+	<!-- fire wall rune -->
+	<item id="516" name="runa de barreira de fogo">	
+		<attribute key="weight" value="35"/>
+	</item>
+	
+	<!-- barreira de fogo-->
+	<item id="517" name="barreira de fogo">	
+		<attribute key="decayTo" value="595"/>
+		<attribute key="duration" value="15"/>
+	</item>
+	<item id="595" name="barreira de fogo">	
+		<attribute key="decayTo" value="596"/>
+		<attribute key="duration" value="7"/>
+	</item>
+	<item id="596" name="barreira de fogo">	
+		<attribute key="decayTo" value="0"/>
+		<attribute key="duration" value="5"/>
+	</item>
+	
+	<!-- fire ball rune -->
+	<item id="518" name="runa de bola de fogo">	
+		<attribute key="weight" value="35"/>
+	</item>
+	
+	<!-- carrinhos - minas -->
+	<item id="519" name="carrinho vazio">	</item>
+	<item id="520" name="carrinho com ouro">	</item>
+	<item id="521" name="carrinho com ouro">	</item>
+	<item id="522" name="carrinho com prata">	</item>
+	<item id="523" name="carrinho com prata">	</item>
+	<item id="524" name="carrinho com terra">	</item>
+	<item id="525" name="carrinho com pedra">	</item>
+	<item id="526" name="carrinho vazinho">	</item>
+	<item id="527" name="carrinho com ouro">	</item>
+	<item id="528" name="carrinho com ouro">	</item>
+	<item id="529" name="carrinho com prata">	</item>
+	<item id="530" name="carrinho com prata">	</item>
+	<item id="531" name="carrinho com pedra">	</item>
+	<item id="532" name="carrinho com terra">	</item>
+	
+	<!-- pedras -->
+	<item id="533" name="rochas">	</item>
+	<item id="534" name="rochas">	</item>
+	
+	<!-- madeiras -->
+	<item id="535" name="madeira">	</item>
+	<item id="536" name="madeira">	</item>
+	<item id="537" name="madeira">	</item>
+	<item id="538" name="madeira">	</item>
+	<item id="539" name="madeira">	</item>
+	<item id="540" name="madeira">	</item>
+	<item id="541" name="madeira">	</item>
+	<item id="542" name="madeira">	</item>
+	<item id="543" name="madeira">	</item>
+	<item id="544" name="madeira">	</item>
+	<item id="545" name="madeira">	</item>
+	<item id="546" name="madeira">	</item>
+	<item id="547" name="madeira">	</item>
+	<item id="548" name="madeira">	</item>
+	<item id="549" name="madeira">	</item>
+	<item id="550" name="madeira">	</item>
+	<item id="551" name="madeira">	</item>
+	<item id="552" name="madeira">	</item>
+	<item id="553" name="madeira">	</item>
+	<item id="554" name="madeira">	</item>
+	<item id="555" name="madeira">	</item>
+	
+	<!-- fogueiras -->
+	<item id="555" name="fogueira de madeira">	</item>
+	<item id="556" name="fogueira de madeira">	</item>
+	<item id="557" name="fogueira de pedra">	</item>
+
+	<!-- cogumelos -->	
+	<item id="559" name="cogumelo">	</item>
+	
+	<!-- barril -->
+	<item id="560" name="barril">	
+		<attribute key="containersize" value="2"/>
+	</item>
+	<item id="561" name="barril">	
+		<attribute key="containersize" value="2"/>
+	</item>
+	<item id="562" name="barril com água">	</item>
+	
+	<!-- cogumelos -->	
+	<item id="563" name="cogumelo">	</item>
+	<item id="564" name="cogumelo">	</item>
+	
+	<!-- plantas -->
+	<item id="565" name="planta">	</item>
+	<item id="566" name="planta">	</item>
+	<item id="567" name="planta">	</item>
+	<item id="568" name="planta">	</item>
+	<item id="569" name="planta">	</item>
+	<item id="570" name="planta">	</item>
+	<item id="570" name="planta">	</item>
+	<item id="571" name="planta">	</item>
+	<item id="572" name="planta">	</item>
+	<item id="573" name="planta">	</item>
+	<item id="574" name="planta">	</item>
+	<item id="575" name="planta">	</item>
+	<item id="576" name="planta">	</item>
+	<item id="577" name="planta">	</item>
+	<item id="578" name="planta">	</item>
+	<item id="579" name="planta">	</item>
+	<item id="580" name="planta">	</item>
+	<item id="581" name="planta">	</item>
+	
+	<!-- pilastras -->
+	<item id="584" name="pilastra">	</item>
+	<item id="585" name="pilastra">	</item>
+	<item id="594" name="pilastra">	</item>
+	
+	<!-- entradas -->
+	<item id="586" name="rocha">	</item>
+	<item id="587" name="rocha">	</item>
+	<item id="588" name="rocha">	</item>
+	<item id="589" name="rocha">	</item>
+	<item id="590" name="rocha">	</item>
+	<item id="591" name="rocha">	</item>
+	<item id="592" name="rocha">	</item>
+	<item id="593" name="rocha">	</item>
+	
+	<!-- runa de fogo -->
+	<item id="597" name="runa">	</item>
+	<item id="598" name="runa">	</item>
+	<item id="599" name="runa">	</item>
+	
+	<!--  -->
+	<item id="600" name="pilastra">
+			<attribute key="docombatafterdecay" value="1"/>	
+			<attribute key="decayTo" value="0"/>
+			<attribute key="duration" value="5"/>
+	</item>
+  
+  <!-- items -->
+  <item id="2201" name="hachet">
+			<attribute key="name" value="machadinha"/>
+			<attribute key="attack" value="20"/>
+			<attribute key="article" value="a"/>
+			<attribute key="plural" value="machadsssinha"/>
+			<attribute key="description" value="machadsssinha"/>
+			<attribute key="weight" value="23"/>
+			<attribute key="slottype" value="hand"/>
+	</item>
+	
+  <item id="2217" name="corrente bestial">    
+		<attribute key="weight" value="3800" />
+	</item>
+  
+  <item id="2218" name="chifre bestial">    
+		<attribute key="weight" value="3800" />
+	</item>
+  
+  <item id="2219" name="capa bestial">    
+		<attribute key="weight" value="3800" />
+		<attribute key="slotType" value="cape" />
+	</item>
+  
+  <item id="2220" name="clava valorosa bestial">    
+    <attribute key="weight" value="3800" />
+		<attribute key="slottype" value="hand"/>
+		<attribute key="attack" value="19" />
+		<attribute key="perforation_attack" value="0" />
+		<attribute key="slash_attack" value="28" />
+		<attribute key="weapontype" value="melee" />
+	</item>
+  
+  <item id="2221" name="colar bestial">    
+		<attribute key="weight" value="300" />
+		<attribute key="slotType" value="necklace" />
+	</item>
+  
+  <item id="2222" name="mochila bestial">    
+		<attribute key="weight" value="1500" />
+		<attribute key="containerSize" value="18" />
+		<attribute key="slotType" value="backpack" />
+	</item>
+  
+  <item id="2223" name="cinto bestial">    
+		<attribute key="weight" value="1500" />
+		<attribute key="containerSize" value="24" />
+		<attribute key="slotType" value="belt" />
+	</item>
+  
+  <item id="2224" name="bota bestial">    
+		<attribute key="armor" value="4" />
+	</item>
+  
+  <item id="2225" name="couro de besta"> 
+		<attribute key="weight" value="1500" />   
+	</item>
+  
+  <item id="2229" name="moedas de ouro">    
+		<attribute key="weight" value="3800" />
+	</item>
+  
+  <item id="2230" name="moedas de prata">    
+		<attribute key="weight" value="3800" />
+	</item>
+  
+  <item id="2236" name="moedas de prata">    
+		<attribute key="weight" value="3800" />
+		<attribute key="slotType" value="necklace" />
+	</item>
+  
+  <item id="2237" name="moedas de prata">    
+		<attribute key="weight" value="3800" />
+		<attribute key="slotType" value="ring" />
+	</item>
+  
+  <item id="2238" name="moedas de prata">    
+		<attribute key="weight" value="3800" />
+		<attribute key="slotType" value="belt" />
+	</item>
+  
+  <item id="2239" name="moedas de prata">    
+		<attribute key="weight" value="3800" />
+		<attribute key="slotType" value="bracelet" />
+	</item>
+  
+  <item id="2240" name="moedas de prata">    
+		<attribute key="weight" value="3800" />
+		<attribute key="slotType" value="legs" />
+	</item>
+  
+  <item id="2241" name="moedas de prata">    
+		<attribute key="weight" value="3800" />
+	</item>
+  
+  <!-- sangue vermelho -->
+	<item id="2233" name="sangue">	
+		<attribute key="decayTo" value="2234"/>
+		<attribute key="duration" value="12"/>
+	</item>
+  
+	<item id="2234" name="sangue">	
+		<attribute key="decayTo" value="2235"/>
+		<attribute key="duration" value="12"/>
+	</item>
+  
+  <item id="2235" name="sangue">	
+		<attribute key="decayTo" value="0"/>
+		<attribute key="duration" value="12"/>
+	</item>
+  
+   <item id="2645" name="escudo de tor">	
+		<attribute key="weaponType" value="shield"/>
+		<attribute key="defense" value="21"/>
+		<attribute key="weight" value="9" />
+    <attribute key="slotType" value="hand" />
+		<attribute key="weaponType" value="shield"/>
+	</item>
+    
+   <item id="2642" name="elm">    
+    <attribute key="weight" value="80" />		
+    <attribute key="slotType" value="head" />
+		<attribute key="defense" value="19"/>
+	</item>
+  
+   <item id="2656" name="">    
+    <attribute key="weight" value="80" />		
+    <attribute key="slotType" value="body" />
+		<attribute key="defense" value="20"/>
+	</item>
+  
+   <item id="2647" name="">    
+    <attribute key="weight" value="80" />		
+    <attribute key="slotType" value="legs" />
+		<attribute key="defense" value="18"/>
+	</item>
+
+   <item id="2643" name="clava  bestial">    
+    <attribute key="weight" value="3800" />
+		<attribute key="slottype" value="hand"/>
+		<attribute key="slash_attack" value="36" />
+		<attribute key="weapontype" value="melee" />
+	</item>
+</items>

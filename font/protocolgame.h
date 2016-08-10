@@ -130,6 +130,7 @@ private:
 
 	//parse player action
 	void parseSpell(NetworkMessage& msg);
+	void parsePlayerTryAddMoney(NetworkMessage& msg);
 
 	//party methods
 	void parseInviteToParty(NetworkMessage& msg);
@@ -185,6 +186,7 @@ private:
 	void sendRemoveReport(const std::string& name);
 	void sendLockRuleViolation();
 	void sendRuleViolationCancel(const std::string& name);
+	void sendUpdateBalance(uint32_t countMoney);
 	void sendIcons(int icons);
 
 	void sendDistanceShoot(const Position& from, const Position& to, uint8_t type);

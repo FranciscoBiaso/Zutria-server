@@ -61,7 +61,7 @@
 	<spawn centerx="587" centery="605" centerz="6" radius="1">
 		<monster name="goblim bolseiro" x="0" y="0" z="6" spawntime="60" />
 	</spawn>
-	<spawn centerx="723" centery="660" centerz="6" radius="5" />
+	<spawn centerx="755" centery="617" centerz="6" radius="5" />
 	<spawn centerx="610" centery="681" centerz="6" radius="1">
 		<monster name="diabrete" x="0" y="0" z="6" spawntime="60" />
 	</spawn>
@@ -96,18 +96,6 @@
 	</spawn>
 	<spawn centerx="607" centery="707" centerz="6" radius="1">
 		<monster name="esqueleto arqueiro" x="0" y="0" z="6" spawntime="60" />
-	</spawn>
-	<spawn centerx="797" centery="485" centerz="7" radius="1">
-		<monster name="javali" x="0" y="0" z="7" spawntime="60" />
-	</spawn>
-	<spawn centerx="789" centery="490" centerz="7" radius="1">
-		<monster name="javali" x="0" y="0" z="7" spawntime="60" />
-	</spawn>
-	<spawn centerx="821" centery="491" centerz="7" radius="1">
-		<monster name="javali" x="0" y="0" z="7" spawntime="60" />
-	</spawn>
-	<spawn centerx="800" centery="509" centerz="7" radius="1">
-		<monster name="javali" x="0" y="0" z="7" spawntime="60" />
 	</spawn>
 	<spawn centerx="586" centery="528" centerz="7" radius="5">
 		<monster name="goblim impetuoso" x="4" y="-5" z="7" spawntime="60" />
@@ -192,6 +180,12 @@
 	<spawn centerx="975" centery="610" centerz="7" radius="1">
 		<monster name="centopéia" x="0" y="0" z="7" spawntime="60" />
 	</spawn>
+	<spawn centerx="756" centery="616" centerz="7" radius="5">
+		<monster name="besouro" x="-3" y="-5" z="7" spawntime="60" />
+		<monster name="cobra" x="4" y="-5" z="7" spawntime="60" />
+		<monster name="besouro" x="4" y="-2" z="7" spawntime="60" />
+		<monster name="vespa" x="0" y="0" z="7" spawntime="60" />
+	</spawn>
 	<spawn centerx="970" centery="617" centerz="7" radius="1">
 		<monster name="besouro" x="0" y="0" z="7" spawntime="60" />
 	</spawn>
@@ -208,32 +202,7 @@
 		<monster name="javali" x="0" y="0" z="7" spawntime="60" />
 		<monster name="javali" x="1" y="1" z="7" spawntime="60" />
 	</spawn>
-	<spawn centerx="746" centery="638" centerz="7" radius="1">
-		<monster name="javali" x="-1" y="0" z="7" spawntime="19918592" />
-		<monster name="javali" x="0" y="0" z="7" spawntime="60" />
-		<monster name="javali" x="-1" y="1" z="7" spawntime="19918592" />
-	</spawn>
 	<spawn centerx="740" centery="639" centerz="7" radius="1">
-		<monster name="javali" x="0" y="0" z="7" spawntime="19918592" />
-		<monster name="javali" x="0" y="1" z="7" spawntime="19918592" />
-	</spawn>
-	<spawn centerx="745" centery="640" centerz="7" radius="1">
-		<monster name="javali" x="-1" y="0" z="7" spawntime="19918592" />
-		<monster name="javali" x="0" y="0" z="7" spawntime="19918592" />
-		<monster name="javali" x="-1" y="1" z="7" spawntime="19918592" />
-	</spawn>
-	<spawn centerx="741" centery="641" centerz="7" radius="1">
-		<monster name="javali" x="-1" y="0" z="7" spawntime="19918592" />
-		<monster name="javali" x="0" y="0" z="7" spawntime="19918592" />
-		<monster name="javali" x="0" y="1" z="7" spawntime="19918592" />
-	</spawn>
-	<spawn centerx="744" centery="642" centerz="7" radius="1">
-		<monster name="javali" x="-1" y="0" z="7" spawntime="19918592" />
-		<monster name="javali" x="0" y="0" z="7" spawntime="19918592" />
-		<monster name="javali" x="-1" y="1" z="7" spawntime="19918592" />
-	</spawn>
-	<spawn centerx="742" centery="643" centerz="7" radius="1">
-		<monster name="javali" x="-1" y="0" z="7" spawntime="19918592" />
 		<monster name="javali" x="0" y="0" z="7" spawntime="19918592" />
 	</spawn>
 	<spawn centerx="616" centery="645" centerz="7" radius="1">
@@ -244,7 +213,7 @@
 		<monster name="aranha da selva" x="0" y="0" z="7" spawntime="60" />
 	</spawn>
 	<spawn centerx="616" centery="649" centerz="7" radius="1">
-		<monster name="centopéia" x="0" y="0" z="7" spawntime="60" />
+		<monster name="centopéia" x="-1" y="0" z="7" spawntime="60" />
 	</spawn>
 	<spawn centerx="628" centery="651" centerz="7" radius="1">
 		<monster name="besouro" x="0" y="-1" z="7" spawntime="60" />
@@ -260,13 +229,6 @@
 	</spawn>
 	<spawn centerx="613" centery="659" centerz="7" radius="1">
 		<monster name="aranha da selva" x="0" y="0" z="7" spawntime="60" />
-	</spawn>
-	<spawn centerx="724" centery="659" centerz="7" radius="5">
-		<monster name="besouro" x="-3" y="-5" z="7" spawntime="60" />
-		<monster name="cobra" x="4" y="-5" z="7" spawntime="60" />
-		<monster name="besouro" x="4" y="-2" z="7" spawntime="60" />
-		<monster name="vespa" x="0" y="0" z="7" spawntime="60" />
-		<monster name="vespa" x="-5" y="3" z="7" spawntime="60" />
 	</spawn>
 	<spawn centerx="638" centery="660" centerz="7" radius="1">
 		<monster name="aranha da selva" x="0" y="0" z="7" spawntime="60" />

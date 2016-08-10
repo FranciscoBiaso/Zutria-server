@@ -418,6 +418,8 @@ public:
 	bool playerUpdateHouseWindow(uint32_t playerId, uint8_t listId, uint32_t windowTextId, const std::string& text);
 	bool playerRequestTrade(uint32_t playerId, const Position& pos, uint8_t stackPos,
 		uint32_t tradePlayerId, uint16_t spriteId);
+	bool playerTryAddMoney(uint32_t playerId, const Position& itemPosition, uint8_t stackPos, const uint16_t spriteId);	
+
 	bool playerAcceptTrade(uint32_t playerId);
 	bool playerLookInTrade(uint32_t playerId, bool lookAtCounterOffer, int index);
 	bool playerCloseTrade(uint32_t playerId);
@@ -506,7 +508,7 @@ public:
 		TextColor_t customTextColor, Creature* attacker, Creature* target, int32_t healthChange);
 	bool combatChangeHealth(CombatType_t combatType, MagicEffectClasses hitEffect,
 		TextColor_t customTextColor, Creature* attacker, Creature* target, struct _weaponDamage_ *);
-	bool occurStab(const Creature * attacker);
+	bool occurGoodAttack(const Creature * attacker);
 	void breakDefense(int32_t & itemDefenseFactor, double & preforationFactor);
 	void increaseDmgByStab(int32_t & dmgHit, struct _weaponDamage_ * wd);
 	void increaseDmgByCritic(int32_t & dmgHit, struct _weaponDamage_ * wd);
