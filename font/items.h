@@ -164,6 +164,7 @@ public:
 	float          weight;
 	bool           showCount;
 	WeaponType_t   weaponType;
+	EquipType_t    m_equipType;
 	Ammo_t         amuType;
 	ShootType_t    shootType;
 	MagicEffectClasses magicEffect;
@@ -222,6 +223,8 @@ public:
 	bool floorChangeSouth;
 	bool floorChangeEast;
 	bool floorChangeWest;
+	bool floorChangeEastPlus;
+	bool floorChangeSouthPlus;
 	bool hasHeight;
 	uint16_t height;
 

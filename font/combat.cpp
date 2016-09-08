@@ -463,26 +463,26 @@ bool Combat::CombatHealthFunc(Creature* caster, Creature* target, const CombatPa
 		return false;
 	}
 
-	if(healthChange < 0)
-	{
-		if (caster && target) 
-		{
-			Player* casterPlayer = caster->getPlayer();
-			Player* targetPlayer = target->getPlayer();
-			//player vs player
-			if (casterPlayer && targetPlayer) 
-			{
-				healthChange = healthChange / 2;
+	//if(healthChange < 0)
+	//{
+	//	if (caster && target) 
+	//	{
+	//		Player* casterPlayer = caster->getPlayer();
+	//		Player* targetPlayer = target->getPlayer();
+	//		//player vs player
+	//		if (casterPlayer && targetPlayer) 
+	//		{
+	//			healthChange = healthChange / 2;
 
-				if (g_config.getBoolean(ConfigManager::TEAM_MODE) && 
-					casterPlayer->getGuildId() == targetPlayer->getGuildId()) 
-				{
-					int damagePercent = g_config.getNumber(ConfigManager::DAMAGE_PERCENT);
-					healthChange = (healthChange * damagePercent) / 100;
-				}
-			}
-		}
-	}
+	//			if (g_config.getBoolean(ConfigManager::TEAM_MODE) && 
+	//				casterPlayer->getGuildId() == targetPlayer->getGuildId()) 
+	//			{
+	//				int damagePercent = g_config.getNumber(ConfigManager::DAMAGE_PERCENT);
+	//				healthChange = (healthChange * damagePercent) / 100;
+	//			}
+	//		}
+	//	}
+	//}
 
 	bool result = g_game.combatChangeHealth(params.combatType, params.hitEffect, params.hitTextColor, caster, target, healthChange);
 
@@ -500,11 +500,11 @@ bool Combat::CombatPhysicalHealthFunc(Creature* caster, Creature* target, const 
 {
 	struct _weaponDamage_* wDamage = (struct _weaponDamage_*)data;
 	//the attack was failed or blocked?
+
 	if (g_game.combatBlockPhysicalHit(params.combatType, caster, target, wDamage))
 		return false;
 
 	bool result = false;
-
 	switch (wDamage->damageType)
 	{
 		//blood only
@@ -1121,6 +1121,7 @@ void Combat::doCombatHealth(Creature* caster, Creature* target, struct _weaponDa
 {
 	if (!params.isAggressive || (caster != target && Combat::canDoCombat(caster, target) == RET_NOERROR))
 	{
+
 		CombatPhysicalHealthFunc(caster, target, params, (struct _weaponDamage_*)wd);
 
 		if (params.impactEffect != NM_ME_NONE)

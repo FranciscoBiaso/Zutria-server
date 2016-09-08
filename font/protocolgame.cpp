@@ -1001,8 +1001,8 @@ bool ProtocolGame::canSee(int x, int y, int z) const
 	//negative offset means that the action taken place is on a lower floor than ourself
 	int offsetz = myPos.z - z;
 
-	if ((x >= myPos.x - cMaxViewW + offsetz) && (x <= myPos.x + cMaxViewW + offsetz) &&
-		(y >= myPos.y - cMaxViewH + offsetz) && (y <= myPos.y + cMaxViewH + offsetz))
+	if ((x >= myPos.x - cMaxViewLeft + offsetz) && (x <= myPos.x + cMaxViewRight + offsetz) &&
+		(y >= myPos.y - cMaxViewTop + offsetz) && (y <= myPos.y + cMaxViewBottom + offsetz))
 		return true;
 
 	return false;
@@ -1174,7 +1174,8 @@ void ProtocolGame::parseStopAutoWalk(NetworkMessage& msg)
 
 void ProtocolGame::parseMove(NetworkMessage& msg, Direction dir)
 {
-	addGameTask(&Game::playerMove, player->getID(), dir);
+	if(!player->m_attacking)
+		addGameTask(&Game::playerMove, player->getID(), dir);
 }
 
 void ProtocolGame::parseTurn(NetworkMessage& msg, Direction dir)
@@ -1575,7 +1576,7 @@ void ProtocolGame::sendCreatureOutfit(const Creature* creature, const Outfit_t& 
 			TRACK_MESSAGE(msg);
             msg->AddByte(0x8E);
             msg->AddU32(creature->getID());
-		    AddCreatureOutfit(msg, creature, outfit);
+			AddCreatureOutfit(msg, creature, outfit);
         }
 	}
 }
@@ -1985,6 +1986,17 @@ void ProtocolGame::sendSkills()
 	}
 }
 
+void ProtocolGame::sendOnPlayerAttack(uint32_t creatureId)
+{
+	NetworkMessage_ptr msg = getOutputBuffer();
+	if (msg) 
+	{
+		//TRACK_MESSAGE(msg);
+		msg->AddByte(SendProtocolCodes::OnPlayerAttack);
+		msg->AddU32(creatureId);		
+	}
+}
+
 void ProtocolGame::sendSpellLearned(unsigned char spellId, unsigned char spellLevel)
 {
 	NetworkMessage_ptr msg = getOutputBuffer();
@@ -2215,6 +2227,7 @@ void ProtocolGame::sendAddCreature(const Creature* creature, bool isLogin)
 			}
 		}
 	}
+
 }
 
 void ProtocolGame::sendRemoveCreature(const Creature* creature, const Position& pos, uint32_t stackpos, bool isLogout)
@@ -2268,23 +2281,79 @@ void ProtocolGame::sendMoveCreature(const Creature* creature, const Tile* newTil
 					MoveUpCreature(msg, creature, newPos, oldPos, oldStackPos);
 				}
 
+				int dif = 0;
 				// north, for old x
-				if (oldPos.y > newPos.y) {
-					msg->AddByte(0x65);
-					GetMapDescription(oldPos.x - cMaxViewW, newPos.y - cMaxViewH, newPos.z, 2 * cMaxViewW + 1, 1, msg);
+				if (oldPos.y > newPos.y) 
+				{
+					dif = std::abs(oldPos.y - newPos.y);				
+					if (dif == 1)
+					{
+						msg->AddByte(0x65);
+						GetMapDescription(oldPos.x - cMaxViewLeft, newPos.y - cMaxViewTop, newPos.z, cMaxViewLeft + cMaxViewRight + 1, 1, msg);
+					}
+					else
+					{
+						for (int i = dif - 1; i >= 0; i--)
+						{
+							msg->AddByte(0x65);
+							GetMapDescription(oldPos.x - cMaxViewLeft, newPos.y - cMaxViewTop + i, newPos.z, cMaxViewLeft + cMaxViewRight + 1, 1, msg);
+						}
+					}
 				}
-				else if (oldPos.y < newPos.y) { // south, for old x
-					msg->AddByte(0x67);
-					GetMapDescription(oldPos.x - cMaxViewW, newPos.y + cMaxViewH, newPos.z, 2 * cMaxViewW + 1, 1, msg);
+				// south, for old x
+				else if (oldPos.y < newPos.y) 
+				{ 
+					dif = std::abs(oldPos.y - newPos.y);
+					
+					if (dif == 1)
+					{
+						msg->AddByte(0x67);
+						GetMapDescription(oldPos.x - cMaxViewLeft, newPos.y + cMaxViewBottom, newPos.z, cMaxViewLeft + cMaxViewRight + 1, 1, msg);
+					}
+					else
+					{
+						for (int i = dif - 1; i >= 0; i--)
+						{
+							msg->AddByte(0x67);
+							GetMapDescription(oldPos.x - cMaxViewLeft, newPos.y + cMaxViewBottom - i, newPos.z, cMaxViewLeft + cMaxViewRight + 1, 1, msg);
+						}
+					}
 				}
 
 				if (oldPos.x < newPos.x) { // east, [with new y]
-					msg->AddByte(0x66);
-					GetMapDescription(newPos.x + cMaxViewW, newPos.y - cMaxViewH, newPos.z, 1, 2 * cMaxViewH + 1, msg);
+					dif = std::abs(oldPos.x - newPos.x);
+
+					if (dif == 1)
+					{
+						msg->AddByte(0x66);
+						GetMapDescription(newPos.x + cMaxViewRight, newPos.y - cMaxViewTop, newPos.z, 1, cMaxViewTop + cMaxViewBottom + 1, msg);
+					}
+					else
+					{
+						for (int i = dif - 1; i >= 0; i--)
+						{
+							msg->AddByte(0x66);
+							GetMapDescription(newPos.x + cMaxViewRight - i, newPos.y - cMaxViewTop, newPos.z, 1, cMaxViewTop + cMaxViewBottom + 1, msg);
+						}
+					}
+					
 				}
 				else if (oldPos.x > newPos.x) { // west, [with new y]
-					msg->AddByte(0x68);
-					GetMapDescription(newPos.x - cMaxViewW, newPos.y - cMaxViewH, newPos.z, 1, 2 * cMaxViewH + 1, msg);
+					dif = std::abs(oldPos.x - newPos.x);
+					if (dif == 1)
+					{
+						msg->AddByte(0x68);
+						GetMapDescription(newPos.x - cMaxViewLeft, newPos.y - cMaxViewTop, newPos.z, 1, cMaxViewTop + cMaxViewBottom + 1, msg);
+					}
+					else
+					{
+						for (int i = dif - 1; i >= 0; i--)
+						{
+							msg->AddByte(0x68);
+							GetMapDescription(newPos.x - cMaxViewLeft + i, newPos.y - cMaxViewTop, newPos.z, 1, cMaxViewTop + cMaxViewBottom + 1, msg);
+						}
+					}
+					
 				}
 			}
 		}
@@ -2501,7 +2570,7 @@ void ProtocolGame::AddMapDescription(NetworkMessage_ptr msg, const Position& pos
 	msg->AddByte(SEND_PROTOCOL::protocol_map_description);
 	msg->AddPosition(player->getPosition());	  
 
-	GetMapDescription(pos.x - cMaxViewW, pos.y - cMaxViewH, pos.z, 2 * cMaxViewW + 1, 2 * cMaxViewH + 1, msg);
+	GetMapDescription(pos.x - cMaxViewLeft, pos.y - cMaxViewTop, pos.z, cMaxViewLeft + cMaxViewRight + 1, cMaxViewBottom + cMaxViewTop + 1, msg);
 	//GetMapDescription(pos.x - cMaxViewW, pos.y - cMaxViewH, pos.z,  cMaxViewW * 2, cMaxViewH * 2, msg);
 }
 
@@ -2744,6 +2813,9 @@ void ProtocolGame::AddCreatureOutfit(NetworkMessage_ptr msg, const Creature* cre
 		msg->AddU32(outfit.lookLegs);
 		msg->AddU32(outfit.lookFeet);
 		msg->AddByte(outfit.addons);
+		msg->AddU16(creature->getAttackOutfit());
+		msg->AddU16(creature->getBreathOutfit());
+		msg->AddU16(creature->getWalkAttackOutfit());
 	}
 	else{
 		msg->AddItemId(outfit.lookTypeEx);
@@ -2847,16 +2919,18 @@ void ProtocolGame::MoveUpCreature(NetworkMessage_ptr msg, const Creature* creatu
 			}
 		}
 
+	
 		//moving up a floor up makes us out of sync
 		//west
 		msg->AddByte(0x68);
-		GetMapDescription(oldPos.x - 8, oldPos.y + 1 - 6, newPos.z, 1, 14, msg);
+		GetMapDescription(oldPos.x - cMaxViewLeft, oldPos.y - cMaxViewTop + 1, newPos.z, 1, cMaxViewBottom + cMaxViewTop + 1, msg);
 
 		//north
 		msg->AddByte(0x65);
-		GetMapDescription(oldPos.x - 8, oldPos.y - 6, newPos.z, 18, 1, msg);
+		GetMapDescription(oldPos.x - cMaxViewLeft, oldPos.y - cMaxViewTop, newPos.z, cMaxViewLeft + cMaxViewRight + 1, 1, msg);
 	}
 }
+
 void ProtocolGame::MoveDownCreature(NetworkMessage_ptr msg, const Creature* creature,
 	const Position& newPos, const Position& oldPos, uint32_t oldStackPos)
 {
@@ -2868,9 +2942,12 @@ void ProtocolGame::MoveDownCreature(NetworkMessage_ptr msg, const Creature* crea
 		if (newPos.z == 8) {
 			int skip = -1;
 
-			GetFloorDescription(msg, oldPos.x - 8, oldPos.y - 6, newPos.z, 18, 14, -1, skip);
-			GetFloorDescription(msg, oldPos.x - 8, oldPos.y - 6, newPos.z + 1, 18, 14, -2, skip);
-			GetFloorDescription(msg, oldPos.x - 8, oldPos.y - 6, newPos.z + 2, 18, 14, -3, skip);
+			GetFloorDescription(msg, oldPos.x - cMaxViewLeft, oldPos.y - cMaxViewTop, newPos.z + 0, cMaxViewLeft + cMaxViewRight + 1,
+								cMaxViewBottom + cMaxViewTop + 1, -1, skip);
+			GetFloorDescription(msg, oldPos.x - cMaxViewLeft, oldPos.y - cMaxViewTop, newPos.z + 1, cMaxViewLeft + cMaxViewRight + 1,
+								cMaxViewBottom + cMaxViewTop + 1, -2, skip);
+			GetFloorDescription(msg, oldPos.x - cMaxViewLeft, oldPos.y - cMaxViewTop, newPos.z + 2, cMaxViewLeft + cMaxViewRight + 1,
+								cMaxViewBottom + cMaxViewTop + 1, -3, skip);
 
 			if (skip >= 0) {
 				msg->AddByte(skip);
@@ -2888,14 +2965,14 @@ void ProtocolGame::MoveDownCreature(NetworkMessage_ptr msg, const Creature* crea
 			}
 		}
 
-		//moving down a floor makes us out of sync
+		//moving down a floor makes us out of synceast
 		//east
 		msg->AddByte(0x66);
-		GetMapDescription(oldPos.x + 8 + 1, oldPos.y - 6 - 1, newPos.z, 1, 14, msg);
+		GetMapDescription(oldPos.x + cMaxViewRight, oldPos.y - cMaxViewTop - 1, newPos.z, 1, cMaxViewBottom + cMaxViewTop + 1, msg);
 
 		//south
 		msg->AddByte(0x67);
-		GetMapDescription(oldPos.x - 8, oldPos.y + 6 + 1, newPos.z, 18, 1, msg);
+		GetMapDescription(oldPos.x - cMaxViewLeft, oldPos.y + cMaxViewBottom, newPos.z, cMaxViewLeft + cMaxViewRight + 1, 1, msg);
 	}
 }
 

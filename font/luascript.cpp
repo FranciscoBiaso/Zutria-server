@@ -2000,6 +2000,9 @@ void LuaScriptInterface::registerFunctions()
 
 	//getItemArmor(uid)
 	lua_register(m_luaState, "getItemArmorByUID", LuaScriptInterface::luaGetItemArmorByUID);
+	
+	//getItemPos(uid)
+	lua_register(m_luaState, "getItemPos", LuaScriptInterface::luaGetItemPos);
 
 	//bit operations for Lua, based on bitlib project release 24
 	//bit.bnot, bit.band, bit.bor, bit.bxor, bit.lshift, bit.rshift
@@ -8782,6 +8785,25 @@ int LuaScriptInterface::luaGetItemArmorByUID(lua_State *L)
 	}
 
 	lua_pushnumber(L, item->getArmor());
+	return 1;
+}
+
+int LuaScriptInterface::luaGetItemPos(lua_State *L)
+{
+	//luaGetItemPos(uid)
+	uint32_t uid = popNumber(L);
+
+	ScriptEnviroment* env = getScriptEnv();
+
+	Item* item = env->getItemByUID(uid);
+	if (!item) 
+	{
+		reportErrorFunc(getErrorDesc(LUA_ERROR_ITEM_NOT_FOUND));
+		lua_pushnil(L);
+		return 1;
+	}
+
+	pushPosition(L, item->getPosition());
 	return 1;
 }
 

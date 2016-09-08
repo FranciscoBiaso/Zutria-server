@@ -165,10 +165,10 @@ public:
 	Map();
 	~Map();
 
-	static const int32_t maxViewportX = cMaxViewW + 4;
-	static const int32_t maxViewportY = cMaxViewH + 5;
-	static const int32_t maxClientViewportX = cMaxViewW;
-	static const int32_t maxClientViewportY = cMaxViewH;
+	static const int32_t maxViewportX = (cMaxViewLeft + cMaxViewRight)/2 + 4;
+	static const int32_t maxViewportY = (cMaxViewBottom + cMaxViewTop)/2 + 4;
+	static const int32_t maxClientViewportX = cMaxViewRight;
+	static const int32_t maxClientViewportY = cMaxViewBottom;
 
 	/**
 	* Load a map.

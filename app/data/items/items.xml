@@ -1,2 +1,96 @@
 <items>
+
+  <!-- ramps -->
+<!--   <item id="425"><attribute key="floorchange" value="west"/></item>  
+  <item id="426"><attribute key="floorchange" value="north"/></item>
+  <item id="427"><attribute key="floorchange" value="eastplus"/></item>
+  <item id="429"><attribute key="floorchange" value="southplus"/></item> -->
+  
+  <item id="998" name="basic axe">    
+		<attribute key="weight" value="1000" />
+		<attribute key="defense" value="2" />
+		<attribute key="attack" value="5" />
+		<attribute key="slash_attack" value="5" />
+		<attribute key="slottype" value="hand"/>
+		<attribute key="weapontype" value="melee"/>
+	</item>
+  
+  <item id="999" name="basic sword">    
+		<attribute key="weight" value="1000" />
+		<attribute key="defense" value="2" />
+		<attribute key="attack" value="5" />
+		<attribute key="perforation_attack" value="5" />
+		<attribute key="slottype" value="hand"/>
+		<attribute key="weapontype" value="melee"/>
+	</item>
+  
+   <item id="1000" name="basic sword">    
+		<attribute key="weight" value="1000" />
+		<attribute key="defense" value="2" />
+		<attribute key="attack" value="5" />
+		<attribute key="trauma_attack" value="5" />
+		<attribute key="slottype" value="hand"/>
+		<attribute key="weapontype" value="melee"/>
+	</item>
+  
+  
+	<!-- bloods -->
+	<item id="1038">	
+		<attribute key="decayTo" value="1039"/>
+		<attribute key="duration" value="15"/>
+	</item>
+  
+  <item id="1039">	
+		<attribute key="decayTo" value="1040"/>
+		<attribute key="duration" value="15"/>
+	</item>
+  
+  <item id="1040">	
+		<attribute key="decayTo" value="1041"/>
+		<attribute key="duration" value="15"/>
+	</item>
+  
+  <item id="1041">	
+		<attribute key="decayTo" value="1042"/>
+		<attribute key="duration" value="15"/>
+	</item>
+ 
+  <item id="1042">	
+		<attribute key="decayTo" value="0"/>
+		<attribute key="duration" value="15"/>
+	</item>
+ 
+ 
+  <!-- goblin body -->
+  <item id="1043">	
+		<attribute key="decayTo" value="1044"/>
+		<attribute key="duration" value="15"/>
+	</item>
+  
+  <item id="1044">	
+		<attribute key="decayTo" value="1045"/>
+		<attribute key="duration" value="15"/>
+	</item>
+  
+  <item id="1045">	
+		<attribute key="decayTo" value="0"/>
+		<attribute key="duration" value="15"/>
+	</item>
+  
+   <!-- rat body -->
+  <item id="1064">	
+		<attribute key="decayTo" value="1065"/>
+		<attribute key="duration" value="15"/>
+	</item>
+  
+  <item id="1065">	
+		<attribute key="decayTo" value="1066"/>
+		<attribute key="duration" value="15"/>
+	</item>
+  
+  <item id="1066">	
+		<attribute key="decayTo" value="0"/>
+		<attribute key="duration" value="15"/>
+	</item>
+	    
 </items>

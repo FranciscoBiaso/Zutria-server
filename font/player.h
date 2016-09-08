@@ -145,6 +145,9 @@ class Player : public Creature, public Cylinder
 public:
 	Player(const std::string& name, ProtocolGame* protocol);
 	virtual ~Player();
+
+	//attack functions
+	virtual void doAttacking();
 	
 	// get functions -------------------------------------------------
 	virtual Player* getPlayer() {return this;}
@@ -165,7 +168,6 @@ public:
 	virtual void getCreatureLight(LightInfo& light) const;
 	virtual RaceType_t getRace() const { return RACE_BLOOD; }
 	virtual WeaponType_t getWeaponType();
-	virtual uint32_t getAttackSpeed() const;
 	uint32_t getGUID() const { return identificator; }
 	static uint64_t getExpForLevel(int32_t level){return 10ULL * level * level * level;}
 	uint32_t getGuildId() const { return guildId; }
@@ -203,8 +205,6 @@ public:
 	uint32_t getTown() const { return town; }
 	double getCapacity() const;
 	double getFreeCapacity() const;	
-	// Returns the inventory item in the slot position
-	Item* getInventoryItem(slots_t slot) const;
 	// As above, but returns NULL if the item can not be weared in that slot (armor in hand for example)
 	Item* getEquippedItem(slots_t slot) const;
 	int32_t getVarSkill(skills_t skill) const { return varSkills[skill]; }
@@ -221,7 +221,7 @@ public:
 	int32_t getSkill(skills_t skilltype, skillsid_t skillinfo) const;
 	bool getAddAttackSkill() const { return addAttackSkillPoint; }
 	BlockType_t getLastAttackBlockType() const { return lastAttackBlockType; }
-	Item* getWeapon(bool ignoreAmmu = false);
+	//Item* getWeapon(bool ignoreAmmu = false);
 	int32_t getWeaponSkill(const Item* item) const;
 	void getShieldAndWeapon(const Item* &shield, const Item* &weapon) const;
 	Item* getWriteItem(uint32_t& _windowTextId, uint16_t& _maxWriteLen);
@@ -368,8 +368,7 @@ public:
 
 	bool isPzLocked() const { return pzLocked; }
 	virtual int blockHit(Creature* attacker, CombatType_t combatType, int * blockType, void * data = nullptr);
-	virtual void doAttacking(uint32_t interval);
-	virtual bool hasExtraSwing() {return lastAttack > 0 && ((OTSYS_TIME() - lastAttack) >= getAttackSpeed());}
+//	virtual bool hasExtraSwing() {return lastAttack > 0 && ((OTSYS_TIME() - lastAttack) >= getAttackSpeed());}
 	virtual void drainHealth(Creature* attacker, CombatType_t combatType, int32_t damage);
 	virtual void drainMana(Creature* attacker, int32_t manaLoss);
 	void addManaSpent(uint32_t amount, bool useMultiplier = true);
@@ -560,6 +559,7 @@ public:
 	void sendPing(uint32_t interval);
 	void sendStats();
 	void sendSkills();
+	void sendOnPlayerAttack(uint32_t creatureId);
 	void sendTextMessage(uint8_t GUItarget,MessageClasses mclass,MessageColors color, const std::string& message) const
 	{
 		if (client) client->sendTextMessage(GUItarget, mclass, color, message);
@@ -612,14 +612,13 @@ public:
 	void receivePing() {if(npings > 0) npings--;}
 
 	virtual void onThink(uint32_t interval);
-	virtual void onAttacking(uint32_t interval);
 
 	virtual void postAddNotification(Thing* thing, const Cylinder* oldParent, int32_t index, cylinderlink_t link = LINK_OWNER);
 	virtual void postRemoveNotification(Thing* thing, const Cylinder* newParent, int32_t index, bool isCompleteRemoval, cylinderlink_t link = LINK_OWNER);
 	
-	bool whereDmgTook(Creature *attacker, int32_t& blockType, double & defenseBodyFactor, int32_t & defenseItem);
+	//bool whereDmgTook(Creature *attacker, int32_t& blockType, double & defenseBodyFactor, int32_t & defenseItem);
 	int32_t getBlockDmg(const double defenseBodyFactor, const int32_t defenseItemFactor);
-	bool canExecuteAttack();
+	bool hasConcentration();
 	int32_t getAttackDmg(struct _weaponDamage_ * wd) { /*dmg is negative*/ return wd->totalDamage; }
 	
 
@@ -778,7 +777,6 @@ protected:
 	int32_t shieldBlockCount;
 	BlockType_t lastAttackBlockType;
 	bool addAttackSkillPoint;
-	uint64_t lastAttack;
 	int32_t shootRange;
 
 	chaseMode_t chaseMode;
@@ -793,9 +791,6 @@ protected:
 	Position loginPosition;
 	uint32_t lastip;
 
-	//inventory variables
-	Item* inventory[16];
-	bool inventoryAbilities[16];
 
 	//player advances variables
 	uint32_t skills[12];

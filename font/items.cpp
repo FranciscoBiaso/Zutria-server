@@ -53,11 +53,13 @@ ItemType::ItemType()
 	hasHeight        = false;
 	height = 0;
 
-	floorChangeDown = true;
+	floorChangeDown = false;
 	floorChangeNorth = false;
 	floorChangeSouth = false;
 	floorChangeEast = false;
 	floorChangeWest = false;
+	floorChangeEastPlus = false;
+	floorChangeSouthPlus = false;
 
 	blockSolid = false;
 	blockProjectile = false;
@@ -78,6 +80,7 @@ ItemType::ItemType()
 	weight        = 0;  // weight of the item, e.g. throwing distance depends on it
 	showCount     = true;
 	weaponType    = WEAPON_TYPE_NONE;
+	m_equipType = EquipType_t::NONE;
 	slot_position = SLOTP_RIGHT | SLOTP_LEFT;
 	wield_position= SLOT_HAND;
 	amuType       = AMMO_NONE;
@@ -274,11 +277,11 @@ int Items::loadFromOtb(std::string file)
 		iType->pickupable = hasBitSet(FLAG_PICKUPABLE, flags);
 		iType->moveable = hasBitSet(FLAG_MOVEABLE, flags);
 		iType->stackable = hasBitSet(FLAG_STACKABLE, flags);
-		iType->floorChangeDown = hasBitSet(FLAG_FLOORCHANGEDOWN, flags);
+		/*iType->floorChangeDown = hasBitSet(FLAG_FLOORCHANGEDOWN, flags);
 		iType->floorChangeNorth = hasBitSet(FLAG_FLOORCHANGENORTH, flags);
 		iType->floorChangeEast = hasBitSet(FLAG_FLOORCHANGEEAST, flags);
 		iType->floorChangeSouth = hasBitSet(FLAG_FLOORCHANGESOUTH, flags);
-		iType->floorChangeWest = hasBitSet(FLAG_FLOORCHANGEWEST, flags);
+		iType->floorChangeWest = hasBitSet(FLAG_FLOORCHANGEWEST, flags);*/
 		iType->alwaysOnTop = hasBitSet(FLAG_ALWAYSONTOP, flags);
 		iType->rotable = hasBitSet(FLAG_ROTABLE, flags);
 		iType->isHangable = hasBitSet(FLAG_HANGABLE, flags);	
@@ -537,22 +540,38 @@ bool Items::loadFromXml(const std::string& datadir)
 									it.allowPickupable = (intValue == 1);
 								}
 							}
-							else if(asLowerCaseString(strValue) == "floorchange"){
-								if(readXMLString(itemAttributesNode, "value", strValue)){
-									if(asLowerCaseString(strValue) == "down"){
+							else if(asLowerCaseString(strValue) == "floorchange")
+							{
+								if(readXMLString(itemAttributesNode, "value", strValue))
+								{
+									if(asLowerCaseString(strValue) == "down")
+									{
 										it.floorChangeDown = true;
 									}
-									else if(asLowerCaseString(strValue) == "north"){
+									else if(asLowerCaseString(strValue) == "north")
+									{
 										it.floorChangeNorth = true;
+
 									}
-									else if(asLowerCaseString(strValue) == "south"){
+									else if(asLowerCaseString(strValue) == "south")
+									{
 										it.floorChangeSouth = true;
 									}
-									else if(asLowerCaseString(strValue) == "west"){
+									else if(asLowerCaseString(strValue) == "west")
+									{
 										it.floorChangeWest = true;
 									}
-									else if(asLowerCaseString(strValue) == "east"){
+									else if(asLowerCaseString(strValue) == "east")
+									{
 										it.floorChangeEast = true;
+									}
+									else if (asLowerCaseString(strValue) == "eastplus")
+									{
+										it.floorChangeEastPlus = true;
+									}
+									else if (asLowerCaseString(strValue) == "southplus")
+									{
+										it.floorChangeSouthPlus = true;
 									}
 								}
 							}
@@ -657,7 +676,7 @@ bool Items::loadFromXml(const std::string& datadir)
 										it.weaponType = WEAPON_TYPE_MELEE;
 									}
 									else if(asLowerCaseString(strValue) == "shield"){
-										it.weaponType = WEAPON_TYPE_SHIELD;
+										it.m_equipType = EquipType_t::SHIELD;
 									}
 									else if(asLowerCaseString(strValue) == "distance"){
 										it.weaponType = WEAPON_TYPE_DISTANCE;

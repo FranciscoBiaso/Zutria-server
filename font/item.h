@@ -39,7 +39,7 @@ class TrashHolder;
 class Mailbox;
 class Door;
 class MagicField;
-class BedItem;
+//class BedItem;
 
 enum ITEMPROPERTY{
 	BLOCKSOLID = 0,
@@ -265,8 +265,8 @@ public:
 	virtual MagicField* getMagicField() {return NULL;}
 	virtual const MagicField* getMagicField() const {return NULL;}
 	//[ added for beds system
-	virtual BedItem* getBed(){ return NULL; }
-	virtual const BedItem* getBed() const { return NULL; }
+	//virtual BedItem* getBed(){ return NULL; }
+	//virtual const BedItem* getBed() const { return NULL; }
 	//]
 	
 	static std::string getDescription(const ItemType& it, int32_t lookDistance,
@@ -334,7 +334,8 @@ public:
 	bool isMoveable() const {return items[id].moveable;}
 	bool isNotMoveable() const {return !items[id].moveable;}
 	bool isPickupable() const {return items[id].pickupable;}
-	bool isWeapon() const {return (items[id].weaponType != WEAPON_TYPE_NONE);}
+	bool isWeapon() const { return (items[id].weaponType != WEAPON_TYPE_NONE); }
+	bool isEquipament() const {return (items[id].m_equipType != EquipType_t::NONE);}
 	bool isUseable() const {return items[id].useable;}
 	bool isHangable() const {return items[id].isHangable;}
 	bool isRoteable() const {const ItemType& it = items[id]; return it.rotable && it.rotateTo;}
@@ -347,6 +348,8 @@ public:
 	bool floorChangeSouth() const {return items[id].floorChangeSouth;}
 	bool floorChangeEast() const {return items[id].floorChangeEast;}
 	bool floorChangeWest() const {return items[id].floorChangeWest;}
+	bool floorChangeEastPlus() const { return items[id].floorChangeEastPlus; }
+	bool floorChangeSouthPlus() const { return items[id].floorChangeSouthPlus; }
 
 	const std::string& getName() const {return items[id].name;}
 	const std::string& getPluralName() const {return items[id].pluralName;}

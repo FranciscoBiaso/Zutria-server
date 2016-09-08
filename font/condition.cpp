@@ -1135,8 +1135,11 @@ bool ConditionDamage::init()
 
 		int32_t intervals = random_range(std::ceil(intervalsMax/2.0), intervalsMax);
 		
-		
-		double dmgPerInterval = totalDamage / intervals;
+		double dmgPerInterval = 0;
+		if (intervals > 0)
+			dmgPerInterval = totalDamage / intervals;
+		else
+			return false;
 		double mod = totalDamage % intervals;
 		for (int32_t i = 0; i < intervals; i++)
 		{
@@ -1144,7 +1147,6 @@ bool ConditionDamage::init()
 		}		
 		if(mod != 0 )
 			addDamage(1, tickInterval, -mod);
-
 	}
 
 	return (!damageList.empty());

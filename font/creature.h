@@ -96,6 +96,7 @@ enum ZoneType_t{
     ZONE_NORMAL
 };
 
+
 class Map;
 class Thing;
 class Container;
@@ -108,6 +109,7 @@ class Tile;
 #define EVENT_CREATURECOUNT 10
 #define EVENT_CREATURE_THINK_INTERVAL 1000
 #define EVENT_CHECK_CREATURE_INTERVAL (EVENT_CREATURE_THINK_INTERVAL / EVENT_CREATURECOUNT)
+#define EVENT_CREATURE_INTERVAL 100
 
 class FrozenPathingConditionCall {
 public:
@@ -135,6 +137,22 @@ protected:
 	
 public:
 	virtual ~Creature();
+
+
+	void onAttacking(uint32_t interval);
+	virtual void onAttacked();
+	virtual void doAttacking() {}
+	uint16_t getAttackSpeed() const;
+	void resetAttackTicks();
+	Item* getInventoryItem(slots_t slot) const;
+	Item* getWeapon() const;
+	Item* getShield() const;
+	
+	bool whereDmgTook(Creature *attacker, int32_t& blockType, double & defenseBodyFactor, int32_t & defenseItemFactor);
+	virtual int32_t getBlockDmg(const double defenseBodyFactor, const int32_t defenseItemFactor) { return 0; }
+	virtual bool hasConcentration() { return true; }
+	virtual int32_t getAttackDmg(struct _weaponDamage_ * wd) { return -1; }
+
 
 	virtual Creature* getCreature() {return this;}
 	virtual const Creature* getCreature()const {return this;}
@@ -211,6 +229,13 @@ public:
 
 	const Outfit_t getCurrentOutfit() const {return currentOutfit;}
 	const void setCurrentOutfit(Outfit_t outfit) {currentOutfit = outfit;}
+	const uint32_t getAttackOutfit() const { return m_attackOutfit; }
+	const uint32_t getBreathOutfit() const { return m_breathOutfit; }
+	const uint32_t getWalkAttackOutfit() const { return m_walkAttackOutfit; }
+	
+	const void setAttackOutfit(uint32_t attackOutfit) { m_attackOutfit = attackOutfit; }
+	const void setBreathOutfit(uint32_t breathOutfit) { m_breathOutfit = breathOutfit; }
+	const void setWalkAttackOutfit(uint32_t walkAttackOutfit) { m_walkAttackOutfit = walkAttackOutfit; }
 	const Outfit_t getDefaultOutfit() const {return defaultOutfit;}
 	bool isInvisible() const {return hasCondition(CONDITION_INVISIBLE);}
 	ZoneType_t getZone() const {
@@ -319,7 +344,6 @@ public:
 	virtual void onTickCondition(ConditionType_t type, bool& bRemove);
 	virtual void onCombatRemoveCondition(const Creature* attacker, Condition* condition);
 	virtual void onAttackedCreature(Creature* target);
-	virtual void onAttacked();
 	virtual void onAttackedCreatureDrainHealth(Creature* target, int32_t points);
 	virtual void onTargetCreatureGainHealth(Creature* target, int32_t points);
 	virtual void onAttackedCreatureKilled(Creature* target);
@@ -330,11 +354,8 @@ public:
 	virtual void onChangeZone(ZoneType_t zone);
 	virtual void onAttackedCreatureChangeZone(ZoneType_t zone);
 	virtual void onIdleStatus();
-	
-	virtual bool whereDmgTook(Creature *attacker, int32_t& blockType, double & defenseBodyFactor, int32_t & defenseItemFactor) { blockType = BLOCK_NONE; return false; }//no critic 
-	virtual int32_t getBlockDmg(const double defenseBodyFactor, const int32_t defenseItemFactor) { return 0; }
-	virtual bool canExecuteAttack() { return true; }
-	virtual int32_t getAttackDmg(struct _weaponDamage_ * wd) { return 1; }
+
+	bool isInRange(Creature * target);
 
 
 	virtual void getCreatureLight(LightInfo& light) const;
@@ -342,7 +363,6 @@ public:
 	void setCreatureLight(LightInfo& light) {internalLight = light;}
 
 	virtual void onThink(uint32_t interval);
-	virtual void onAttacking(uint32_t interval);
 	virtual void onWalk();
 	virtual bool getNextStep(Direction& dir);
 
@@ -416,6 +436,9 @@ protected:
 
 	Outfit_t currentOutfit;
 	Outfit_t defaultOutfit;
+	uint32_t m_attackOutfit;
+	uint32_t m_breathOutfit;
+	uint32_t m_walkAttackOutfit;
 
 	Position masterPos;
 	int32_t masterRadius;
@@ -426,6 +449,7 @@ protected:
 	int32_t varSpeed;
 	bool skillLoss;
 	bool lootDrop;
+	int range;
 
 
 	double m_skills[NUMBER_OF_SKILLS];
@@ -479,7 +503,6 @@ protected:
 	void updateTileCache(const Tile* tile, int32_t dx, int32_t dy);
 	void updateTileCache(const Tile* tile, const Position& pos);
 	void onCreatureDisappear(const Creature* creature, bool isLogout);
-	virtual void doAttacking(uint32_t interval) {};
 	virtual bool hasExtraSwing() {return false;}
 
 	virtual uint64_t getLostExperience() const { return 0; };
@@ -496,6 +519,14 @@ protected:
 	friend class Map;
 	friend class Commands;
 	friend class LuaScriptInterface;
+
+	uint32_t m_attackTicks;
+	uint16_t m_attackSpeed;
+	bool m_attacking;
+	//Creature * defenderCreature;
+	Item* inventory[16];
+	//inventory variables
+	bool inventoryAbilities[16];
 };
 
 

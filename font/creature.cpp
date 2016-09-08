@@ -35,6 +35,9 @@
 #include <vector>
 #include <algorithm>
 
+
+extern Weapons* g_weapons;
+
 #if defined __EXCEPTION_TRACER__
 #include "exception.h"
 #endif
@@ -48,7 +51,9 @@ extern ConfigManager g_config;
 extern CreatureEvents* g_creatureEvents;
 
 Creature::Creature() :
-  isInternalRemoved(false)
+	isInternalRemoved(false), m_attackTicks(0),
+	m_attackSpeed(EVENT_CREATURE_INTERVAL * 2),
+	m_attacking(false)
 {
 	id = 0;
     _tile = NULL;
@@ -91,9 +96,16 @@ Creature::Creature() :
 	scriptEventsBitField = 0;
 	onIdleStatus();
 	isDying = false;
+	range = 1;
+	//defenderCreature = nullptr;
 
-	/*for (int i = 0; i < NUMBER_OF_SKILLS; i++)
-		m_skills[i] = 0;*/
+	for (int32_t i = 0; i < SLOT_LAST; i++) {
+		inventory[i] = NULL;
+		inventoryAbilities[i] = false;
+	}
+
+	for (int i = 0; i < NUMBER_OF_SKILLS; i++)
+		m_skills[i] = 0;
 }
 
 Creature::~Creature()
@@ -118,6 +130,174 @@ Creature::~Creature()
 
 	//std::cout << "Creature destructor " << this->getID() << std::endl;
 }
+
+void Creature::onAttacking(uint32_t interval)
+{
+	if (attackedCreature)
+	{
+		//onAttacked();
+		attackedCreature->onAttacked();
+
+		//target not in range or blocked by objects
+		if (isInRange(attackedCreature) && g_game.isSightClear(getPosition(), attackedCreature->getPosition(), true))
+		{
+			m_attackTicks += interval;
+
+			//delay time to attack
+			if (m_attackTicks >= getAttackSpeed())
+			{
+				m_attacking = true;
+				doAttacking();
+				resetAttackTicks();
+				m_attacking = false;
+			}
+		}
+	}
+}
+
+uint16_t Creature::getAttackSpeed() const 
+{
+	return m_attackSpeed;
+}
+
+
+void Creature::resetAttackTicks()
+{
+	m_attackTicks = 0;
+}
+
+Item * Creature::getInventoryItem(slots_t slot) const
+{
+	return inventory[slot];
+}
+
+
+Item* Creature::getWeapon() const
+{
+	if (getInventoryItem(SLOT_RIGHT))
+		return getInventoryItem(SLOT_RIGHT)->isWeapon() ? getInventoryItem(SLOT_RIGHT) : getInventoryItem(SLOT_LEFT);
+	else
+		return  getInventoryItem(SLOT_LEFT);
+}
+
+Item* Creature::getShield() const
+{
+	if (getInventoryItem(SLOT_RIGHT))
+		return getInventoryItem(SLOT_RIGHT)->isEquipament() ? getInventoryItem(SLOT_RIGHT) : getInventoryItem(SLOT_LEFT);
+	else
+		return  getInventoryItem(SLOT_LEFT);
+}
+
+bool Creature::whereDmgTook(Creature *attacker, int32_t& blockType, double & defenseBodyFactor, int32_t & defenseItemFactor)
+{
+	bool critic = false;
+	double probabilityOccurr = 0;	
+
+	Item * weapon = getWeapon();
+	Item * shield = getShield();
+	Item * elm = getInventoryItem(SLOT_HEAD);
+	Item * legs = getInventoryItem(SLOT_LEGS);
+	Item * armor = getInventoryItem(SLOT_ARMOR);
+
+	double attackerAgilityRandomNumber = dice_00_10() * attacker->getSkillValue(ATTR_AGILITY);
+	double defenderAgilityRandomNumber = dice_00_10() * getSkillValue(ATTR_AGILITY);
+
+	if (defenderAgilityRandomNumber > attackerAgilityRandomNumber)
+	{
+		//get the influence of the amount of agility of this player
+		double defenderAgilityInfluence = 1 - std::pow(0.5, defenderAgilityRandomNumber / 20.0);
+
+		//(defenderAgilityRandomNumber - attackerAgilityRandomNumber)/defendingPlayerAgility = %of agility in use in this moment                 
+		probabilityOccurr = (defenderAgilityRandomNumber - attackerAgilityRandomNumber) / defenderAgilityRandomNumber * defenderAgilityInfluence * 0.35;
+
+
+		if (dice_00_10() <= probabilityOccurr)
+		{
+			blockType = BLOCK_DODGE;
+			defenseBodyFactor = inifity;
+			defenseItemFactor = inifity;
+		}
+
+	}
+
+	double attackerSkillRandomNumber = dice_00_10() * attacker->getSkillValue(attacker->getAttackSkillType(attacker->getWeaponType()));
+	double defenderSkillRandomNumber = dice_00_10() * getSkillValue(ATTR_DEFENSE);
+
+
+	if (defenderSkillRandomNumber > attackerSkillRandomNumber)
+	{
+		//get the influence of the amount of defense of this player
+		double defenderDefenseInfluence = 1 - std::pow(0.5, defenderSkillRandomNumber / 20.0);
+		//(defenderAgilityRandomNumber - attackerAgilityRandomNumber)/defendingPlayerAgility = %of agility in use in this moment                 
+		probabilityOccurr = (defenderSkillRandomNumber - attackerSkillRandomNumber) / defenderSkillRandomNumber * defenderDefenseInfluence;
+
+		//trying to block with shield		
+		if (dice_00_10() <= probabilityOccurr && shield)
+		{
+			blockType = BLOCK_SHIELD;
+			defenseItemFactor = shield->getDefense();
+			defenseBodyFactor = dice_05_10();
+
+		}
+
+		//trying to block with weapon
+		if (dice_00_10() <= probabilityOccurr && weapon)
+		{
+			blockType = BLOCK_WEAPON;
+			defenseItemFactor = weapon->getDefense();
+			defenseBodyFactor = dice_04_09();
+
+		}
+	}
+
+	//didn't took at shield/weapon/air(dodge)
+	if (blockType == BLOCK_NONE)
+	{
+		double randomNumber = dice_00_10();
+		//55% chance armor
+		if (randomNumber <= 0.55)
+		{
+			blockType = BLOCK_ARMOR;
+			if (armor)
+				defenseItemFactor = armor->getDefense();
+			defenseBodyFactor = dice_04_085();
+
+		}
+		//30% legs
+		else if (randomNumber <= 0.85)
+		{
+			blockType = BLOCK_LEGS;
+			if (legs)
+				defenseItemFactor = legs->getDefense();
+			defenseBodyFactor = dice_04_075();
+
+		}
+		//15% helmet
+		else
+		{
+			blockType = BLOCK_ELM;
+			if (elm)
+				defenseItemFactor = elm->getDefense();
+			defenseBodyFactor = dice_00_10();
+
+			// aprox 3% chance to critic occur
+			//increased with attacker concentration
+			if (defenseBodyFactor <= 1.0 - std::pow(0.5, attacker->getSkillValue(ATTR_CONCENTRATION) / 25.0))
+				critic = true;
+		}
+	}
+
+	//we already has defenseitemfactor and defensebodyfactor
+	//let's reset blocktype it will be attributed in future
+	if (!(blockType & BLOCK_DODGE))
+		blockType = BLOCK_NONE;
+
+	if (critic)
+		return true;
+	else
+		return false;
+}
+
 
 bool Creature::canSee(const Position& myPos, const Position& pos, uint32_t viewRangeX, uint32_t viewRangeY)
 {
@@ -230,17 +410,6 @@ void Creature::onThink(uint32_t interval)
 	}
 }
 
-void Creature::onAttacking(uint32_t interval)
-{
-	if(attackedCreature){
-		onAttacked();
-		attackedCreature->onAttacked();
-
-		if(g_game.isSightClear(getPosition(), attackedCreature->getPosition(), true)){
-			doAttacking(interval);
-		}
-	}
-}
 
 void Creature::onWalk()
 {
@@ -720,11 +889,11 @@ void Creature::onCreatureMove(const Creature* creature, const Tile* newTile, con
 			onCreatureDisappear(attackedCreature, false);
 		}
 		else{
-			if(hasExtraSwing()){
-				//our target is moving lets see if we can get in hit
-				Dispatcher::getDispatcher().addTask(createTask(
-					boost::bind(&Game::checkCreatureAttack, &g_game, getID())));
-			}
+			//if(hasExtraSwing()){
+			//	//our target is moving lets see if we can get in hit
+			//	Dispatcher::getDispatcher().addTask(createTask(
+			//		boost::bind(&Game::checkCreatureAttack, &g_game, getID())));
+			//}
 
 			onAttackedCreatureChangeZone(attackedCreature->getZone());
 		}
@@ -787,13 +956,16 @@ void Creature::onDie()
 void Creature::dropCorpse()
 {
 	Item* splash = NULL;
-	switch(getRace()){
+
+
+	switch(getRace())
+	{
 		case RACE_VENOM:
-			splash = Item::CreateItem(ITEM_FULLSPLASH, FLUID_GREEN);
+			splash = Item::CreateItem(ITEM_SPLASH_SIZE_1, FLUID_GREEN);
 			break;
 
 		case RACE_BLOOD:
-			splash = Item::CreateItem(ITEM_FULLSPLASH, FLUID_BLOOD);
+			splash = Item::CreateItem(ITEM_SPLASH_SIZE_1, FLUID_BLOOD);
 			break;
 
 		case RACE_UNDEAD:
@@ -820,8 +992,9 @@ void Creature::dropCorpse()
 
 	//scripting event - onDie
 	onDieEvent(corpse);
-	if(corpse)
-		dropLoot(corpse->getContainer());
+	
+	//if(corpse)
+		//dropLoot(corpse->getContainer());
 
 	g_game.removeCreature(this, false);
 }
@@ -1778,6 +1951,17 @@ int64_t Creature::getEventStepTicks() const
 	}
 
 	return ret;
+}
+
+bool Creature::isInRange(Creature * target)
+{
+	Position pos = getPosition();
+	Position targetPosition = target->getPosition();
+
+	if (std::abs(pos.x - targetPosition.x) <= range && std::abs(pos.y - targetPosition.y) <= range)
+		return g_game.isSightClear(pos, targetPosition, true);
+	else
+		return false;
 }
 
 void Creature::getCreatureLight(LightInfo& light) const

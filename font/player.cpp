@@ -112,7 +112,6 @@ Creature()
 	shieldBlockCount = 0;
 	lastAttackBlockType = BLOCK_NONE;
 	addAttackSkillPoint = false;
-	lastAttack = 0;
 	shootRange = 1;
 
 	chaseMode = CHASEMODE_STANDSTILL;
@@ -127,11 +126,6 @@ Creature()
 	walkTaskEvent = 0;
 	actionTaskEvent = 0;
 	nextStepEvent = 0;
-
-	for(int32_t i = 0; i < SLOT_LAST; i++){
-		inventory[i] = NULL;
-		inventoryAbilities[i] = false;
-	}
 
 	//for(int32_t i = SKILL_FIRST; i <= SKILL_LAST; ++i){
 	//	skills[i][SKILL_LEVEL]= 10;
@@ -217,6 +211,48 @@ Player::~Player()
 #ifdef __ENABLE_SERVER_DIAGNOSTIC__
 	playerCount--;
 #endif
+}
+
+void Player::doAttacking()
+{
+	//player weapon
+	Item* tool = getWeapon();
+	const Weapon* weapon = g_weapons->getWeapon(tool);
+
+	//player only attack with weapon in this case
+	if (weapon)
+	{
+		if (!weapon->interruptSwing())
+		{
+			weapon->useWeapon(this, tool, attackedCreature);			
+
+			//used to all players see the attack animation on client game
+			const SpectatorVec& spectors = g_game.getSpectators(getPosition());
+			Player * spectator = nullptr;
+			for (SpectatorVec::const_iterator it = spectors.begin(); it != spectors.end(); ++it) 
+			{
+				if ((spectator = (*it)->getPlayer()))
+				{
+					spectator->sendOnPlayerAttack(getID());
+				}
+			}			
+			
+		}
+		else if (!canDoAction())
+		{
+			uint32_t delay = getNextActionTime();
+			SchedulerTask* task = createSchedulerTask(delay, boost::bind(&Game::checkCreatureAttack,
+				&g_game, getID()));
+			setNextActionTask(task);
+		}
+		else
+		{
+			if (!weapon->hasExhaustion())
+			{
+				weapon->useWeapon(this, tool, attackedCreature);
+			}
+		}
+	}
 }
 
 bool Player::setVocation(uint32_t vocId)
@@ -313,16 +349,6 @@ std::string Player::getDescription(int32_t lookDistance) const
 	return str;
 }
 
-Item* Player::getInventoryItem(slots_t slot) const
-{
-	if(slot > 0 && slot < SLOT_LAST)
-		return inventory[slot];
-	if(slot == SLOT_HAND)
-		return inventory[SLOT_LEFT]? inventory[SLOT_LEFT] : inventory[SLOT_RIGHT];
-
-	return NULL;
-}
-
 Item* Player::getEquippedItem(slots_t slot) const
 {
 	Item* item = getInventoryItem(slot);
@@ -349,57 +375,57 @@ void Player::setConditionSuppressions(uint32_t conditions, bool remove)
 	}
 }
 
-Item* Player::getWeapon(bool ignoreAmmu /*= false*/)
-{
-	Item* item;
-
-	for(uint32_t slot = SLOT_RIGHT; slot <= SLOT_LEFT; slot++)
-	{
-		item = getInventoryItem((slots_t)slot);
-		if(!item) 
-			continue;		
-
-		switch(item->getWeaponType())
-		{
-			case WEAPON_TYPE_MELEE:
-			{
-				const Weapon* weapon = g_weapons->getWeapon(item);
-				if(weapon)
-				{
-					return item;
-				}
-			}
-			break;
-
-			case WEAPON_TYPE_DISTANCE:
-			{
-				if(!ignoreAmmu && item->getAmuType() != AMMO_NONE){
-					Item* ammuItem = getInventoryItem(SLOT_AMMO);
-
-					if(ammuItem && ammuItem->getAmuType() == item->getAmuType()){
-						const Weapon* weapon = g_weapons->getWeapon(ammuItem);
-						if(weapon){
-							shootRange = item->getShootRange();
-							return ammuItem;
-						}
-					}
-				}
-				else{
-					const Weapon* weapon = g_weapons->getWeapon(item);
-					if(weapon){
-						shootRange = item->getShootRange();
-						return item;
-					}
-				}
-			}
-
-			default:
-				break;
-		}
-	}
-
-	return NULL;
-}
+//Item* Player::getWeapon(bool ignoreAmmu /*= false*/)
+//{
+//	Item* item;
+//
+//	for(uint32_t slot = SLOT_RIGHT; slot <= SLOT_LEFT; slot++)
+//	{
+//		item = getInventoryItem((slots_t)slot);
+//		if(!item) 
+//			continue;		
+//
+//		switch(item->getWeaponType())
+//		{
+//			case WEAPON_TYPE_MELEE:
+//			{
+//				const Weapon* weapon = g_weapons->getWeapon(item);
+//				if(weapon)
+//				{
+//					return item;
+//				}
+//			}
+//			break;
+//
+//			case WEAPON_TYPE_DISTANCE:
+//			{
+//				if(!ignoreAmmu && item->getAmuType() != AMMO_NONE){
+//					Item* ammuItem = getInventoryItem(SLOT_AMMO);
+//
+//					if(ammuItem && ammuItem->getAmuType() == item->getAmuType()){
+//						const Weapon* weapon = g_weapons->getWeapon(ammuItem);
+//						if(weapon){
+//							shootRange = item->getShootRange();
+//							return ammuItem;
+//						}
+//					}
+//				}
+//				else{
+//					const Weapon* weapon = g_weapons->getWeapon(item);
+//					if(weapon){
+//						shootRange = item->getShootRange();
+//						return item;
+//					}
+//				}
+//			}
+//
+//			default:
+//				break;
+//		}
+//	}
+//
+//	return NULL;
+//}
 
 WeaponType_t Player::getWeaponType()
 {
@@ -1076,6 +1102,12 @@ void Player::sendSkills()
 		client->sendSkills(); 
 }
 
+void Player::sendOnPlayerAttack(uint32_t creatureId)
+{
+	if (client)
+		client->sendOnPlayerAttack(creatureId);
+}
+
 
 void Player::sendPing(uint32_t interval)
 {
@@ -1248,13 +1280,13 @@ void Player::onCreatureAppear(const Creature* creature, bool isLogin)
 		}
 
 		//[ added for beds system
-		BedItem* bed = Beds::instance().getBedBySleeper(getGUID());
+		/*BedItem* bed = Beds::instance().getBedBySleeper(getGUID());
 		if(bed){
 			bed->wakeUp(this);
 			#ifdef __DEBUG__
 			std::cout << "Player " << getName() << " waking up." << std::endl;
 			#endif
-		}
+		}*/
 		//]
 	}
 }
@@ -1715,127 +1747,124 @@ void Player::addManaSpent(uint32_t amount, bool useMultiplier /*= true*/)
 	//}
 }
 
-bool Player::whereDmgTook(Creature *attacker, int32_t& blockType,double & defenseBodyFactor, int32_t & defenseItemFactor)
-{
-	bool critic = false;
-	double probabilityOccurr = 0;	
-
-	Item * weapon = getWeapon();
-	Item * elm = getInventoryItem(SLOT_HEAD);
-	Item * legs = getInventoryItem(SLOT_LEGS);
-	Item * armor = getInventoryItem(SLOT_ARMOR);
-
-	double attackerAgilityRandomNumber = dice_00_10() * attacker->getSkillValue(ATTR_AGILITY);
-	double defenderAgilityRandomNumber = dice_00_10() * getSkillValue(ATTR_AGILITY);
-
-	if (defenderAgilityRandomNumber > attackerAgilityRandomNumber)
-	{
-		//get the influence of the amount of agility of this player
-		double defenderAgilityInfluence = 1 - std::pow(0.5, defenderAgilityRandomNumber / 20.0);		
-
-		//(defenderAgilityRandomNumber - attackerAgilityRandomNumber)/defendingPlayerAgility = %of agility in use in this moment                 
-		probabilityOccurr = (defenderAgilityRandomNumber - attackerAgilityRandomNumber) / defenderAgilityRandomNumber * defenderAgilityInfluence * 0.35;
-		
-		
-		if (dice_00_10() <= probabilityOccurr)
-		{			
-			blockType = BLOCK_DODGE;
-			defenseBodyFactor = inifity;
-			defenseItemFactor = inifity;
-		}
-		
-	}
-
-	double attackerSkillRandomNumber = dice_00_10() * attacker->getSkillValue(attacker->getAttackSkillType(attacker->getWeaponType()));
-	//std::cout << "attackerSkillRandomNumber" << attackerSkillRandomNumber << std::endl;
-	double defenderSkillRandomNumber = dice_00_10() * getSkillValue(ATTR_DEFENSE);
-	//std::cout << "defenderSkillRandomNumber" << defenderSkillRandomNumber << std::endl;
-
-	if (defenderSkillRandomNumber > attackerSkillRandomNumber)
-	{
-		//get the influence of the amount of defense of this player
-		double defenderDefenseInfluence = 1 - std::pow(0.5, defenderSkillRandomNumber / 20.0);
-		//(defenderAgilityRandomNumber - attackerAgilityRandomNumber)/defendingPlayerAgility = %of agility in use in this moment                 
-		probabilityOccurr = (defenderSkillRandomNumber - attackerSkillRandomNumber) / defenderSkillRandomNumber * defenderDefenseInfluence;
-		
-		//trying to block with shield		
-		if (dice_00_10() <= probabilityOccurr && hasShield())
-		{
-			blockType = BLOCK_SHIELD;
-			defenseItemFactor = getShieldDefense();
-			defenseBodyFactor = dice_05_10();
-
-		}
-
-		//trying to block with weapon
-		if (dice_00_10() <= probabilityOccurr && weapon)
-		{
-			blockType = BLOCK_WEAPON;
-			defenseItemFactor = getWeaponDefense();
-			defenseBodyFactor = dice_04_09();
-
-		}
-	}
-
-	//didn't took at shield/weapon/air(dodge)
-	if (blockType == BLOCK_NONE)
-	{
-		double randomNumber = dice_00_10();
-		//55% chance armor
-		if (randomNumber <= 0.55)
-		{
-			blockType = BLOCK_ARMOR;
-			if (armor)
-				defenseItemFactor = armor->getDefense();
-			defenseBodyFactor = dice_04_085();
-
-		}
-		//30% legs
-		else if (randomNumber <= 0.85)
-		{
-			blockType = BLOCK_LEGS;
-			if (legs)
-				defenseItemFactor = legs->getDefense();
-			defenseBodyFactor = dice_04_075();
-
-		}
-		//15% helmet
-		else
-		{
-			blockType = BLOCK_ELM;
-			if (elm)
-				defenseItemFactor = elm->getDefense();
-			defenseBodyFactor = dice_04_065();
-
-			// aprox 3% chance to critic occur
-			//increased with attacker concentration
-			std::cout << (0.045 + (0.075 - std::pow(0.5, attacker->getSkillValue(ATTR_CONCENTRATION) / 25.0) * 0.075)) << std::endl;
-			if (defenseBodyFactor <= (0.045 + (0.075 - std::pow(0.5, attacker->getSkillValue(ATTR_CONCENTRATION) / 25.0) * 0.075)))
-				critic = true;
-		}
-	}
-
-	//we already has defenseitemfactor and defensebodyfactor
-	//let's reset blocktype it will be attributed in future
-	if (!(blockType & BLOCK_DODGE))
-		blockType = BLOCK_NONE;
-
-	if (attacker)
-		sendCreatureSquare(attacker, (SquareColor_t)TEXTCOLOR_GRAY);
-
-	if (critic)
-		return true;
-	else
-		return false;
-}
+//bool Player::whereDmgTook(Creature *attacker, int32_t& blockType,double & defenseBodyFactor, int32_t & defenseItemFactor)
+//{
+//	bool critic = false;
+//	double probabilityOccurr = 0;	
+//
+//	Item * weapon = getWeapon();
+//	Item * elm = getInventoryItem(SLOT_HEAD);
+//	Item * legs = getInventoryItem(SLOT_LEGS);
+//	Item * armor = getInventoryItem(SLOT_ARMOR);
+//
+//	double attackerAgilityRandomNumber = dice_00_10() * attacker->getSkillValue(ATTR_AGILITY);
+//	double defenderAgilityRandomNumber = dice_00_10() * getSkillValue(ATTR_AGILITY);
+//
+//	if (defenderAgilityRandomNumber > attackerAgilityRandomNumber)
+//	{
+//		//get the influence of the amount of agility of this player
+//		double defenderAgilityInfluence = 1 - std::pow(0.5, defenderAgilityRandomNumber / 20.0);		
+//
+//		//(defenderAgilityRandomNumber - attackerAgilityRandomNumber)/defendingPlayerAgility = %of agility in use in this moment                 
+//		probabilityOccurr = (defenderAgilityRandomNumber - attackerAgilityRandomNumber) / defenderAgilityRandomNumber * defenderAgilityInfluence * 0.35;
+//		
+//		
+//		if (dice_00_10() <= probabilityOccurr)
+//		{			
+//			blockType = BLOCK_DODGE;
+//			defenseBodyFactor = inifity;
+//			defenseItemFactor = inifity;
+//		}
+//		
+//	}
+//
+//	double attackerSkillRandomNumber = dice_00_10() * attacker->getSkillValue(attacker->getAttackSkillType(attacker->getWeaponType()));
+//	double defenderSkillRandomNumber = dice_00_10() * getSkillValue(ATTR_DEFENSE);
+//	
+//
+//	if (defenderSkillRandomNumber > attackerSkillRandomNumber)
+//	{
+//		//get the influence of the amount of defense of this player
+//		double defenderDefenseInfluence = 1 - std::pow(0.5, defenderSkillRandomNumber / 20.0);
+//		//(defenderAgilityRandomNumber - attackerAgilityRandomNumber)/defendingPlayerAgility = %of agility in use in this moment                 
+//		probabilityOccurr = (defenderSkillRandomNumber - attackerSkillRandomNumber) / defenderSkillRandomNumber * defenderDefenseInfluence;
+//		
+//		//trying to block with shield		
+//		if (dice_00_10() <= probabilityOccurr && hasShield())
+//		{
+//			blockType = BLOCK_SHIELD;
+//			defenseItemFactor = getShieldDefense();
+//			defenseBodyFactor = dice_05_10();
+//
+//		}
+//
+//		//trying to block with weapon
+//		if (dice_00_10() <= probabilityOccurr && weapon)
+//		{
+//			blockType = BLOCK_WEAPON;
+//			defenseItemFactor = getWeaponDefense();
+//			defenseBodyFactor = dice_04_09();
+//
+//		}
+//	}
+//
+//	//didn't took at shield/weapon/air(dodge)
+//	if (blockType == BLOCK_NONE)
+//	{
+//		double randomNumber = dice_00_10();
+//		//55% chance armor
+//		if (randomNumber <= 0.55)
+//		{
+//			blockType = BLOCK_ARMOR;
+//			if (armor)
+//				defenseItemFactor = armor->getDefense();
+//			defenseBodyFactor = dice_04_085();
+//
+//		}
+//		//30% legs
+//		else if (randomNumber <= 0.85)
+//		{
+//			blockType = BLOCK_LEGS;
+//			if (legs)
+//				defenseItemFactor = legs->getDefense();
+//			defenseBodyFactor = dice_04_075();
+//
+//		}
+//		//15% helmet
+//		else
+//		{
+//			blockType = BLOCK_ELM;
+//			if (elm)
+//				defenseItemFactor = elm->getDefense();
+//			defenseBodyFactor = dice_00_10();
+//
+//			// aprox 3% chance to critic occur
+//			//increased with attacker concentration
+//			if (defenseBodyFactor <= 1.0 - std::pow(0.5, attacker->getSkillValue(ATTR_CONCENTRATION) / 25.0))
+//				critic = true;
+//		}
+//	}
+//
+//	//we already has defenseitemfactor and defensebodyfactor
+//	//let's reset blocktype it will be attributed in future
+//	if (!(blockType & BLOCK_DODGE))
+//		blockType = BLOCK_NONE;
+//
+//	if (attacker)
+//		sendCreatureSquare(attacker, (SquareColor_t)TEXTCOLOR_GRAY);
+//
+//	if (critic)
+//		return true;
+//	else
+//		return false;
+//}
 
 int32_t Player::getBlockDmg(const double defenseBodyFactor, const int32_t defenseItemFactor)
 {
 	return dice_07_10() * (0.4 * getSkillValue(ATTR_FORCE) + 0.6 *  getSkillValue(ATTR_DEFENSE)) * (defenseBodyFactor * defenseItemFactor);
 }
 
-
-bool Player::canExecuteAttack()
+bool Player::hasConcentration()
 {
 	//use concentration to influence attack error
 	if (dice_00_10() <= (std::pow(0.5, getSkillValue(ATTR_CONCENTRATION) / 40.0) * 0.35))
@@ -1843,7 +1872,6 @@ bool Player::canExecuteAttack()
 	else
 		return true;
 }
-
 
 void Player::updateAttributes()
 {
@@ -3182,61 +3210,6 @@ void Player::getPathSearchParams(const Creature* creature, FindPathParams& fpp) 
 	fpp.fullPathSearch = true;
 }
 
-uint32_t Player::getAttackSpeed() const
-{
-	return vocation->getAttackSpeed();
-}
-
-void Player::onAttacking(uint32_t interval)
-{
-	Creature::onAttacking(interval);
-}
-
-void Player::doAttacking(uint32_t interval)
-{
-	if(lastAttack == 0)
-		lastAttack = OTSYS_TIME() - getAttackSpeed() - 1; 
-		// - 1 to compensate for timer resolution etc.
-
-
-	if((OTSYS_TIME() - lastAttack) >= getAttackSpeed() )
-	{
-		Item* tool = getWeapon();
-		bool result = false;
-		const Weapon* weapon = g_weapons->getWeapon(tool);
-
-		if(weapon)
-		{
-			if(!weapon->interruptSwing())
-			{
-				result = weapon->useWeapon(this, tool, attackedCreature);
-			}
-			else if(!canDoAction())
-			{
-				uint32_t delay = getNextActionTime();
-				SchedulerTask* task = createSchedulerTask(delay, boost::bind(&Game::checkCreatureAttack,
-					&g_game, getID()));
-				setNextActionTask(task);
-			}
-			else 
-			{
-                if (!weapon->hasExhaustion()) 
-				{
-					result = weapon->useWeapon(this, tool, attackedCreature);
-				}
-			}
-		}
-		else
-		{
-			result = Weapon::useFist(this, attackedCreature);
-		}
-
-		if(result)
-		{
-			lastAttack = OTSYS_TIME();
-		}
-	}
-}
 
 uint64_t Player::getGainedExperience(Creature* attacker, bool useMultiplier /*= true*/) const
 {
@@ -3458,7 +3431,8 @@ void Player::onAttackedCreature(Creature* target)
 
 void Player::onAttacked()
 {
-	Creature::onAttacked();
+	//sendCreatureSquare(defenderCreature, SquareColor_t::SQ_COLOR_NONE);
+	//Creature::onAttacked();
 
 	if(!hasFlag(PlayerFlag_NotGainInFight)){
 		addInFightTicks();

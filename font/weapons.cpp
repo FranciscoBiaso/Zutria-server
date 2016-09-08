@@ -502,7 +502,7 @@ bool Weapon::internalUseWeapon(Player* player, Item* item, Creature* target, int
 	{
 		struct _weaponDamage_ weaponDam;
 		getDamage(weaponDam, player, item);
-		Combat::doCombatHealth(player, target, &weaponDam , params);
+		Combat::doCombatHealth(player, target, &weaponDam , params);		
 	}
 
 	if(g_config.getBoolean(ConfigManager::REMOVE_AMMUNITION))
@@ -749,7 +749,7 @@ void Weapon::getDamage(struct _weaponDamage_ & wDamage, const Player* player, co
 
 
 	//35% until 100%
-	wDamage.perforationFactorPercentage = dice_35_10() *  (1 - std::pow(0.5, wDamage.perforationFactor / 20.0));		
+	wDamage.perforationFactorPercentage = dice_35_10() *  (1 - std::pow(0.5, wDamage.perforationFactor / 20.0));
 
 	wDamage.damageByPerforation = 0;	
 	wDamage.damageBySlash = 0;
@@ -864,14 +864,14 @@ bool WeaponDistance::configureWeapon(const ItemType& it)
 
 int32_t WeaponDistance::playerWeaponCheck(Player* player, Creature* target) const
 {
-	const ItemType& it = Item::items[id];
-	Item* bow = player->getWeapon(true);
-	if(bow && bow->getWeaponType() == WEAPON_TYPE_DISTANCE && bow->getID() != id){ //Be sure we are using a bow
-		const Weapon* weap = g_weapons->getWeapon(bow);
-		if(weap){
-			return weap->playerWeaponCheck(player, target);
-		}
-	}
+	//const ItemType& it = Item::items[id];
+	//Item* bow = player->getWeapon(true);
+	//if(bow && bow->getWeaponType() == WEAPON_TYPE_DISTANCE && bow->getID() != id){ //Be sure we are using a bow
+	//	const Weapon* weap = g_weapons->getWeapon(bow);
+	//	if(weap){
+	//		return weap->playerWeaponCheck(player, target);
+	//	}
+	//}
 
 	return Weapon::playerWeaponCheck(player, target);
 }
@@ -937,7 +937,7 @@ bool WeaponDistance::useWeapon(Player* player, Item* item, Creature* target) con
 		chance = hitChance;
 	}
 
-	Item* bow = player->getWeapon(true);
+	Item* bow = nullptr;// = player->getWeapon(true);
 	// Be sure we are using a bow, not a spear
 	if(bow && bow != item && bow->getHitChance() > 0){
 		chance += bow->getHitChance();

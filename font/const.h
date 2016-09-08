@@ -33,8 +33,10 @@
 #define MONSTER_ID_RANGE 0x40000000
 #define NPC_ID_RANGE 0x80000000
 
-static const int cMaxViewW = 12;
-static const int cMaxViewH = 7;
+static const int cMaxViewLeft = 12;
+static const int cMaxViewRight = 13;
+static const int cMaxViewTop = 7;
+static const int cMaxViewBottom = 8;
 
 enum MagicEffectClasses {
 	NM_ME_DRAW_BLOOD_MIN   = 0x00,
@@ -272,10 +274,15 @@ enum Icons_t{
 
 enum WeaponType_t {
 	WEAPON_TYPE_NONE = 0,
-	WEAPON_TYPE_MELEE,
-	WEAPON_TYPE_DISTANCE,
-	WEAPON_TYPE_SHIELD,
-	WEAPON_TYPE_AMMO
+	WEAPON_TYPE_MELEE = 1,
+	WEAPON_TYPE_DISTANCE = 2,
+	WEAPON_TYPE_SHIELD = 4,
+	WEAPON_TYPE_AMMO = 8
+};
+
+enum EquipType_t {
+	NONE = 0,
+	SHIELD = 1
 };
 
 enum Ammo_t {
@@ -321,6 +328,11 @@ enum PartyShields_t{
 };
 
 enum item_t {
+	ITEM_SPLASH_SIZE_1 = 1042,
+	ITEM_SPLASH_SIZE_2 = 1041,
+	ITEM_SPLASH_SIZE_3 = 1040,
+	ITEM_SPLASH_SIZE_4 = 1039,
+	ITEM_SPLASH_SIZE_5 = 1038,
     ITEM_FIREFIELD_PVP    = 1492,
     ITEM_FIREFIELD_NOPVP  = 1500,
     
@@ -490,6 +502,22 @@ namespace _player_{
 };
 
 struct _weaponDamage_ {
+
+	_weaponDamage_()
+	{
+		damageByTrauma = 0;
+		traumaFactor = 0;
+		damageByPerforation = 0;
+		perforationFactor = 0;
+		perforationFactorPercentage = 0;
+		damageBySlash = 0;
+		slashFactor = 0;
+		totalDamage = 0;
+		damageType = 0;
+		critic = false;
+		criticDmg = 0;
+	}
+
 	int32_t damageByTrauma;
 	int32_t traumaFactor;
 	int32_t damageByPerforation;
@@ -503,6 +531,11 @@ struct _weaponDamage_ {
 	int32_t criticDmg;
 };
 
+enum attackType {
+	stab = 1,
+	slash = 2,
+	trauma = 4,
+};
 
 #define inifity 2e15
 

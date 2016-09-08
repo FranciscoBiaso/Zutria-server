@@ -1,98 +1,12 @@
 <?xml version="1.0"?>
 <monsters>
 
-	<!-- bears	-->
-	<monster name="urso pardo" file="bears/urso pardo.xml"/>
+	<!-- goblins	-->
+	<monster name="wicked goblin" file="goblins/wicked goblin.xml"/>
+  
+  <!-- rats -->
+	<monster name="rat" file="rats/rat.xml"/>
 	
-	<!-- warthogs -->	
-	<monster name="javali" file="warthogs/javali.xml"/>	
-	
-	<!-- snakes -->	
-	<monster name="cobra" file="snakes/cobra.xml"/>	
-	
-	<!-- rats -->
-	<monster name="rato" file="rats/rato.xml"/>
-	<monster name="ratazana" file="rats/ratazana.xml"/>	
-	
-	<!-- beastly -->
-	<monster name="besta" file="beastly/besta.xml"/>
-	
-	<!-- insects -->
-	<monster name="vespa" file="insects/vespa.xml"/>
-	<monster name="besouro" file="insects/besouro.xml"/>
-	<monster name="centopéia" file="insects/centopéia.xml"/>
-	<monster name="abelhão" file="insects/abelhão.xml"/>
-	
-	<!-- goblins -->
-	<monster name="goblim bolseiro" file="goblins/goblim bolseiro.xml"/>
-	<monster name="goblim enfurecido" file="goblins/goblim enfurecido.xml"/>
-	<monster name="goblim impetuoso" file="goblins/goblim impetuoso.xml"/>
-	
-	<!-- skeletons -->
-	<monster name="esqueleto" file="skeletons/esqueleto.xml"/>
-	<monster name="esqueleto guerreiro" file="skeletons/esqueleto guerreiro.xml"/>
-	<monster name="esqueleto arqueiro" file="skeletons/esqueleto arqueiro.xml"/>	
-	<monster name="esqueleto feitiçeiro" file="skeletons/esqueleto feitiçeiro.xml"/>
-	
-	<!-- anões -->
-	<monster name="anão soldado" file="dwarfs/anão soldado.xml"/>
-	<monster name="anão patrulheiro" file="dwarfs/anão patrulheiro.xml"/>
-	<monster name="anão enfurecido" file="dwarfs/anão enfurecido.xml"/>
-	<monster name="anão minerador" file="dwarfs/anão minerador.xml"/>
-	<monster name="anão feitiçeiro" file="dwarfs/anão feitiçeiro.xml"/>
-	<monster name="anão metamorfo" file="dwarfs/anão metamorfo.xml"/>
-	
-	<!-- wolfs -->
-	<monster name="lobo branco" file="wolfs/lobo branco.xml"/>
-	<monster name="lobo atroz" file="wolfs/lobo atroz.xml"/>
-	<monster name="lobo feroz" file="wolfs/lobo feroz.xml"/>
-	<monster name="cão infernal" file="wolfs/cão infernal.xml"/>
-	
-	<!-- monkeys -->
-	<monster name="macaquinho" file="monkeys/macaquinho.xml"/>
-	<monster name="chipamzé" file="monkeys/chipamzé.xml"/>
-	<monster name="gorila" file="monkeys/gorila.xml"/>
-	
-	<!-- elfs -->
-	<monster name="elfo duelista" file="elfs/elfo duelista.xml"/>
-	<monster name="elfo arqueiro" file="elfs/elfo arqueiro.xml"/>
-	<monster name="elfo guardião" file="elfs/elfo guardião.xml"/>
-	<monster name="elfo espiritual" file="elfs/elfo espiritual.xml"/>
-	<monster name="elfo flautista" file="elfs/elfo flautista.xml"/>
-	
-	<!-- spiders -->
-	<monster name="aranha da selva" file="spiders/aranha da selva.xml"/>
-	<monster name="aranha tecelã" file="spiders/aranha tecelã.xml"/>
-	<monster name="aranha golias" file="spiders/aranha golias.xml"/>
-	<monster name="aranha colossal" file="spiders/aranha colossal.xml"/>
-	
-	<!-- magic -->	
-	<monster name="duende" file="magic/leprechauns/duende.xml"/>
-	<monster name="duende ancião" file="magic/leprechauns/duende ancião.xml"/>
-	<monster name="fada de géia" file="magic/fairy/fada de géia.xml"/>
-	<monster name="fada esmeralda" file="magic/fairy/fada esmeralda.xml"/>
-	<monster name="sátiro" file="magic/mythological/sátiro.xml"/>
-	<monster name="centauro" file="magic/mythological/centauro.xml"/>
-	<monster name="minotauro" file="magic/mythological/minotauro.xml"/>
-	<monster name="diabrete" file="magic/diabrete.xml"/>
-	
-	<!-- zumbies -->	
-	<monster name="zumbi" file="zumbies/zumbi.xml"/>
-	
-	<!-- trolls -->
-	<monster name="trasgo" file="trolls/trasgo.xml"/>
-	<monster name="trasgo capanga" file="trolls/trasgo capanga.xml"/>
-	<monster name="trasgo chefe" file="trolls/trasgo chefe.xml"/>
-	
-	<!-- ents -->
-	<monster name="qawwa" file="ents/qawwa.xml"/>
-	<monster name="karsilik" file="ents/karsilik.xml"/>
-	<monster name="għerf" file="ents/għerf.xml"/>
-	<monster name="umoya" file="ents/umoya.xml"/>
-	
-	<!-- rocks -->	
-	<monster name="lagarto ouriço" file="rocks/lagarto ouriço.xml"/>
-	<monster name="golem" file="rocks/golem.xml"/>
 	
 	
 </monsters>

@@ -36,6 +36,9 @@ enum Direction {
 	SOUTHEAST = 5,
 	NORTHWEST = 6,
 	NORTHEAST = 7,
+	FLOOR_CHANGE_SOULTH_PLUS,
+	FLOOR_CHANGE_EAST_PLUS
+
 };
 
 class Position{

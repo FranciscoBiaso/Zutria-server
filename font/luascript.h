@@ -710,6 +710,7 @@ protected:
 	static int luaGetItemAttackByUID(lua_State *L);
 	static int luaGetItemDefenseByUID(lua_State *L);
 	static int luaGetItemArmorByUID(lua_State *L);
+	static int luaGetItemPos(lua_State *L);
 
 	lua_State* m_luaState;
 	std::string m_lastLuaError;

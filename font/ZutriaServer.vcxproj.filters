@@ -30,9 +30,6 @@
     <ClInclude Include="baseevents.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="beds.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="chat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -73,9 +70,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="databasemysql.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="databasesqlite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="definitions.h">
@@ -198,9 +192,6 @@
     <ClInclude Include="protocollogin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="raids.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="rsa.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -290,9 +281,6 @@
     <ClCompile Include="baseevents.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="beds.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="chat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -327,9 +315,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="databasemysql.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="databasesqlite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="depot.cpp">
@@ -432,9 +417,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="protocollogin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="raids.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="rsa.cpp">

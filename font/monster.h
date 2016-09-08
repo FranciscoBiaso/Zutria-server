@@ -42,7 +42,8 @@ class Monster : public Creature
 {
 private:
 	Monster(MonsterType* mtype);
-	//const Monster& operator=(const Monster& rhs);
+
+	virtual void doAttacking();
 
 public:
 #ifdef __ENABLE_SERVER_DIAGNOSTIC__
@@ -108,8 +109,9 @@ public:
 	virtual void setNormalCreatureLight();
 	virtual bool getCombatValues(int32_t& min, int32_t& max);
 
-	virtual void doAttacking(uint32_t interval);
 	virtual bool hasExtraSwing() {return extraMeleeAttack;}
+
+	bool isFirstAttack() { if (firstAttack == true) return true; else return false; }
 	
 	bool searchTarget(TargetSearchType_t searchType = TARGETSEARCH_DEFAULT);
 	bool selectTarget(Creature* creature);
@@ -129,15 +131,14 @@ private:
 
 	MonsterType* mType;
 
+
 	int32_t minCombatValue;
 	int32_t maxCombatValue;
-	uint32_t attackTicks;
 	uint32_t targetTicks;
 	uint32_t targetChangeTicks;
 	uint32_t defenseTicks;
 	uint32_t yellTicks;
 	int32_t targetChangeCooldown;
-	bool resetTicks;
 	bool isActivated;
 	bool extraMeleeAttack;
 
@@ -197,6 +198,8 @@ private:
 	virtual uint16_t getLookCorpse() const { return mType->lookCorpse; }
 	virtual void getPathSearchParams(const Creature* creature, FindPathParams& fpp) const;
 	virtual bool useCacheMap() const {return true;}
+
+	bool firstAttack;
 };
 
 #endif

@@ -64,15 +64,15 @@ void HouseTile::updateHouse(Item* item)
 		}
 
 		//[ added for beds system
-		if(!door)
-		{
-			BedItem* bed = item->getBed();
-			if(bed)
-			{
-				// next, add it to the house
-				house->addBed(bed);
-			}
-		}
+		//if(!door)
+		//{
+		//	BedItem* bed = item->getBed();
+		//	if(bed)
+		//	{
+		//		// next, add it to the house
+		//		house->addBed(bed);
+		//	}
+		//}
 		//]
 	}
 }

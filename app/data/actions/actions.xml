@@ -2,10 +2,19 @@
 
 <actions>
 
-	<action itemid="463" script="ropeToUp.lua"/>
-	<action itemid="461" script="rockRopeToDown.lua"/>
-	
-	<action itemid="509" script="lampClick.lua"/>
-	<action itemid="510" script="lampClick.lua"/>
-
+  <!-- rock ropes -->
+  <!-- weast -->
+	<action itemid="541" script="weastRockRopeDown.lua"/>
+	<action itemid="543" script="weastRockRopeUp.lua"/>  
+  <!-- sulth -->
+  <action itemid="550" script="sulthRockRopeDown.lua"/>  
+	<action itemid="552" script="sulthRockRopeUp.lua"/>
+  <!-- north -->
+   <action itemid="544" script="northRockRopeDown.lua"/>  
+	<action itemid="546" script="northRockRopeUp.lua"/>
+  <!-- east -->
+   <action itemid="547" script="eastRockRopeDown.lua"/>  
+	<action itemid="549" script="eastRockRopeUp.lua"/>
+  
+  
 </actions>

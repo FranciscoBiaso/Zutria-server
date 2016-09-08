@@ -40,7 +40,7 @@
 #include "server.h"
 #include "party.h"
 #include "ban.h"
-#include "raids.h"
+//#include "raids.h"
 #include "spawn.h"
 #include "ioaccount.h"
 #include "movement.h"
@@ -135,9 +135,9 @@ void Game::setGameState(GameState_t newState)
 			{
 				Spawns::getInstance()->startup();
 
-				Raids::getInstance()->loadFromXml(g_config.getString(
+				/*Raids::getInstance()->loadFromXml(g_config.getString(
 					ConfigManager::DATA_DIRECTORY) + "/raids/raids.xml");
-				Raids::getInstance()->startup();
+				Raids::getInstance()->startup();*/
 
 
 				loadGameState();
@@ -873,7 +873,6 @@ ReturnValue Game::internalMoveCreature(Creature* creature, Direction direction, 
 
 	const Position& currentPos = creature->getPosition();
 	Position destPos = currentPos;
-	bool canChangeFloor = true;
 
 	switch (direction){
 	case NORTH:
@@ -895,67 +894,67 @@ ReturnValue Game::internalMoveCreature(Creature* creature, Direction direction, 
 	case SOUTHWEST:
 		destPos.x -= 1;
 		destPos.y += 1;
-		canChangeFloor = false;
 		break;
 
 	case NORTHWEST:
 		destPos.x -= 1;
 		destPos.y -= 1;
-		canChangeFloor = false;
 		break;
 
 	case NORTHEAST:
 		destPos.x += 1;
 		destPos.y -= 1;
-		canChangeFloor = false;
 		break;
 
 	case SOUTHEAST:
 		destPos.x += 1;
 		destPos.y += 1;
-		canChangeFloor = false;
 		break;
 	}
 
-	if (creature->getPlayer() && canChangeFloor){
-		//try go up
-		if (currentPos.z != 8 && creature->getTile()->hasHeight(9)){
-			Tile* tmpTile = map->getTile(currentPos.x, currentPos.y, currentPos.z - 1);
-			if (tmpTile == NULL || (tmpTile->ground == NULL && !tmpTile->hasProperty(BLOCKSOLID))){
-				tmpTile = map->getTile(destPos.x, destPos.y, destPos.z - 1);
-				if (tmpTile && tmpTile->ground && !tmpTile->hasProperty(BLOCKSOLID)){
-					flags = flags | FLAG_IGNOREBLOCKITEM | FLAG_IGNOREBLOCKCREATURE;
-					destPos.z -= 1;
-				}
-			}
-		}
-		else{
-			//try go down
-			Tile* tmpTile = map->getTile(destPos);
-			if (currentPos.z != 7 && (tmpTile == NULL || (tmpTile->ground == NULL && !tmpTile->hasProperty(BLOCKSOLID)))){
-				tmpTile = map->getTile(destPos.x, destPos.y, destPos.z + 1);
+	//if (creature->getPlayer() && canChangeFloor)
+	//{		
+	//	//try go up
+	//	if (currentPos.z != 8 && creature->getTile()->hasHeight(9)){
+	//		Tile* tmpTile = map->getTile(currentPos.x, currentPos.y, currentPos.z - 1);
+	//		if (tmpTile == NULL || (tmpTile->ground == NULL && !tmpTile->hasProperty(BLOCKSOLID))){
+	//			tmpTile = map->getTile(destPos.x, destPos.y, destPos.z - 1);
+	//			if (tmpTile && tmpTile->ground && !tmpTile->hasProperty(BLOCKSOLID)){
+	//				flags = flags | FLAG_IGNOREBLOCKITEM | FLAG_IGNOREBLOCKCREATURE;
+	//				destPos.z -= 1;
+	//			}
+	//		}
+	//	}
+	//	else{
+	//		//try go down
+	//		Tile* tmpTile = map->getTile(destPos);
+	//		if (currentPos.z != 7 && (tmpTile == NULL || (tmpTile->ground == NULL && !tmpTile->hasProperty(BLOCKSOLID)))){
+	//			tmpTile = map->getTile(destPos.x, destPos.y, destPos.z + 1);
 
-				if (tmpTile && tmpTile->hasHeight(9)){
-					flags = flags | FLAG_IGNOREBLOCKITEM | FLAG_IGNOREBLOCKCREATURE;
-					destPos.z += 1;
-				}
-			}
-		}
-	}
+	//			if (tmpTile && tmpTile->hasHeight(9)){
+	//				flags = flags | FLAG_IGNOREBLOCKITEM | FLAG_IGNOREBLOCKCREATURE;
+	//				destPos.z += 1;
+	//			}
+	//		}
+	//	}
+	//}
+
+
+
+	//Tile* fromPos = getTile(currentPos.x, currentPos.y, currentPos.z);
+	//Tile* toPos = getTile(destPos.x, destPos.y, destPos.z);
 
 	toTile = map->getTile(destPos);
-
-
-	Tile* fromPos = getTile(currentPos.x, currentPos.y, currentPos.z);
-	Tile* toPos = getTile(destPos.x, destPos.y, destPos.z);
-
 	ReturnValue ret = RET_NOTPOSSIBLE;
-	if (toTile){
-			ret = internalMoveCreature(creature, fromTile, toTile, flags);
+	if (toTile)
+	{
+		ret = internalMoveCreature(creature, fromTile, toTile, flags);
 	}
 
-	if (ret != RET_NOERROR){
-		if (Player* player = creature->getPlayer()){
+	if (ret != RET_NOERROR)
+	{
+		if (Player* player = creature->getPlayer())
+		{
 			player->sendCancelMessage(ret);
 			player->sendCancelWalk();
 		}
@@ -1962,6 +1961,7 @@ bool Game::playerMove(uint32_t playerId, Direction dir)
 	}
 
 	player->onWalk(dir);
+
 	return (internalMoveCreature(player, dir) == RET_NOERROR);
 }
 
@@ -3964,24 +3964,28 @@ void Game::removeCreatureCheck(Creature* creature)
 void Game::checkCreatures()
 {
 	Scheduler::getScheduler().addEvent(createSchedulerTask(
-		EVENT_CHECK_CREATURE_INTERVAL, boost::bind(&Game::checkCreatures, this)));
+		EVENT_CREATURE_INTERVAL, boost::bind(&Game::checkCreatures, this)));
 
 	checkCreatureLastIndex++;
-	if(checkCreatureLastIndex == EVENT_CREATURECOUNT) {
+	if(checkCreatureLastIndex == EVENT_CREATURECOUNT) 
+	{
 		checkCreatureLastIndex = 0;
 	}
 
 	std::vector<Creature*>& checkCreatureVector = checkCreatureVectors[checkCreatureLastIndex];
 
 	Creature* creature;
-	for(uint32_t i = 0; i < checkCreatureVector.size(); ++i){
+	for(uint32_t i = 0; i < checkCreatureVector.size(); ++i)
+	{
 		creature = checkCreatureVector[i];
-		if(creature->getHealth() > 0){
-			creature->onThink(EVENT_CREATURE_THINK_INTERVAL);
-			creature->onAttacking(EVENT_CREATURE_THINK_INTERVAL);
-			creature->executeConditions(EVENT_CREATURE_THINK_INTERVAL);
+		if(creature->getHealth() > 0)
+		{
+			creature->onThink(EVENT_CREATURE_INTERVAL);
+			creature->onAttacking(EVENT_CREATURE_INTERVAL);
+			creature->executeConditions(EVENT_CREATURE_INTERVAL);
 		}
-		else if(!creature->isDying){
+		else if(!creature->isDying)
+		{
 			creature->isDying = true;
 			int random = random_range(100, 200);
 			Scheduler::getScheduler().addEvent(createSchedulerTask(
@@ -4144,7 +4148,7 @@ bool Game::combatBlockHit(CombatType_t combatType, Creature* attacker, Creature*
 
 
 bool Game::combatBlockPhysicalHit(CombatType_t combatType, Creature* attacker, Creature* target, struct _weaponDamage_ * wd)
-{		
+{
 	if (!target->isAttackable() || Combat::canDoCombat(attacker, target) != RET_NOERROR)
 	{
 		const Position& targetPos = target->getPosition();
@@ -4153,37 +4157,37 @@ bool Game::combatBlockPhysicalHit(CombatType_t combatType, Creature* attacker, C
 		return true;
 	}
 
-	if (attacker->canExecuteAttack())
+	if (attacker->hasConcentration())
 	{
-		int blockType = BLOCK_NONE;
+		wd->damageType = 0x00; //reset
+		int blockType = BLOCK_NONE; //reset
 		int32_t defenseItemFactor = 0;
 		double defenseBodyFactor = 0;
 		//dmgHit is negative
-		int32_t dmgHit = attacker->getAttackDmg(wd);// player(ok)
-		wd->critic = target->whereDmgTook(attacker, blockType, defenseBodyFactor, defenseItemFactor);// player(ok)
-
+		int32_t dmgHit = attacker->getAttackDmg(wd);// player(ok)	
+		wd->critic = target->whereDmgTook(attacker, blockType, defenseBodyFactor, defenseItemFactor);// player(ok)		
 		uint8_t occurredAttack = 0;
 
 		if (occurGoodAttack(attacker))
 		{
 			if (wd->perforationFactor > 0)
-				occurredAttack = 0x01;//stab
+				occurredAttack = attackType::stab;
 			else if(wd->slashFactor > 0)
-				occurredAttack = 0x02;//slash
-			else
-				occurredAttack = 0x04;//trauma
+				occurredAttack = attackType::slash;
+			else if(wd->traumaFactor > 0)
+				occurredAttack = attackType::trauma;
 		}
 
 
 				
-		//not dodge, the weapon has perforation factor and can occur
-		if (!(blockType & BLOCK_DODGE) && occurredAttack & 0x01)
+		//if not dodge and the weapon has perforation factor and can occur
+		if (!(blockType & BLOCK_DODGE) && occurredAttack & attackType::stab)
 		{
 			//the player is defending with a item, break the def
 			if (defenseItemFactor != 0)			
 				breakDefense(defenseItemFactor, wd->perforationFactorPercentage);										
 
-			//print how much dmg was incresed by stab
+			// how much dmg was incresed by stab
 			increaseDmgByStab(dmgHit, wd);
 
 			if (wd->perforationFactor >= 0 && wd->perforationFactor <= 0.33)
@@ -4203,8 +4207,9 @@ bool Game::combatBlockPhysicalHit(CombatType_t combatType, Creature* attacker, C
 			}
 		}		
 
-		if(wd->critic)
+		if (wd->critic) {
 			increaseDmgByCritic(dmgHit, wd);
+		}
 
 		//dmgBlock is positive
 		int32_t dmgBlock = target->getBlockDmg(defenseBodyFactor, defenseItemFactor);// player(ok)				
@@ -4215,9 +4220,12 @@ bool Game::combatBlockPhysicalHit(CombatType_t combatType, Creature* attacker, C
 			dmgHit += dmgBlock;
 
 			//0% until 100%
-			double percentageOfLife = -dmgHit / (double)target->getMaxHealth();
+			double percentageOfLife = 0;
 
-			if (occurredAttack & 0x02) //slash only ocurr with hit
+			if(target->getMaxHealth() != 0)
+				percentageOfLife = -dmgHit / (double)target->getMaxHealth();
+
+			if (occurredAttack & attackType::slash) //slash only ocurr with hit
 			{
 				wd->damageType = 0;
 				if (wd->slashFactor >= 0 && wd->slashFactor <= 0.33)
@@ -4226,7 +4234,9 @@ bool Game::combatBlockPhysicalHit(CombatType_t combatType, Creature* attacker, C
 					wd->damageType |= DAMAGE_SLASH_MED;
 				else
 					wd->damageType |= DAMAGE_SLASH_MAX;
+
 				wd->damageBySlash = dmgHit * dice_07_10();
+				
 				target->addCombatBleeding(wd->damageBySlash);
 			}
 
@@ -4238,6 +4248,7 @@ bool Game::combatBlockPhysicalHit(CombatType_t combatType, Creature* attacker, C
 				wd->damageType |= DAMAGE_MAX;
 			
 			wd->totalDamage = dmgHit;
+
 			return false;
 		}
 		else if (blockType & BLOCK_DODGE)//dodge
@@ -4268,16 +4279,16 @@ bool Game::combatBlockPhysicalHit(CombatType_t combatType, Creature* attacker, C
 				ss <<std::setprecision(3)<< damageProportionality * 100.0  - 0.001 <<" % penetrado" << std::endl;
 				addAnimatedText(target->getPosition(), TEXTCOLOR_ORANGE, ss.str());
 			}
-			
+
 			return true;
 		}			
 	}
 	//attack fail
 	else
 	{				
-		addMagicEffect(getSpectators(attacker->getPosition()), attacker->getPosition(), NM_ME_MAX_PUFF);
+		addAnimatedText(target->getPosition(), TEXTCOLOR_ORANGE, "miss");
 		return true;
-	}		
+	}
 
 	return false;
 }
@@ -4330,10 +4341,10 @@ void Game::dmgBlocked(Creature const * target, int32_t const blockType)
 	{
 		case BLOCK_DODGE:
 		{
-			addMagicEffect(defenderSpectors, targetPos, NM_ME_PUFF);
-			std::stringstream ss;
-			ss << "miss";
-			addAnimatedText(defenderSpectors, targetPos, TEXTCOLOR_ORANGE, ss.str());
+			//addMagicEffect(defenderSpectors, targetPos, NM_ME_PUFF);
+			//std::stringstream ss;
+			//ss << "miss";
+			addAnimatedText(defenderSpectors, targetPos, TEXTCOLOR_ORANGE, "dodge");
 		}break;
 
 		case BLOCK_DEFENSE_MIN:
@@ -4389,7 +4400,7 @@ void Game::dmgBlocked(Creature const * target, int32_t const blockType)
 			break;
 
 		default:
-			addMagicEffect(defenderSpectors, targetPos, 3);
+			//addMagicEffect(defenderSpectors, targetPos, 3);
 			break;
 	}
 }
@@ -4486,7 +4497,17 @@ bool Game::combatChangeHealth(CombatType_t combatType, MagicEffectClasses custom
 					Item* splash = NULL;
 					textColor = TEXTCOLOR_RED;
 					hitEffect = NM_ME_DRAW_BLEEDING_MIN;
-					splash = Item::CreateItem(ITEM_SMALLSPLASH, FLUID_BLOOD);
+					if (healthChange <= 15)
+						splash = Item::CreateItem(ITEM_SPLASH_SIZE_1, FLUID_BLOOD);
+					else if (healthChange <= 25)
+						splash = Item::CreateItem(ITEM_SPLASH_SIZE_2, FLUID_BLOOD);
+					else if (healthChange <= 35)
+						splash = Item::CreateItem(ITEM_SPLASH_SIZE_3, FLUID_BLOOD);
+					else if (healthChange <= 65)
+						splash = Item::CreateItem(ITEM_SPLASH_SIZE_4, FLUID_BLOOD);
+					else
+						splash = Item::CreateItem(ITEM_SPLASH_SIZE_5, FLUID_BLOOD);
+					break;
 					if (splash) {
 						internalAddItem(target->getTile(), splash, INDEX_WHEREEVER, FLAG_NOLIMIT);
 						startDecay(splash);
@@ -4506,7 +4527,17 @@ bool Game::combatChangeHealth(CombatType_t combatType, MagicEffectClasses custom
 					case RACE_BLOOD:
 						textColor = TEXTCOLOR_RED;
 						hitEffect = NM_ME_DRAW_BLOOD_MIN;
-						splash = Item::CreateItem(ITEM_SMALLSPLASH, FLUID_BLOOD);
+						//0 - 15 small hit
+						if(healthChange <= 15)
+							splash = Item::CreateItem(ITEM_SPLASH_SIZE_1, FLUID_BLOOD);
+						else if (healthChange <= 25)
+							splash = Item::CreateItem(ITEM_SPLASH_SIZE_2, FLUID_BLOOD);
+						else if (healthChange <= 35)
+							splash = Item::CreateItem(ITEM_SPLASH_SIZE_3, FLUID_BLOOD);
+						else if (healthChange <= 65)
+							splash = Item::CreateItem(ITEM_SPLASH_SIZE_4, FLUID_BLOOD);
+						else
+							splash = Item::CreateItem(ITEM_SPLASH_SIZE_5, FLUID_BLOOD);
 						break;
 
 					case RACE_UNDEAD:
@@ -4577,8 +4608,6 @@ bool Game::combatChangeHealth(CombatType_t combatType, MagicEffectClasses custom
 
 					std::stringstream ss;
 					std::stringstream ss2;
-					if (wDamage->critic < 0)
-						healthChange = healthChange + wDamage->criticDmg;
 					
 					if (wDamage->damageByPerforation < 0)
 					{
@@ -4588,7 +4617,6 @@ bool Game::combatChangeHealth(CombatType_t combatType, MagicEffectClasses custom
 							ss << healthChange - wDamage->criticDmg << " (crít)";
 						else
 							ss << healthChange;
-						std::cout << TEXTCOLOR_LIGHT_YELLOW << std::endl;
 						addAnimatedTexts(list, targetPos, TEXTCOLOR_GRAY, TEXTCOLOR_LIGHT_YELLOW, ss.str(), ss2.str());
 					}
 					else if (wDamage->damageBySlash < 0)
@@ -4706,11 +4734,21 @@ bool Game::combatChangeHealth(CombatType_t combatType, MagicEffectClasses custom
 						Item* splash = NULL;
 						textColor = TEXTCOLOR_RED;
 						hitEffect = NM_ME_DRAW_BLEEDING_MIN;
-						splash = Item::CreateItem(ITEM_SMALLSPLASH, FLUID_BLOOD);
+						if (healthChange <= 15)
+							splash = Item::CreateItem(ITEM_SPLASH_SIZE_1, FLUID_BLOOD);
+						else if (healthChange <= 25)
+							splash = Item::CreateItem(ITEM_SPLASH_SIZE_2, FLUID_BLOOD);
+						else if (healthChange <= 35)
+							splash = Item::CreateItem(ITEM_SPLASH_SIZE_3, FLUID_BLOOD);
+						else if (healthChange <= 65)
+							splash = Item::CreateItem(ITEM_SPLASH_SIZE_4, FLUID_BLOOD);
+						else
+							splash = Item::CreateItem(ITEM_SPLASH_SIZE_5, FLUID_BLOOD);
+						break;
 						if (splash) {
 							internalAddItem(target->getTile(), splash, INDEX_WHEREEVER, FLAG_NOLIMIT);
 							startDecay(splash);
-						}						
+						}
 					}break;
 
 					case COMBAT_PHYSICALDAMAGE:
@@ -4726,7 +4764,17 @@ bool Game::combatChangeHealth(CombatType_t combatType, MagicEffectClasses custom
 							case RACE_BLOOD:
 								textColor = TEXTCOLOR_RED;
 								hitEffect = NM_ME_DRAW_BLOOD_MIN;
-								splash = Item::CreateItem(ITEM_SMALLSPLASH, FLUID_BLOOD);
+								//0 - 15 small hit
+								if (healthChange <= 15)
+									splash = Item::CreateItem(ITEM_SPLASH_SIZE_1, FLUID_BLOOD);
+								else if (healthChange <= 25)
+									splash = Item::CreateItem(ITEM_SPLASH_SIZE_2, FLUID_BLOOD);
+								else if (healthChange <= 35)
+									splash = Item::CreateItem(ITEM_SPLASH_SIZE_3, FLUID_BLOOD);
+								else if (healthChange <= 65)
+									splash = Item::CreateItem(ITEM_SPLASH_SIZE_4, FLUID_BLOOD);
+								else
+									splash = Item::CreateItem(ITEM_SPLASH_SIZE_5, FLUID_BLOOD);
 								break;
 
 							case RACE_UNDEAD:
@@ -5633,11 +5681,11 @@ void Game::reloadInfo(ReloadTypes_t info)
 		case RELOAD_TYPE_SPELLS:
 			g_spells->reload();
 			g_monsters.reload();
-			break;
+			break;/*
 		case RELOAD_TYPE_RAIDS:
 			Raids::getInstance()->reload();
 			Raids::getInstance()->startup();
-			break;
+			break;*/
 		case RELOAD_TYPE_CREATURESCRIPTS:
 			g_creatureEvents->reload();
 			break;

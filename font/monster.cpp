@@ -63,6 +63,7 @@ Monster* Monster::createMonster(const std::string& name)
 Monster::Monster(MonsterType* _mtype) :
 Creature()
 {
+	firstAttack = true;
 	isActivated = false;
 	isMasterInRange = false;
 	mType = _mtype;
@@ -82,7 +83,6 @@ Creature()
 	targetTicks = 0;
 	targetChangeTicks = 0;
 	targetChangeCooldown = 0;
-	attackTicks = 1000;
 	defenseTicks = 0;
 	yellTicks = 0;
 	extraMeleeAttack = false;
@@ -120,7 +120,6 @@ void Monster::onAttackedCreatureDissapear(bool isLogout)
 	std::cout << "Attacked creature dissapeared." << std::endl;
 #endif
 
-	attackTicks = 1000;
 	extraMeleeAttack = false;
 }
 
@@ -627,65 +626,48 @@ void Monster::onThink(uint32_t interval)
     Creature::onThink(interval);
 }
 
-void Monster::doAttacking(uint32_t interval)
+void Monster::doAttacking()
 {
-	
-	if(!attackedCreature || (isSummon() && attackedCreature == this)){
+	if(!attackedCreature || (isSummon() && attackedCreature == this))
+	{
 		return;
 	}
 
-	bool updateLook = true;
-	bool outOfRange = true;
-
-	resetTicks = interval != 0;
-	attackTicks += interval;
-	
-	const Position& myPos = getPosition();
-	const Position& targetPos = attackedCreature->getPosition();
-
-	for(SpellList::iterator it = mType->spellAttackList.begin();
-		it != mType->spellAttackList.end(); ++it)
+	for(SpellList::iterator it = mType->spellAttackList.begin(); it != mType->spellAttackList.end(); ++it)
 	{
-		bool inRange = false;
-		if(canUseSpell(myPos, targetPos, *it, interval, inRange)){
-			if(it->chance >= (uint32_t)random_range(1, 100)){
-				if(updateLook){
-					updateLookDirection();
-					updateLook = false;
-				}
+
+		if (it->isMelee)
+		{
+			struct _weaponDamage_ * weaponDam = new struct _weaponDamage_();
+			CombatParams p;
+			p.isAggressive = true;
+			p.combatType = COMBAT_PHYSICALDAMAGE;
 			
-
-				minCombatValue = it->minCombatValue;
-				maxCombatValue = it->maxCombatValue;
-				it->spell->castSpell(this, attackedCreature);
-				if(it->isMelee){
-					extraMeleeAttack = false;
-				}
-
-#ifdef __DEBUG__
-				static uint64_t prevTicks = OTSYS_TIME();
-				std::cout << "doAttacking ticks: " << OTSYS_TIME() - prevTicks << std::endl;
-				prevTicks = OTSYS_TIME();
-#endif
-			}
+			Combat::doCombatHealth(this, attackedCreature, weaponDam, p);		
 		}
+		//else if(canUseSpell(myPos, targetPos, *it, interval, inRange))
+		//{
+		//	//if (attackTicks < it->speed)
+		//	//	break;
 
-		if(inRange){
-			outOfRange = false;
-		}
-		else if(it->isMelee){
-			//melee swing out of reach
-			extraMeleeAttack = true;
-		}
+		//	//if(it->chance >= (uint32_t)random_range(1, 100))
+		//	//{
+		//	//	/*if(updateLook){
+		//	//		updateLookDirection();
+		//	//		updateLook = false;
+		//	//	}*/			
+
+		//	//	minCombatValue = it->minCombatValue;
+		//	//	maxCombatValue = it->maxCombatValue;
+
+		//	//	it->spell->castSpell(this, attackedCreature);
+		//	//	resetTicks = true;
+		//	//}
+		//}
 	}
 
-	if(updateLook){
-		updateLookDirection();
-	}
-
-	if(resetTicks){
-		attackTicks = 0;
-	}
+	//look to the target
+	updateLookDirection();
 }
 
 bool Monster::canUseAttack(const Position& pos, const Creature* target) const
@@ -712,26 +694,28 @@ bool Monster::canUseSpell(const Position& pos, const Position& targetPos,
 {
 	inRange = true;
 
-	if(!sb.isMelee || !extraMeleeAttack){
-		if(sb.speed > attackTicks){
-			resetTicks = false;
-			return false;
-		}
+	//if(!sb.isMelee)
+	//{
+	//	if(sb.speed > attackTicks)
+	//	{
+	//		resetTicks = false;
+	//		return false;
+	//	}
 
-		if(attackTicks % sb.speed >= interval){
-			//already used this spell for this round
-			return false;
-		}
-	}
+	//	if(attackTicks % sb.speed >= interval){
+	//		//already used this spell for this round
+	//		return false;
+	//	}
+	//}
 
-	if(sb.range != 0 && std::max(std::abs(pos.x - targetPos.x), std::abs(pos.y - targetPos.y)) > (int32_t)sb.range){
-		inRange = false;
-		return false;
-	}
+	//if(sb.range != 0 && std::max(std::abs(pos.x - targetPos.x), std::abs(pos.y - targetPos.y)) > (int32_t)sb.range){
+	//	inRange = false;
+	//	return false;
+	//}
 
-	if (isFleeing() && sb.isMelee) {
-		return false;
-	}
+	//if (isFleeing() && sb.isMelee) {
+	//	return false;
+	//}
 
 	return true;
 }
@@ -770,14 +754,12 @@ void Monster::onThinkTarget(uint32_t interval)
 
 void Monster::onThinkDefense(uint32_t interval)
 {
-	resetTicks = true;
 	defenseTicks += interval;
 
 	for(SpellList::iterator it = mType->spellDefenseList.begin();
 		it != mType->spellDefenseList.end(); ++it)
 	{
 		if(it->speed > defenseTicks){
-			resetTicks = false;
 			continue;
 		}
 
@@ -796,7 +778,6 @@ void Monster::onThinkDefense(uint32_t interval)
 	if(!isSummon() && (int32_t)summons.size() < mType->maxSummons){
 		for(SummonList::iterator it = mType->summonList.begin(); it != mType->summonList.end(); ++it){
 			if(it->speed > defenseTicks){
-				resetTicks = false;
 				continue;
 			}
 
@@ -823,9 +804,6 @@ void Monster::onThinkDefense(uint32_t interval)
 		}
 	}
 
-	if(resetTicks){
-		defenseTicks = 0;
-	}
 }
 
 void Monster::onThinkYell(uint32_t interval)

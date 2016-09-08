@@ -33,7 +33,7 @@ class TrashHolder;
 class Mailbox;
 class MagicField;
 class QTreeLeafNode;
-class BedItem;
+//class BedItem;
 
 typedef std::vector<Item*> ItemVector;
 typedef std::vector<Creature*> CreatureVector;
@@ -63,6 +63,8 @@ enum tileflags_t{
 	TILESTATE_IMMOVABLEBLOCKPATH		= 1 << 18,
 	TILESTATE_IMMOVABLENOFIELDBLOCKPATH = 1 << 19,
 	TILESTATE_NOFIELDBLOCKPATH			= 1 << 20,
+	TILESTATE_FLOORCHANGE_EAST_PLUS     = 1 << 21,
+	TILESTATE_FLOORCHANGE_SOULTH_PLUS   = 1 << 22,
 };
 
 class HouseTile;
@@ -118,7 +120,7 @@ public:
 	Teleport* getTeleportItem() const;
 	TrashHolder* getTrashHolder() const;
 	Mailbox* getMailbox() const;
-	BedItem* getBedItem() const;
+	//BedItem* getBedItem() const;
 
 	Creature* getTopCreature();
 	Item* getTopTopItem();
@@ -150,6 +152,10 @@ public:
 			return hasFlag(TILESTATE_FLOORCHANGE_EAST);
 		case WEST:
 			return hasFlag(TILESTATE_FLOORCHANGE_WEST);
+		case FLOOR_CHANGE_EAST_PLUS:
+			return hasFlag(TILESTATE_FLOORCHANGE_EAST_PLUS);
+		case FLOOR_CHANGE_SOULTH_PLUS:
+			return hasFlag(TILESTATE_FLOORCHANGE_SOULTH_PLUS);
 		default:
 			return false;
 		}
@@ -195,6 +201,7 @@ public:
 
 	virtual bool isRemoved() const {return false;}
 
+	uint32_t m_flags;
 private:
 	void onAddTileItem(Item* item);
 	void onUpdateTileItem(uint32_t index, Item* oldItem,
@@ -207,7 +214,6 @@ private:
 protected:
 	uint32_t thingCount;
 	Position tilePos;
-	uint32_t m_flags;
 };
 
 #endif

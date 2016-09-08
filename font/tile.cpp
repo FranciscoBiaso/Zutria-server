@@ -202,18 +202,18 @@ Mailbox* Tile::getMailbox() const
 	return NULL;
 }
 
-BedItem* Tile::getBedItem() const
-{
-	BedItem* bed = NULL;
-	Item* iiItem = NULL;
-	for(uint32_t i = 0; i < getThingCount(); ++i){
-		iiItem = __getThing(i)->getItem();
-		if(iiItem && (bed = iiItem->getBed()))
-			return bed;
-	}
-
-	return NULL;
-}
+//BedItem* Tile::getBedItem() const
+//{
+//	BedItem* bed = NULL;
+//	Item* iiItem = NULL;
+//	for(uint32_t i = 0; i < getThingCount(); ++i){
+//		iiItem = __getThing(i)->getItem();
+//		if(iiItem && (bed = iiItem->getBed()))
+//			return bed;
+//	}
+//
+//	return NULL;
+//}
 
 Creature* Tile::getTopCreature()
 {
@@ -674,36 +674,61 @@ Cylinder* Tile::__queryDestination(int32_t& index, const Thing* thing, Item** de
 
 	if(floorChangeDown())
 	{
-		dz = dz + 1;
+		dz = dz + 1;		
 		Tile* downTile = g_game.getTile(dx, dy, dz);
-		if(downTile)
+		if (downTile->floorChange())
 		{
-			if(downTile->floorChange(NORTH))
+			if (downTile->floorChange(NORTH))
 				dy += 1;
-			if(downTile->floorChange(SOUTH))
+			if (downTile->floorChange(SOUTH))
 				dy -= 1;
-			if(downTile->floorChange(EAST))
+			if (downTile->floorChange(EAST))
 				dx -= 1;
-			if (downTile->floorChange(WEST))			
-				dx += 1;			
-			destTile = g_game.getTile(dx, dy, dz);
+			if (downTile->floorChange(WEST))
+				dx += 1;
 		}
+		else
+		{
+			//try north
+			downTile = g_game.getTile(dx, dy - 1, dz);
+			if (downTile->floorChange(FLOOR_CHANGE_SOULTH_PLUS))
+				dy -= 2;
+			else
+			{
+				downTile = g_game.getTile(dx - 1, dy, dz);
+				if (downTile->floorChange(FLOOR_CHANGE_EAST_PLUS))
+					dx -= 2;
+			}
+		}
+			
 	}
 	else if(floorChange())
 	{
 		dz = dz - 1;
-		if(floorChange(NORTH))
+		if (floorChange(NORTH))
+		{
 			dy -= 1;
-		if(floorChange(SOUTH))
-			dy += 1;
-		if(floorChange(EAST))
-			dx += 1;
-		if(floorChange(WEST))
+		}
+		if (floorChange(SOUTH))
+		{
+			dy += 2;
+		}
+		if (floorChange(EAST))
+		{
+			dx += 2;
+		}
+		if (floorChange(WEST))
+		{
 			dx -= 1;
-		destTile = g_game.getTile(dx, dy, dz);
+		}
+		if (floorChange(FLOOR_CHANGE_EAST_PLUS))
+			dx += 2;
+		if (floorChange(FLOOR_CHANGE_SOULTH_PLUS))
+			dy += 2;
 	}
 
 
+	destTile = g_game.getTile(dx, dy, dz);
 	if(destTile == NULL)
 	{
 		destTile = this;
@@ -1274,28 +1299,45 @@ void Tile::__internalAddThing(uint32_t index, Thing* thing)
 
 void Tile::updateTileFlags(Item* item, bool removing)
 {
-	if(!removing){
+	if(!removing)
+	{
 		//!removing is adding an item to the tile
-		if(!hasFlag(TILESTATE_FLOORCHANGE)){
-			if(item->floorChangeDown()){
+		if(!hasFlag(TILESTATE_FLOORCHANGE))
+		{
+			if (item->floorChangeDown())
+			{
 				setFlag(TILESTATE_FLOORCHANGE);
 				setFlag(TILESTATE_FLOORCHANGE_DOWN);
-			}
-			if(item->floorChangeNorth()){
+			}			
+			if (item->floorChangeNorth()) 
+			{
 				setFlag(TILESTATE_FLOORCHANGE);
 				setFlag(TILESTATE_FLOORCHANGE_NORTH);
-			}
-			if(item->floorChangeSouth()){
+			}		
+			if (item->floorChangeSouth()) 
+			{
 				setFlag(TILESTATE_FLOORCHANGE);
 				setFlag(TILESTATE_FLOORCHANGE_SOUTH);
-			}
-			if(item->floorChangeEast()){
+			}			
+			if (item->floorChangeEast())
+			{
 				setFlag(TILESTATE_FLOORCHANGE);
 				setFlag(TILESTATE_FLOORCHANGE_EAST);
-			}
-			if(item->floorChangeWest()){
+			}		
+			if (item->floorChangeWest())
+			{
 				setFlag(TILESTATE_FLOORCHANGE);
 				setFlag(TILESTATE_FLOORCHANGE_WEST);
+			}		
+			if (item->floorChangeEastPlus())
+			{
+				setFlag(TILESTATE_FLOORCHANGE);
+				setFlag(TILESTATE_FLOORCHANGE_EAST_PLUS);
+			}
+			if (item->floorChangeSouthPlus())
+			{
+				setFlag(TILESTATE_FLOORCHANGE);
+				setFlag(TILESTATE_FLOORCHANGE_SOULTH_PLUS);
 			}
 		}
 
@@ -1338,6 +1380,14 @@ void Tile::updateTileFlags(Item* item, bool removing)
 		if(item->floorChangeEast()){
 			resetFlag(TILESTATE_FLOORCHANGE);
 			resetFlag(TILESTATE_FLOORCHANGE_EAST);
+		}
+		if (item->floorChangeEastPlus()) {
+			resetFlag(TILESTATE_FLOORCHANGE);
+			resetFlag(TILESTATE_FLOORCHANGE_EAST_PLUS);
+		}
+		if (item->floorChangeSouthPlus()) {
+			resetFlag(TILESTATE_FLOORCHANGE);
+			resetFlag(TILESTATE_FLOORCHANGE_SOULTH_PLUS);
 		}
 		if(item->floorChangeWest()){
 			resetFlag(TILESTATE_FLOORCHANGE);

@@ -33,7 +33,7 @@
 #include "boost/regex.hpp"
 
 class House;
-class BedItem;
+//class BedItem;
 
 class AccessList
 {
@@ -114,7 +114,7 @@ enum AccessHouseLevel_t{
 typedef std::list<HouseTile*> HouseTileList;
 typedef std::list<Door*> HouseDoorList;
 //[ added for beds system
-typedef std::list<BedItem*> HouseBedItemList;
+//typedef std::list<BedItem*> HouseBedItemList;
 //]
 
 
@@ -197,10 +197,10 @@ public:
 
 	HouseDoorList::iterator getHouseDoorBegin() {return doorList.begin();}
 	HouseDoorList::iterator getHouseDoorEnd() {return doorList.end();}
-
+/*
 	void addBed(BedItem* bed);
 	HouseBedItemList::iterator getHouseBedsBegin() {return bedsList.begin();}
-	HouseBedItemList::iterator getHouseBedsEnd() {return bedsList.end();}
+	HouseBedItemList::iterator getHouseBedsEnd() {return bedsList.end();}*/
 
 	// Transfers all items to depot and clicks all players (useful for map updates, for example)
 	void cleanHouse();
@@ -216,7 +216,7 @@ private:
 	HouseTileList houseTiles;
 	HouseDoorList doorList;
 	//[ added for beds system
-	HouseBedItemList bedsList;
+	//HouseBedItemList bedsList;
 	//]
 	AccessList guestList;
 	AccessList subOwnerList;

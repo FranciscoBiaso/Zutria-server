@@ -198,10 +198,10 @@ bool IOMapSerialize::loadItems(Database* db, DBResult* result, Cylinder* parent)
 						item = findItem;
 						break;
 					}
-					else if(iType.isBed() && findItem->getBed()){
+					/*else if(iType.isBed() && findItem->getBed()){
 						item = findItem;
 						break;
-					}
+					}*/
 				}
 			}
 		}
@@ -322,8 +322,7 @@ bool IOMapSerialize::saveItems(Database* db, uint32_t tileId, uint32_t houseId, 
 		if(!(!item->isNotMoveable() ||
 			item->getDoor() ||
 			(item->getContainer() && item->getContainer()->size() != 0)||
-			item->canWriteText() ||
-			item->getBed() ) )
+			item->canWriteText() ) )
 			continue;
 
 		if(!storedTile){
@@ -511,11 +510,11 @@ bool IOMapSerialize::loadItem(PropStream& propStream, Cylinder* parent)
 				else if(iType.isDoor() && findItem->getDoor()){
 					item = findItem;
 					break;
-				}
+				}/*
 				else if(iType.isBed() && findItem->getBed()) {
 					item = findItem;
 					break;
-				}
+				}*/
 			}
 		}
 
@@ -639,8 +638,7 @@ bool IOMapSerialize::saveTile(PropWriteStream& stream, const Tile* tile)
 		if(!(   item->isMoveable() ||
 				item->getDoor() ||
 				(item->getContainer() && item->getContainer()->size() != 0) ||
-				item->canWriteText() ||
-				item->getBed()))
+				item->canWriteText()))
 			continue;
 		
 		items.push_back(item);

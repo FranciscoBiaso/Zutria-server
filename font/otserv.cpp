@@ -207,9 +207,9 @@ int main(int argc, char *argv[])
 	#ifdef __DEBUG_LUASCRIPTS__
 	std::cout << " LUA-SCRIPTS";
 	#endif
-	#ifdef __DEBUG_RAID__
+	/*#ifdef __DEBUG_RAID__
 	std::cout << " RAIDS";
-	#endif
+	#endif*/
 	#ifdef __DEBUG_NET__
 	std::cout << " NET-ASIO";
 	#endif

@@ -90,12 +90,12 @@ void House::setHouseOwner(uint32_t guid)
 		 }
 
 		// we need to remove players from beds
-		HouseBedItemList::iterator bit;
-		for(bit = bedsList.begin(); bit != bedsList.end(); ++bit) {
+		//HouseBedItemList::iterator bit;
+		/*for(bit = bedsList.begin(); bit != bedsList.end(); ++bit) {
 			if((*bit)->getSleeper() != 0) {
 				(*bit)->wakeUp(NULL);
 			}
-		}
+		}*/
 
 		//clean access lists
 		houseOwner = 0;
@@ -316,12 +316,12 @@ void House::cleanHouse()
 	}
 
 	// we need to remove players from beds
-	HouseBedItemList::iterator bit;
-	for(bit = bedsList.begin(); bit != bedsList.end(); ++bit) {
+	//HouseBedItemList::iterator bit;
+	/*for(bit = bedsList.begin(); bit != bedsList.end(); ++bit) {
 		if((*bit)->getSleeper() != 0) {
 			(*bit)->wakeUp(NULL);
 		}
-	}
+	}*/
 }
 
 bool House::getAccessList(uint32_t listId, std::string& list) const
@@ -378,11 +378,11 @@ void House::removeDoor(Door* door)
 
 
 //[ added for beds system
-void House::addBed(BedItem* bed)
-{
-	bedsList.push_back(bed);
-	bed->setHouse(this);
-}
+//void House::addBed(BedItem* bed)
+//{
+//	bedsList.push_back(bed);
+//	bed->setHouse(this);
+//}
 //]
 
 Door* House::getDoorByNumber(uint32_t doorId)

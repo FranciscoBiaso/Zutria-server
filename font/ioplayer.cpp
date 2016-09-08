@@ -45,7 +45,7 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 	query << "SELECT `players`.`id` AS `id`, `players`.`name` AS `name`, `account_id`, \
 			 `players`.`group_id` as `group_id`, `sex`, `vocation`, `experience`, `level`, \
 			 `health`,`healthMax`, `mana`, `manaMax`, `manaspent`, `direction`,`looktype`, \
-			 `lookhead`, `lookbody`, `looklegs`, `lookfeet`, `posx`, `posy`, \
+			 `attackOutfit` , `breathOutfit`, `walkAttackOutfit`, `lookhead`, `lookbody`, `looklegs`, `lookfeet`, `posx`, `posy`, \
 			 `posz`, `lastlogin`, `lastlogout`, `lastip`, `save`, `conditions`, `redskulltime`, \
 			 `redskull`, `guildnick`, `loss_experience`, `loss_mana`, `loss_skills`, \
 			 `loss_items`, `rank_id`, `town_id`, `balance`, `status`, `levelPoints`, `unusedMagicPoints`, \
@@ -98,6 +98,9 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 	player->defaultOutfit.lookLegs = result->getDataInt("looklegs");
 	player->defaultOutfit.lookFeet = result->getDataInt("lookfeet");
 	player->currentOutfit = player->defaultOutfit;
+	player->setAttackOutfit(result->getDataInt("attackOutfit"));
+	player->setBreathOutfit(result->getDataInt("breathOutfit"));
+	player->setWalkAttackOutfit(result->getDataInt("walkAttackOutfit"));
 	player->setLevelPoints((uint16_t)result->getDataInt("levelPoints"));
 	player->setUnusedMagicPoints((uint16_t)result->getDataInt("unusedMagicPoints"));
 	player->setBreath(result->getDataInt("breath"));
@@ -330,7 +333,7 @@ bool IOPlayer::loadPlayer(Player* player, const std::string& name, bool preload 
 
 	//player->updateBaseSpeed();
 	//player->setBaseSpeed(player->getSkillValue(skillsID::PLAYER_SKILL_SPEED));
-	player->setBaseSpeed(240);
+	player->setBaseSpeed(190);
 	player->updateInventoryWeigth();
 	player->updateItemsLight(true);
 

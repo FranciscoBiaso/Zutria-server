@@ -45,6 +45,11 @@ class Container;
 class Tile;
 class Connection;
 
+enum SendProtocolCodes
+{
+	OnPlayerAttack = 52
+};
+
 enum SEND_PROTOCOL : std::uint8_t
 {
 	protocol_login = 0,
@@ -196,6 +201,7 @@ private:
 	void sendCreatureHealth(const Creature* creature);
 	
 	void sendSkills();
+	void sendOnPlayerAttack(uint32_t creatureId);
 	
 	void sendSpellLearned(unsigned char spellId, unsigned char spellLevel);
 	void sendPing();
