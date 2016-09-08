@@ -5,6 +5,8 @@
 *.log
 *.pdb
 *.suo
+*.iobj
+*.ipdb
 *.filters
 *.vc.opendb
 *ZutriaServer.VC.db
