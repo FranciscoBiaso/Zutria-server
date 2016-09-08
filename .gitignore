@@ -7,7 +7,7 @@
 *.suo
 *.iobj
 *.ipdb
-#.db
+*.db
 *.filters
 *.vc.opendb
 *ZutriaServer.VC.db
